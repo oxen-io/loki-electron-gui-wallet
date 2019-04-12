@@ -4,8 +4,15 @@
   "daemonVersion": "3.0.4",
   "description": "Modern GUI interface for Loki Currency",
   "productName": "Loki Electron Wallet",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loki-project/loki-electron-gui-wallet.git"
+  },
   "cordovaId": "com.lokinetwork.wallet",
-  "author": "Loki",
+  "author": {
+    "name": "Loki",
+    "email": "team@loki.network"
+  },
   "private": true,
   "scripts": {
     "dev": "quasar dev -m electron -t mat",
@@ -17,6 +24,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "electron-is-dev": "^1.0.1",
+    "electron-updater": "^4.0.6",
     "electron-window-state": "^5.0.3",
     "flag-icon-css": "^3.3.0",
     "fs-extra": "^7.0.1",

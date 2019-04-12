@@ -1,4 +1,5 @@
 import { app, ipcMain, BrowserWindow, Menu, dialog } from "electron"
+import { autoUpdater } from "electron-updater"
 import { Backend } from "./modules/backend"
 import menuTemplate from "./menu"
 import isDev from "electron-is-dev"
@@ -132,6 +133,7 @@ function createWindow () {
 }
 
 app.on("ready", () => {
+    autoUpdater.checkForUpdatesAndNotify()
     if (process.platform === "darwin") {
         const menu = Menu.buildFromTemplate(menuTemplate)
         Menu.setApplicationMenu(menu)

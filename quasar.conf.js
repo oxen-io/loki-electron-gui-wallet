@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 // Configuration for your app
 
 module.exports = function (ctx) {
@@ -178,13 +179,10 @@ module.exports = function (ctx) {
                 appId: "com.lokinetwork.wallet",
                 productName: "Loki Electron Wallet",
                 copyright: "Copyright © 2018-2019 Loki Project, 2018 Ryo Currency Project",
-
-                // directories: {
-                //     buildResources: "src-electron/build"
-                // },
+                publish: "github",
 
                 linux: {
-                    target: ["AppImage", "snap", "tar.xz"],
+                    target: ["AppImage", "snap", "deb"],
                     icon: "src-electron/icons/icon_512x512.png",
                     category: "Finance"
                 },
