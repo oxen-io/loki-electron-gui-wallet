@@ -13,7 +13,7 @@
                 {{ $t("titles.transactionDetails") }}
             </q-toolbar-title>
             <q-btn flat class="q-mr-sm" @click="showTxDetails" :label="$t('buttons.showTxDetails')" />
-            <q-btn color="primary" @click="openExplorer" :label="$t('buttons.viewOnExplorer')" />
+            <q-btn v-if="can_open" color="primary" @click="openExplorer" :label="$t('buttons.viewOnExplorer')" />
         </q-toolbar>
 
         <div class="layout-padding">
@@ -177,6 +177,10 @@ export default {
     name: "TxDetails",
     computed: mapState({
         theme: state => state.gateway.app.config.appearance.theme,
+        can_open (state) {
+            const { net_type } = state.gateway.app.config.app
+            return net_type !== "stagenet"
+        },
         in_tx_address_used (state) {
             let i
             let used_addresses = state.gateway.wallet.address_list.primary.concat(state.gateway.wallet.address_list.used)

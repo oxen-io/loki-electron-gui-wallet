@@ -245,7 +245,9 @@ export class Backend {
 
         case "open_explorer":
             if (params.type == "tx") {
-                require("electron").shell.openExternal("https://lokiblocks.com/tx/" + params.id)
+                const { net_type } = this.config_data.app
+                const url = net_type === "testnet" ? "https://lokitestnet.com/tx/" : "https://lokiblocks.com/tx/"
+                require("electron").shell.openExternal(url + params.id)
             }
             break
 
