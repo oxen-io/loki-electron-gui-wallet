@@ -156,9 +156,9 @@ export default {
                         })
                         this.$v.$reset();
                         this.service_node = {
+                            ...this.service_node,
                             key: "",
                             amount: 0,
-                            award_address: "",
                         }
                         break;
                     case -1:
