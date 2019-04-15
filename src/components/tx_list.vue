@@ -256,7 +256,7 @@ export default {
             if(confirms < Math.max(10, tx.unlock_time - height))
                 return this.$t("strings.blockHeight") + `: ${height} (${confirms} confirm${confirms==1?'':'s'})`
             else
-                return this.$t("strings.blockHeight") + `: ${height} (confirmed)`
+                return this.$t("strings.blockHeight") + `: ${height} (${this.$t("strings.transactionConfirmed")})`
         },
         copyTxid (txid, event) {
             event.stopPropagation()

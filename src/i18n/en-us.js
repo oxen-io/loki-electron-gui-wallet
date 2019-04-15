@@ -187,13 +187,17 @@ export default {
         oldPassword: "Old Password",
         rescanFullBlockchain: "Rescan full blockchain",
         rescanSpentOutputs: "Rescan spent outputs",
-        transactionNotes: "Transaction Notes"
+        transactionNotes: "Transaction Notes",
+        chooseNetwork: "Choose a Network",
+        network: "Network"
     },
     footer: {
         ready: "READY",
         scanning: "SCANNING",
         status: "Status",
-        syncing: "SYNCING"
+        syncing: "SYNCING",
+        remote: "Remote",
+        wallet: "Wallet"
     },
     menuItems: {
         about: "About",
@@ -322,6 +326,7 @@ export default {
             bannedUntil: "Banned until {time}"
         },
         blockHeight: "Height",
+        transactionConfirmed: "confirmed",
         closing: "Closing",
         connectingToBackend: "Connecting to backend",
         daemon: {
@@ -337,6 +342,13 @@ export default {
                 title: "Remote Daemon Only",
                 description: "Less security, wallet will connect to a remote node to make all transactions."
             }
+        },
+        priorityOptions: {
+            automatic: "Automatic",
+            slow: "Slow",
+            normal: "Normal",
+            fast: "Fast",
+            fastest: "Fastest"
         },
         destinationUnknown: "Destination Unknown",
         editAddressBookEntry: "Edit address book entry",

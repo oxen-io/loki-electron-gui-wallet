@@ -162,11 +162,11 @@ export default {
                 }
             },
             priorityOptions: [
-                {label: "Automatic", value: 0},
-                {label: "Slow", value: 1},
-                {label: "Normal", value: 2},
-                {label: "Fast", value: 3},
-                {label: "Fastest", value: 4},
+                {label: this.$t("strings.priorityOptions.automatic"), value: 0},
+                {label: this.$t("strings.priorityOptions.slow"), value: 1},
+                {label: this.$t("strings.priorityOptions.normal"), value: 2},
+                {label: this.$t("strings.priorityOptions.fast"), value: 3},
+                {label: this.$t("strings.priorityOptions.fastest"), value: 4},
             ],
         }
     },

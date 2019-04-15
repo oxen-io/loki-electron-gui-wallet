@@ -11,10 +11,10 @@
             </template>
 
             <template v-if="config_daemon.type !== 'local'">
-                <div>Remote: {{ daemon.info.height }}</div>
+                <div>{{ $t("footer.remote") }}: {{ daemon.info.height }}</div>
             </template>
 
-            <div>Wallet: {{ wallet.info.height }} / {{ target_height }} ({{ wallet_pct }}%)</div>
+            <div>{{ $t("footer.wallet") }}: {{ wallet.info.height }} / {{ target_height }} ({{ wallet_pct }}%)</div>
         </div>
 
     </div>

@@ -142,7 +142,7 @@
                             float- type="number" :decimals="0" :step="1" min="1024" max="65535" hide-underline />
             </LokiField>
         </div>
-         <q-field helper="Choose a network" label="Network" orientation="vertical">
+         <q-field :helper="$t('fieldLabels.chooseNetwork')" :label="$t('fieldLabels.network')" orientation="vertical">
              <q-option-group
                 type="radio"
                 v-model="config.app.net_type"
