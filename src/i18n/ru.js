@@ -187,13 +187,17 @@ export default {
         oldPassword: "Старый Пароль",
         rescanFullBlockchain: "Пересканировать весь блокчейн",
         rescanSpentOutputs: "Пересканировать потраченные выходы",
-        transactionNotes: "Заметки Транзакции"
+        transactionNotes: "Заметки Транзакции",
+        chooseNetwork: "Выберите сеть",
+        network: "Сеть"
     },
     footer: {
         ready: "СИНХРОНИЗИРОВАН",
         scanning: "СКАНИРОВАНИЕ",
         status: "Статус",
-        syncing: "СИНХРОНИЗАЦИЯ"
+        syncing: "СИНХРОНИЗАЦИЯ",
+        remote: "Удаленная нода",
+        wallet: "Кошелек"
     },
     menuItems: {
         about: "Информация",
@@ -322,6 +326,7 @@ export default {
             bannedUntil: "Забанено до {time}"
         },
         blockHeight: "Высота блока",
+        transactionConfirmed: "подтверждено",
         closing: "Закрытие",
         connectingToBackend: "Подключение...",
         daemon: {
@@ -337,6 +342,13 @@ export default {
                 title: "Только Удаленная Нода",
                 description: "Меньшая безопасность, кошелек подключится к удаленной ноде для проведения всех транзакций."
             }
+        },
+        priorityOptions: {
+            automatic: "Автоматически",
+            slow: "Медленно",
+            normal: "Нормально",
+            fast: "Быстро",
+            fastest: "Очень быстро"
         },
         destinationUnknown: "Назначение Неизвестно",
         editAddressBookEntry: "Редактировать запись адресной книги",
@@ -366,25 +378,25 @@ export default {
         transactionID: "ID транзакции",
         transactions: {
             amount: "Сумма",
-            description: "Транзакция {type}",
+            description: "Транзакция: {type}",
             fee: "Комиссия",
             paidBySender: "оплачивается отправителем",
             received: "Получено",
             sent: "Отправлено",
-            sentTo: "Транзакция {type} отправлена",
+            sentTo: "Транзакция отправлена: {type}",
             timestamp: "Отметка времени",
             types: {
                 all: "Все",
-                incoming: "Входящая",
-                outgoing: "Исходящая",
-                pending: "Ожидающая",
-                pendingIncoming: "Ожидающая входящая",
-                pendingOutgoing: "Ожидающая исходящая",
-                miner: "Майнинга",
-                serviceNode: "Сервисной Ноды",
-                governance: "Управления",
-                stake: "Стейка",
-                failed: "Не удалась"
+                incoming: "Входящие",
+                outgoing: "Исходящие",
+                pending: "Ожидающие",
+                pendingIncoming: "Ожидающие входящие",
+                pendingOutgoing: "Ожидающие исходящие",
+                miner: "Майнинг",
+                serviceNode: "Сервисная Нода",
+                governance: "Управление",
+                stake: "Стейк",
+                failed: "Не удавшиеся"
             }
         },
         unspentOutputs: "Непотраченные выходы",
