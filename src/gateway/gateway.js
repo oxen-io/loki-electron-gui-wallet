@@ -46,7 +46,7 @@ export class Gateway extends EventEmitter {
         })
 
         ipcRenderer.on("confirmClose", () => {
-            this.confirmClose("Are you sure you want to exit?")
+            this.confirmClose(i18n.t("dialog.exit.message"))
         })
     }
 
@@ -152,7 +152,7 @@ export class Gateway extends EventEmitter {
             break
 
         case "settings_changed_reboot":
-            this.confirmClose("Changes require restart. Would you like to restart now?", true)
+            this.confirmClose(i18n.t("dialog.restart.message"), true)
             break
 
         case "show_notification":
