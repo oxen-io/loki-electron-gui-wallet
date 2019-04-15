@@ -21,7 +21,7 @@
                     </q-item-main>
                     <q-item-side class="meta">
                         <q-item-tile label>
-                            <timeago :datetime="tx.timestamp*1000" :auto-update="60" />
+                            <timeago :datetime="tx.timestamp*1000" :auto-update="60" :locale="$i18n.locale"/>
                         </q-item-tile>
                         <q-item-tile sublabel>{{ formatHeight(tx) }}</q-item-tile>
                     </q-item-side>
