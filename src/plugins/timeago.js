@@ -7,6 +7,9 @@ export default ({
 }) => {
     Vue.use(VueTimeago, {
         name: "Timeago",
-        locale: "en"
+        locale: "en",
+        locales: {
+            ru: require("date-fns/locale/ru")
+        }
     })
 }
