@@ -180,6 +180,9 @@ module.exports = function (ctx) {
                 productName: "Loki Electron Wallet",
                 copyright: "Copyright © 2018-2019 Loki Project, 2018 Ryo Currency Project",
                 publish: "github",
+                files: [
+                    "!dev-app-update.yml"
+                ],
 
                 linux: {
                     target: ["AppImage", "snap", "deb"],

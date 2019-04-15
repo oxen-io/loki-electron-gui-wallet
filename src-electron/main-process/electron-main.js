@@ -1,6 +1,6 @@
 import { app, ipcMain, BrowserWindow, Menu, dialog } from "electron"
-import { autoUpdater } from "electron-updater"
 import { Backend } from "./modules/backend"
+import { checkForUpdate } from "./auto-updater"
 import menuTemplate from "./menu"
 import isDev from "electron-is-dev"
 const portscanner = require("portscanner")
@@ -109,6 +109,10 @@ function createWindow () {
             }
 
             portscanner.checkPortStatus(config.port, "127.0.0.1", (error, status) => {
+                if (error) {
+                    console.error(error)
+                }
+
                 if (status == "closed") {
                     backend = new Backend(mainWindow)
                     backend.init(config)
@@ -133,7 +137,7 @@ function createWindow () {
 }
 
 app.on("ready", () => {
-    autoUpdater.checkForUpdatesAndNotify()
+    checkForUpdate()
     if (process.platform === "darwin") {
         const menu = Menu.buildFromTemplate(menuTemplate)
         Menu.setApplicationMenu(menu)
