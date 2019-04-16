@@ -1,5 +1,4 @@
 import enUS from "./en-us"
-import ru from "./ru"
 
 // ADD LANGUAGES HERE
 const languages = [
@@ -11,6 +10,5 @@ export { languages }
 
 // DO NOT MODIFY THIS EXPORT, LANGUAGE FILES CAN BE DYNAMICALLY LOADED
 export default {
-    "en-us": enUS,
-    "ru": ru
+    "en-us": enUS
 }
