@@ -1,8 +1,11 @@
-import { app, dialog } from "electron"
+import { dialog } from "electron"
 import isDev from "electron-is-dev"
 import { autoUpdater } from "electron-updater"
+import ProgressBar from "electron-progressbar"
 
+let progressBar = null
 let isUpdating = false
+let downloadAndInstall = false
 
 function checkForUpdate (onQuitAndInstall) {
     // Disable for development
@@ -23,44 +26,56 @@ function checkForUpdate (onQuitAndInstall) {
 
     autoUpdater.on("update-available", info => {
         console.log(`Update available: ${info.version}`)
+
+        const message = `Update ${info.version} found. Do you want to download the update?`
+        const detail = `View the release notes at: https://github.com/loki-project/loki-electron-gui-wallet/releases/tag/v${info.version}`
+
         dialog.showMessageBox({
             type: "info",
             title: "Update available",
-            message: `Update ${info.version} found. Do you want to download the update?`,
-            buttons: ["Download", "No"]
+            message,
+            detail,
+            buttons: ["Download and Install", "Download and Install Later", "No"],
+            defaultId: 0
         }, (buttonIndex) => {
+            // Download and install
             if (buttonIndex === 0) {
+                downloadAndInstall = true
+                if (!progressBar) {
+                    progressBar = new ProgressBar({
+                        indeterminate: false,
+                        title: "Downloading...",
+                        text: `Downloading wallet v${info.version}`
+                    })
+                }
+            }
+
+            // Download
+            if (buttonIndex !== 2) {
                 isUpdating = true
                 autoUpdater.downloadUpdate()
             }
         })
     })
 
-    autoUpdater.on("update-downloaded", (info) => {
+    autoUpdater.on("download-progress", progress => {
+        progressBar.value = progress.percent
+    })
+
+    autoUpdater.on("update-downloaded", () => {
         console.log("Update downloaded")
         isUpdating = false
-        let detail = `${app.getName()} ${info.version} is now available. It will be installed the next time you restart the application.`
-        if (info.releaseNotes) {
-            const splitNotes = info.releaseNotes.split(/[^\r]\n/)
-            detail += "\n\nRelease notes:\n"
-            splitNotes.forEach(notes => {
-                detail += notes + "\n\n"
-            })
+
+        if (progressBar) {
+            progressBar.setCompleted()
+            progressBar = null
         }
 
-        dialog.showMessageBox({
-            type: "question",
-            buttons: ["Install", "Later"],
-            defaultId: 0,
-            message: `A new version of ${app.getName()} has been downloaded`,
-            detail
-        }, (buttonIndex) => {
-            if (buttonIndex === 0) {
-                if (onQuitAndInstall) {
-                    onQuitAndInstall(autoUpdater)
-                }
-            }
-        })
+        // If download and install was selected then quit and install
+        if (downloadAndInstall && onQuitAndInstall) {
+            onQuitAndInstall(autoUpdater)
+            downloadAndInstall = false
+        }
     })
 
     autoUpdater.checkForUpdates()
