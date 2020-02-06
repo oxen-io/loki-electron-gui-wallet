@@ -1,0 +1,78 @@
+name: Loki Electron Wallet Build
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [windows-latest, macos-latest, ubuntu-latest]
+        steps:
+            - name: Checkout git repo
+              uses: actions/checkout@v1
+
+            - name: Install node
+              uses: actions/setup-node@v1
+              with:
+                node-version: "11.9.0"
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Download lokid binaries
+              run: node ./build/download-binaries.js
+
+            - name: Extract zip binaries
+              if: runner.os != 'Linux'
+              run: unzip latest.zip
+              shell: bash
+              working-directory: ./downloads
+
+            - name: Extract xz binaries
+              if: runner.os == 'Linux'
+              run: tar -xf latest.xz
+              shell: bash
+              working-directory: ./downloads
+
+            - name: Move lokid binaries
+              run: |
+                find ./downloads -type f -name "lokid*" -exec cp '{}' ./bin \;
+                find ./downloads -type f -name "loki-wallet-rpc*" -exec cp '{}' ./bin \;
+              shell: bash
+
+            - name: Verify binaries
+              run: ls ./bin
+              shell: bash
+
+            - name: Publish window and linux binaries
+              if: runner.os != 'macOS'
+              run: npm run release
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Publish mac binaries
+              if: runner.os == 'macOS'
+              run: npm run release
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                CSC_LINK: ${{ secrets.MAC_CERTIFICATE }}
+                CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+                SIGNING_APPLE_ID: ${{ secrets.SIGNING_APPLE_ID }}
+                SIGNING_APP_PASSWORD: ${{ secrets.SIGNING_APP_PASSWORD }}
+                SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
+
+            - name: Remove un-needed artifacts
+              run: rm -r -- ./*/
+              shell: bash
+              working-directory: ./dist/electron-mat/Packaged
+
+            - name: Upload artifacts
+              uses: actions/upload-artifact@v1
+              with:
+                name: ${{ runner.OS }}
+                path: dist/electron-mat/Packaged
