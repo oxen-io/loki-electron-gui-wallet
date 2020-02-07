@@ -1,6 +1,6 @@
 # Loki Electron GUI Wallet
 
-### Introduction
+### Introduction Introduction
 Loki is a private cryptocurrency based on Monero. Loki aims to provide a private data transmission layer using a second layer of Service Nodes.
 More information on the project can be found on the [website](https://loki.network) and in the [whitepaper](https://loki.network/whitepaper). Loki is an open source project, and we encourage contributions from anyone with something to offer.
 <p align="center">
