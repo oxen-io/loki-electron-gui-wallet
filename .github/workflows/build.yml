@@ -77,3 +77,6 @@ jobs:
               with:
                 name: ${{ runner.OS }}
                 path: dist/electron-mat/Packaged
+            - name: Echo things out
+              run: Echo Brian is awesome!
+                
