@@ -4,8 +4,13 @@
   "description": "Modern GUI interface for Loki Currency",
   "productName": "Loki Electron Wallet",
   "cordovaId": "com.lokinetwork.wallet",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jian10au/loki-electron-gui-wallet.git"
+  },
   "author": "Loki",
   "private": true,
+
   "scripts": {
     "dev": "quasar dev -m electron -t mat",
     "build": "quasar build -m electron -t mat",
@@ -17,6 +22,8 @@
   "dependencies": {
     "axios": "^0.18.1",
     "electron-is-dev": "^1.0.1",
+    "electron-log": "^4.0.6",
+    "electron-updater": "^4.2.0",
     "electron-window-state": "^5.0.3",
     "flag-icon-css": "^3.3.0",
     "fs-extra": "^8.1.0",
