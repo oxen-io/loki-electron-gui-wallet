@@ -1,6 +1,9 @@
 import { app, ipcMain, BrowserWindow, Menu, dialog } from "electron"
 import { version, productName } from "../../package.json"
 import { Backend } from "./modules/backend"
+import { checkForUpdate } from './auto-updater'
+// looks ok by Brian
+
 import menuTemplate from "./menu"
 import isDev from "electron-is-dev"
 const portscanner = require("portscanner")
@@ -21,6 +24,9 @@ if (process.env.PROD) {
 let mainWindow, backend
 let showConfirmClose = true
 let forceQuit = false
+let installUpdate = false
+
+
 
 const title = `${productName} v${version}`
 
