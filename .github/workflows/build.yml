@@ -6,6 +6,7 @@ on:
         branches:
             - master
             - crossplatform-release
+            - intergration-first-attempt
 
 jobs:
     build:
