@@ -4,10 +4,6 @@
   "description": "Modern GUI interface for Loki Currency",
   "productName": "Loki Electron Wallet",
   "cordovaId": "com.lokinetwork.wallet",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jian10au/loki-electron-gui-wallet.git"
-  },
   "author": "Loki",
   "private": true,
 
