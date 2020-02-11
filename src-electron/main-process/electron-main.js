@@ -178,7 +178,7 @@ function createWindow () {
 }
 
 app.on("ready", () => {
-    console.log(checkForUpdate)
+    console.log(checkForUpdate, 'definitely is run in here')
     // below part is for checking the auto update; 
     // I don't understand how come this checkForUpdate functions actually takes in 
     checkForUpdate(
