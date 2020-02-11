@@ -97,4 +97,8 @@ function checkForUpdate (onQuitAndInstall) {
     //then all there will be some event that triggers that all the event listener we have set in above.
 }
 
+// the whole file is only a giant function
+
+
+
 export { checkForUpdate }
