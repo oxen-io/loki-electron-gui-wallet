@@ -49,11 +49,13 @@ export class Gateway extends EventEmitter {
             this.confirmClose(i18n.t("dialog.exit.message"))
         })
 
+        //added 
         ipcRenderer.on("showQuitScreen", () => {
             if (this.router) {
                 this.router.replace({ path: "/quit" })
             }
         })
+        //added
 
 
     }
