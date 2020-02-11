@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "quasar dev -m electron -t mat",
     "build": "quasar build -m electron -t mat",
-    "release": "quasar build -m electron -t mat --publish=always",
+    "release": "quasar build -m electron -wl -t mat --publish=always",
     "lint": "eslint --ext .js,.vue src",
     "lint-fix": "eslint --fix .",
     "test": "echo \"No test specified\" && exit 0"
