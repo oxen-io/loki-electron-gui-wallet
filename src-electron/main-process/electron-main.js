@@ -65,7 +65,16 @@ function createWindow () {
         title
     })
 
+
+    //why does everything starts with close Brian 
     mainWindow.on("close", (e) => {
+
+        if(installUpdate) {
+            return
+        }
+        //how does the above function works
+
+
         if (process.platform === "darwin") {
             if (forceQuit) {
                 forceQuit = false
@@ -153,6 +162,21 @@ function createWindow () {
 }
 
 app.on("ready", () => {
+    console.log(checkForUpdate)
+    checkForUpdate(autoUpdater => {
+        if (mainWindow) {
+            mainWindow.webContents.send("showQuitScreen")
+        }
+
+        const promise = backend ? backend.quit() : Promise.resolve()
+        promise.then(() => {
+            installUpdate = true
+            backend = null
+            autoUpdater.quitAndInstall()
+        })
+    })
+
+
     if (process.platform === "darwin") {
         const menu = Menu.buildFromTemplate(menuTemplate)
         Menu.setApplicationMenu(menu)
