@@ -1,12 +1,11 @@
 {
   "name": "loki-electron-wallet",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Modern GUI interface for Loki Currency",
   "productName": "Loki Electron Wallet",
   "cordovaId": "com.lokinetwork.wallet",
   "author": "Loki",
   "private": true,
-
   "scripts": {
     "dev": "quasar dev -m electron -t mat",
     "build": "quasar build -m electron -t mat",
