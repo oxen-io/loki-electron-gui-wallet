@@ -5,6 +5,8 @@ on:
     push:
         branches:
             - master
+            - crossplatform-release
+            - intergration-first-attempt
 
 jobs:
     build:
