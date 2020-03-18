@@ -1260,11 +1260,7 @@ export class WalletRPC {
         // limit to 10 unused addresses
         wallet.address_list.unused = wallet.address_list.unused.slice(0, 10);
 
-        if (
-          wallet.address_list.unused.length < num_unused_addresses &&
-          !wallet.address_list.primary[0].address.startsWith("RYoK") &&
-          !wallet.address_list.primary[0].address.startsWith("RYoH")
-        ) {
+        if (wallet.address_list.unused.length < num_unused_addresses) {
           for (let n = wallet.address_list.unused.length; n < num_unused_addresses; n++) {
             this.sendRPC("create_address", {
               account_index: 0

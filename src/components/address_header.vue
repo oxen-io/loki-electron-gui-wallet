@@ -3,7 +3,7 @@
     <q-item-main class="self-start">
       <q-item-tile sublabel class="title non-selectable">{{ title }}</q-item-tile>
       <q-item-tile class="break-all" label>{{ address }}</q-item-tile>
-      <q-item-tile v-if="payment_id" sublabel>{{ $t("fieldLabels.paymentId") }}: {{ payment_id }}</q-item-tile>
+      <q-item-tile v-if="paymentId" sublabel>{{ $t("fieldLabels.paymentId") }}: {{ paymentId }}</q-item-tile>
       <q-item-tile v-if="extra" sublabel class="extra non-selectable">{{ extra }}</q-item-tile>
     </q-item-main>
     <q-item-side v-if="showCopy">
@@ -65,7 +65,7 @@ export default {
         this.$refs.copy.$el.blur();
       }
       clipboard.writeText(this.address);
-      if (this.payment_id) {
+      if (this.paymentId) {
         this.$q
           .dialog({
             title: this.$t("dialog.copyAddress.title"),

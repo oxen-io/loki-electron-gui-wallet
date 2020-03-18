@@ -69,7 +69,7 @@ export default {
   },
   props: {
     address: {
-      type: String,
+      type: Object,
       required: true
     },
     sublabel: {
