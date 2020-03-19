@@ -98,7 +98,8 @@ export default {
     unlock_status: {
       handler(val, old) {
         if (val.code == old.code) return;
-        switch (this.unlock_status.code) {
+        const { code, message } = val;
+        switch (code) {
           case 0:
             this.key = null;
             this.password = null;
@@ -106,7 +107,7 @@ export default {
             this.$q.notify({
               type: "positive",
               timeout: 1000,
-              message: this.unlock_status.message
+              message
             });
             this.$v.$reset();
             break;
@@ -115,7 +116,7 @@ export default {
             this.$q
               .dialog({
                 title: this.$t("dialog.unlockServiceNode.confirmTitle"),
-                message: this.unlock_status.message,
+                message,
                 ok: {
                   label: this.$t("dialog.unlockServiceNode.ok")
                 },
@@ -137,7 +138,7 @@ export default {
             this.$q.notify({
               type: "negative",
               timeout: 3000,
-              message: this.unlock_status.message
+              message
             });
             break;
           default:

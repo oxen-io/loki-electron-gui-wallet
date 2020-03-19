@@ -135,7 +135,8 @@ export default {
     status: {
       handler(val, old) {
         if (val.code == old.code) return;
-        switch (this.status.code) {
+        const { code, message } = val;
+        switch (code) {
           case 1:
             break;
           case 0:
@@ -149,7 +150,7 @@ export default {
             this.$q.notify({
               type: "negative",
               timeout: 1000,
-              message: this.status.message
+              message
             });
             break;
         }

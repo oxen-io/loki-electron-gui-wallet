@@ -103,12 +103,13 @@ export default {
     lns_status: {
       handler(val, old) {
         if (val.code == old.code) return;
-        switch (this.lns_status.code) {
+        const { code, message } = val;
+        switch (code) {
           case 0:
             this.$q.notify({
               type: "positive",
               timeout: 1000,
-              message: this.lns_status.message
+              message
             });
             this.$v.$reset();
             this.lns = {
@@ -122,8 +123,8 @@ export default {
           case -1:
             this.$q.notify({
               type: "negative",
-              timeout: 1000,
-              message: this.lns_status.message
+              timeout: 3000,
+              message
             });
             break;
         }

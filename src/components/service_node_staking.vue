@@ -107,12 +107,13 @@ export default {
     stake_status: {
       handler(val, old) {
         if (val.code == old.code) return;
-        switch (this.stake_status.code) {
+        const { code, message } = val;
+        switch (code) {
           case 0:
             this.$q.notify({
               type: "positive",
               timeout: 1000,
-              message: this.stake_status.message
+              message
             });
             this.$v.$reset();
             this.service_node = {
@@ -124,7 +125,7 @@ export default {
             this.$q.notify({
               type: "negative",
               timeout: 3000,
-              message: this.stake_status.message
+              message
             });
             break;
         }

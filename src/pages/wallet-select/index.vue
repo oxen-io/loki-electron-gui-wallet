@@ -123,7 +123,8 @@ export default {
     status: {
       handler(val, old) {
         if (val.code == old.code) return;
-        switch (this.status.code) {
+        const { code, message } = val;
+        switch (code) {
           case 0: // Wallet loaded
             this.$q.loading.hide();
             this.$router.replace({ path: "/wallet" });
@@ -134,7 +135,7 @@ export default {
             this.$q.notify({
               type: "negative",
               timeout: 1000,
-              message: this.status.message
+              message
             });
             this.$store.commit("gateway/set_wallet_data", {
               status: {
