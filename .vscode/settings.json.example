@@ -1,0 +1,8 @@
+{
+    "i18n-ally.localesPaths": "src/i18n",
+    "vue-i18n-ally.localesPaths": "src/i18n",
+    "vetur.validation.template": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}
