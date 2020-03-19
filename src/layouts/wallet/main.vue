@@ -27,6 +27,9 @@
           <router-link to="/wallet/servicenode">
             <q-btn class="large-btn" :label="$t('buttons.serviceNode')" size="md" icon-right="router" align="left" />
           </router-link>
+          <router-link to="/wallet/lns">
+            <q-btn class="large-btn" :label="$t('buttons.lns')" size="md" icon-right="text_fields" align="left" />
+          </router-link>
           <router-link to="/wallet/advanced">
             <q-btn class="large-btn" :label="$t('buttons.advanced')" size="md" icon-right="tune" align="left" />
           </router-link>
@@ -99,7 +102,7 @@ export default {
     min-width: 160px;
     .q-btn-inner > *:last-child {
       margin-left: auto;
-      padding-left: 8px;
+      padding-left: 16px;
     }
   }
 }

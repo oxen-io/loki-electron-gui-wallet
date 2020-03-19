@@ -289,6 +289,17 @@ export class WalletRPC {
         );
         break;
 
+      case "purchase_lns":
+        this.purchaseLNS(
+          params.password,
+          params.type,
+          params.name,
+          params.value,
+          params.owner || "",
+          params.backupOwner || ""
+        );
+        break;
+
       case "prove_transaction":
         this.proveTransaction(params.txid, params.address, params.message);
         break;
@@ -355,6 +366,7 @@ export class WalletRPC {
       return;
     }
 
+    // We need to check if the hash generated with an empty string is the same as the password_hash we are storing
     crypto.pbkdf2("", this.auth[2], 1000, 64, "sha512", (err, password_hash) => {
       if (err) {
         this.sendGateway("set_has_password", false);
@@ -1069,6 +1081,57 @@ export class WalletRPC {
       if (address_book.hasOwnProperty("save") && address_book.save) {
         this.addAddressBook(address, payment_id, address_book.description, address_book.name);
       }
+    });
+  }
+
+  purchaseLNS(password, type, name, value, owner, backupOwner) {
+    const _name = name.trim().toLowerCase();
+    const _owner = owner.trim() === "" ? null : owner;
+    const _backupOwner = backupOwner.trim() === "" ? null : backupOwner;
+
+    crypto.pbkdf2(password, this.auth[2], 1000, 64, "sha512", (err, password_hash) => {
+      if (err) {
+        this.sendGateway("set_lns_status", {
+          code: -1,
+          i18n: "notification.errors.internalError",
+          sending: false
+        });
+        return;
+      }
+      if (!this.isValidPasswordHash(password_hash)) {
+        this.sendGateway("set_lns_status", {
+          code: -1,
+          i18n: "notification.errors.invalidPassword",
+          sending: false
+        });
+        return;
+      }
+
+      const params = {
+        type,
+        owner: _owner,
+        backup_owner: _backupOwner,
+        name: _name,
+        value
+      };
+
+      this.sendRPC("lns_buy_mapping", params).then(data => {
+        if (data.hasOwnProperty("error")) {
+          let error = data.error.message.charAt(0).toUpperCase() + data.error.message.slice(1);
+          this.sendGateway("set_lns_status", {
+            code: -1,
+            message: error,
+            sending: false
+          });
+          return;
+        }
+
+        this.sendGateway("set_lns_status", {
+          code: 0,
+          i18n: "notification.positive.namePurchased",
+          sending: false
+        });
+      });
     });
   }
 

@@ -52,34 +52,47 @@ export default {
   },
   tx_status: {
     code: 0,
-    message: ""
+    message: "",
+    i18n: "",
+    sending: false
   },
   service_node_status: {
     stake: {
       code: 0,
       message: "",
+      i18n: "",
       sending: false
     },
     registration: {
       code: 0,
       message: "",
+      i18n: "",
       sending: false
     },
     unlock: {
       code: 0,
       message: "",
+      i18n: "",
       sending: false
     }
   },
   prove_transaction_status: {
     code: 0,
     message: "",
+    i18n: "",
     state: {}
   },
   check_transaction_status: {
     code: 0,
     message: "",
+    i18n: "",
     state: {}
+  },
+  lns_status: {
+    code: 0,
+    message: "",
+    i18n: "",
+    sending: false
   },
   daemon: {
     info: {

@@ -20,8 +20,10 @@ export default {
     generate: "GENERATE",
     import: "IMPORT",
     importWallet: "IMPORT WALLET | IMPORT WALLETS",
+    lns: "LOKI NAME SERVICE",
     next: "NEXT",
     openWallet: "OPEN WALLET",
+    purchase: "PURCHASE",
     receive: "RECEIVE",
     registerServiceNode: "REGISTER SERVICE NODE",
     rescan: "RESCAN",
@@ -93,6 +95,11 @@ export default {
     password: {
       title: "Password",
       message: "Enter wallet password to continue."
+    },
+    purchase: {
+      title: "Purchase name",
+      message: "Do you want to purchase the name?",
+      ok: "PURCHASE"
     },
     registerServiceNode: {
       title: "Register service node",
@@ -166,6 +173,7 @@ export default {
     // Field labels are also all uppercased
     address: "ADDRESS",
     amount: "AMOUNT",
+    backupOwner: "BACKUP OWNER",
     confirmPassword: "CONFIRM PASSWORD",
     daemonLogLevel: "DAEMON LOG LEVEL",
     daemonP2pPort: "DAEMON P2P PORT",
@@ -200,6 +208,7 @@ export default {
     seedLanguage: "SEED LANGUAGE",
     serviceNodeCommand: "SERVICE NODE COMMAND",
     serviceNodeKey: "SERVICE NODE KEY",
+    sessionId: "SESSION ID",
     signature: "SIGNATURE",
     transactionId: "TRANSACTION ID",
     walletFile: "WALLET FILE",
@@ -265,6 +274,7 @@ export default {
         imported: "Key images imported"
       },
       passwordUpdated: "Password updated",
+      namePurchased: "Name successfully purchased",
       qrCopied: "QR code copied to clipboard",
       registerServiceNodeSuccess: "Successfully registered service node",
       sendSuccess: "Transaction successfully sent",
@@ -284,6 +294,7 @@ export default {
       enterTransactionId: "Enter transaction ID",
       enterTransactionProof: "Enter transaction proof",
       enterWalletName: "Enter a wallet name",
+      enterName: "Enter a name",
       errorSavingItem: "Error saving {item}",
       failedServiceNodeUnlock: "Failed to unlock service node",
       failedToSetLanguage: "Failed to set language: {lang}",
@@ -293,6 +304,10 @@ export default {
       internalError: "Internal error",
       invalidAddress: "Address not valid",
       invalidAmount: "Amount not valid",
+      invalidBackupOwner: "Backup owner address not valid",
+      invalidNameLength: "Name must be between 1 and 64 characters long",
+      invalidNameFormat: "Name may only contain alphanumerics, hyphens and underscore",
+      invalidNameHypenNotAllowed: "Name may only begin or end with alphanumerics or an underscore",
       invalidOldPassword: "Invalid old password",
       invalidPassword: "Invalid password",
       invalidPaymentId: "Payment id not valid",
@@ -303,6 +318,7 @@ export default {
       invalidSeedLength: "Invalid seed word length",
       invalidServiceNodeCommand: "Please enter the service node registration command",
       invalidServiceNodeKey: "Service node key not valid",
+      invalidSessionId: "Session ID not valid",
       invalidWalletPath: "Invalid wallet path",
       keyImages: {
         exporting: "Error exporting key images",
@@ -332,12 +348,15 @@ export default {
     addressBookName: "Name that belongs to this address",
     filterTx: "Enter an ID, name, address or amount",
     hexCharacters: "{count} hexadecimal characters",
+    lnsName: "The name to purchase via Loki Name Service",
+    lnsBackupOwner: "The wallet address of the backup owner",
     mnemonicSeed: "25 (or 24) word mnemonic seed",
     pasteTransactionId: "Paste transaction ID",
     pasteTransactionProof: "Paste transaction proof",
     proveOptionalMessage: "Optional message against which the signature is signed",
     recipientWalletAddress: "Recipient's wallet address",
     selectAFile: "Please select a file",
+    sessionId: "The Session ID to link to Loki Name Service",
     transactionNotes: "Additional notes to locally attach to the transaction",
     walletName: "A name for your wallet",
     walletPassword: "An optional password for the wallet"
@@ -396,6 +415,7 @@ export default {
     },
     destinationUnknown: "Destination Unknown",
     editAddressBookEntry: "Edit address book entry",
+    lnsDescription: "Purchase a name for a Session ID. The current wallet will become the owner of the name.",
     loadingSettings: "Loading settings",
     lokiBalance: "Balance",
     lokiUnlockedBalance: "Unlocked balance",

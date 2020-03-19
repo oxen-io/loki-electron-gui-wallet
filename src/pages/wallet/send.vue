@@ -149,7 +149,6 @@ export default {
   data() {
     const blink = 0x626c6e6b;
     return {
-      sending: false,
       newTx: {
         amount: 0,
         address: "",

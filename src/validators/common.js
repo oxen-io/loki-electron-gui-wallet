@@ -16,6 +16,14 @@ export const service_node_key = input => {
   return input.length === 64 && /^[0-9A-Za-z]+$/.test(input);
 };
 
+export const session_id = input => {
+  return input.length == 66 && /^05[0-9A-Za-z]+$/.test(input);
+};
+
+export const lns_name = input => {
+  return /^[a-z0-9_]([a-z0-9-_]*[a-z0-9_])?$/.test(input.toLowerCase());
+};
+
 export const address = (input, gateway) => {
   if (!/^[0-9A-Za-z]+$/.test(input)) return false;
 
