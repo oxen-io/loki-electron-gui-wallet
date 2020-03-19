@@ -195,19 +195,19 @@ export class Backend {
           });
         });
         break;
-
+      case "save_config_init":
       case "save_config": {
-        Object.keys(this.config_data).map(i => {
-          if (i == "appearance") return;
-          Object.keys(this.config_data[i]).map(j => {
-            if (this.config_data[i][j] !== params[i][j]) {
-              config_changed = true;
-            }
+        if (data.method === "save_config") {
+          Object.keys(this.config_data).map(i => {
+            if (i == "appearance") return;
+            Object.keys(this.config_data[i]).map(j => {
+              if (this.config_data[i][j] !== params[i][j]) {
+                config_changed = true;
+              }
+            });
           });
-        });
-        break;
-      }
-      case "save_config_init": {
+        }
+
         Object.keys(params).map(key => {
           this.config_data[key] = Object.assign(this.config_data[key], params[key]);
         });
