@@ -31,6 +31,19 @@
           </LokiField>
         </div>
 
+        <!-- Owner -->
+        <div class="col q-mt-sm">
+          <LokiField class="q-mt-md" :label="$t('fieldLabels.owner')" :error="$v.lns.owner.$error" optional>
+            <q-input
+              v-model.trim="lns.owner"
+              :dark="theme == 'dark'"
+              :placeholder="our_address"
+              hide-underline
+              @blur="$v.lns.owner.$touch"
+            />
+          </LokiField>
+        </div>
+
         <!-- Backup owner -->
         <div class="col q-mt-sm">
           <LokiField class="q-mt-md" :label="$t('fieldLabels.backupOwner')" :error="$v.lns.backupOwner.$error" optional>
@@ -90,6 +103,7 @@ export default {
   computed: mapState({
     theme: state => state.gateway.app.config.appearance.theme,
     lns_status: state => state.gateway.lns_status,
+    our_address: state => state.gateway.wallet.info.address,
     is_able_to_send() {
       return this.$store.getters["gateway/isAbleToSend"];
     },
@@ -189,6 +203,15 @@ export default {
         return;
       }
 
+      if (this.$v.lns.owner.$error) {
+        this.$q.notify({
+          type: "negative",
+          timeout: 3000,
+          message: this.$t("notification.errors.invalidOwner")
+        });
+        return;
+      }
+
       this.showPasswordConfirmation({
         title: this.$t("dialog.purchase.title"),
         noPasswordMessage: this.$t("dialog.purchase.message"),
@@ -207,7 +230,7 @@ export default {
           });
           this.$gateway.send("wallet", "purchase_lns", lns);
         })
-        .catch(console.error);
+        .catch(() => {});
     }
   },
   validations: {
