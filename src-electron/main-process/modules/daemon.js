@@ -429,6 +429,36 @@ export class Daemon {
     });
   }
 
+  getLNSRecordsForOwners(owners) {
+    if (!Array.isArray(owners) || owners.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    return this.sendRPC("lns_print_owners_to_names", { owners }).then(data => {
+      console.log(JSON.stringify(data));
+      if (!data.hasOwnProperty("result")) return [];
+
+      return data.result || [];
+    });
+  }
+
+  getLNSRecord(name) {
+    if (!name || name.length === 0) {
+      return Promise.resolve(null);
+    }
+
+    return this.sendRPC("lns_print_name_to_owners", { name: name.toLowerCase() }).then(data => {
+      console.log(JSON.stringify(data));
+      if (!data.hasOwnProperty("result")) return null;
+
+      const record = data.result || {};
+      return {
+        name,
+        record
+      };
+    });
+  }
+
   sendGateway(method, data) {
     this.backend.send(method, data);
   }

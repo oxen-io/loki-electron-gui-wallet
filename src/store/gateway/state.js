@@ -48,6 +48,7 @@ export default {
       unused: [],
       address_book: []
     },
+    lnsRecords: [],
     isRPCSyncing: false
   },
   tx_status: {

@@ -17,12 +17,14 @@ export class WalletRPC {
     this.id = 0;
     this.net_type = "mainnet";
     this.heartbeat = null;
+    this.lnsHeartbeat = null;
     this.wallet_state = {
       open: false,
       name: "",
       password_hash: null,
       balance: null,
-      unlocked_balance: null
+      unlocked_balance: null,
+      lnsRecords: []
     };
     this.isRPCSyncing = false;
     this.dirs = null;
@@ -721,6 +723,12 @@ export class WalletRPC {
       this.heartbeatAction();
     }, 5000);
     this.heartbeatAction(true);
+
+    clearInterval(this.lnsHeartbeat);
+    this.lnsHeartbeat = setInterval(() => {
+      this.updateLNSRecords();
+    }, 30 * 1000); // Every 30 seconds
+    this.updateLNSRecords();
   }
 
   heartbeatAction(extended = false) {
@@ -818,6 +826,91 @@ export class WalletRPC {
         }
       }
     });
+  }
+
+  async updateLNSRecords() {
+    try {
+      const addressData = await this.sendRPC("get_address", { account_index: 0 }, 5000);
+      if (addressData.hasOwnProperty("error") || !addressData.hasOwnProperty("result")) {
+        return;
+      }
+
+      // Pull out all our addresses from the data and make sure they're valid
+      const results = addressData.result.addresses || [];
+      const addresses = results.map(a => a.address).filter(a => !!a);
+      if (addresses.length === 0) return;
+
+      const records = await this.backend.daemon.getLNSRecordsForOwners(addresses);
+
+      // We need to ensure that we decrypt any incoming records that we already have
+      const currentRecords = this.wallet_state.lnsRecords;
+      const recordsToDecrypt = [];
+      const newRecords = records.map(record => {
+        // If we have a new record or we haven't decrypted our current record then we should return the new record
+        const current = currentRecords.find(c => c.name_hash === record.name_hash);
+        if (!current || !current.name) return record;
+
+        // We need to check if we need to re-decrypt the record.
+        // This is only necessary if the encrypted_value changed.
+        const needsToDecrypt = current.encrypted_value !== record.encrypted_value;
+        if (needsToDecrypt) {
+          recordsToDecrypt.push(current.name);
+
+          return {
+            name,
+            record
+          };
+        }
+
+        // Otherwise just update our current record with new information (in the case that owner or backup_owner was updated)
+        return {
+          ...current,
+          ...record
+        };
+      });
+      this.wallet_state.lnsRecords = newRecords;
+      this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
+
+      // Decrypt the records serially
+      const decryptPromise = Promise.resolve();
+      for (const name of recordsToDecrypt) {
+        decryptPromise.then(() => {
+          this.decryptLNSRecord(name);
+        });
+      }
+    } catch (e) {
+      console.debug("Something went wrong when updating lns records: ", e);
+    }
+  }
+
+  /*
+  Decrypt any LNS records with the given name in our current wallet state
+  */
+  async decryptLNSRecord(name) {
+    try {
+      const record = await this.getLNSRecord(name);
+      if (!record) return;
+
+      // Update our current records with the new decrypted record
+      const currentRecords = this.wallet_state.lnsRecords;
+      const newRecords = currentRecords.map(current => {
+        if (current.name_hash === record.name_hash) {
+          return record;
+        }
+        return current;
+      });
+      this.wallet_state.lnsRecords = newRecords;
+      this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
+    } catch (e) {
+      // Something went wrong
+    }
+  }
+
+  /*
+  Get a LNS record associated with the given name
+  */
+  async getLNSRecord(name) {
+    return this.backend.daemon.getLNSRecord(name);
   }
 
   stake(password, amount, service_node_key, destination) {
@@ -1125,6 +1218,11 @@ export class WalletRPC {
           });
           return;
         }
+
+        // Fetch new records and then get the decrypted record for the one we just inserted
+        this.updateLNSRecords().then(() => {
+          this.decryptLNSRecord(_name);
+        });
 
         this.sendGateway("set_lns_status", {
           code: 0,
@@ -1888,12 +1986,14 @@ export class WalletRPC {
 
   async closeWallet() {
     clearInterval(this.heartbeat);
+    clearInterval(this.lnsHeartbeat);
     this.wallet_state = {
       open: false,
       name: "",
       password_hash: null,
       balance: null,
-      unlocked_balance: null
+      unlocked_balance: null,
+      lnsRecords: []
     };
 
     await this.saveWallet();
