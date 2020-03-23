@@ -22,8 +22,14 @@ export const set_snode_status = (state, data) => {
   state.service_node_status = objectAssignDeep.noMutate(state.service_node_status, data);
 };
 export const set_prove_transaction_status = (state, data) => {
-  state.prove_transaction_status = data;
+  state.prove_transaction_status = {
+    ...state.prove_transaction_status,
+    ...data
+  };
 };
 export const set_check_transaction_status = (state, data) => {
-  state.check_transaction_status = data;
+  state.check_transaction_status = {
+    ...state.check_transaction_status,
+    ...data
+  };
 };

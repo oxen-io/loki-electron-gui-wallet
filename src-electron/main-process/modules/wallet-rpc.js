@@ -1085,7 +1085,8 @@ export class WalletRPC {
 
     this.sendGateway("set_prove_transaction_status", {
       code: 1,
-      message: ""
+      message: "",
+      state: {}
     });
 
     this.sendRPC(rpc_endpoint, params).then(data => {
@@ -1124,7 +1125,8 @@ export class WalletRPC {
 
     this.sendGateway("set_check_transaction_status", {
       code: 1,
-      message: ""
+      message: "",
+      state: {}
     });
 
     this.sendRPC(rpc_endpoint, params).then(data => {
