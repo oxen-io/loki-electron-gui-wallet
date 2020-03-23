@@ -1,7 +1,8 @@
 <template>
   <div v-if="records.length > 0" class="lns-record-list">
+    <!-- TODO: Add decrypting -->
     <q-list link no-border :dark="theme == 'dark'" class="loki-list">
-      <q-item v-for="record in records" :key="record.name_hash" class="loki-list-item" :class="bindClass(record)">
+      <q-item v-for="record in records" :key="record.name_hash" class="loki-list-item">
         <q-item-side class="type">
           <q-icon :name="isLocked(record) ? 'lock' : 'lock_open'" size="24px" />
         </q-item-side>
@@ -11,16 +12,43 @@
           </q-item-tile>
           <q-item-tile v-if="!isLocked(record)" sublabel>{{ record.value }}</q-item-tile>
         </q-item-main>
-        <q-item-side right class="height">{{ record.register_height | blockHeight }}</q-item-side>
+        <template v-if="isLocked(record)">
+          <q-item-side right class="height">
+            {{ record.register_height | blockHeight }}
+          </q-item-side>
+        </template>
+        <template v-else>
+          <q-item-side right>
+            <q-btn color="secondary" :label="$t('buttons.update')" @click="onUpdate(record)" />
+          </q-item-side>
+        </template>
 
-        <q-context-menu v-if="!isLocked(record)">
+        <q-item-side v-if="!isLocked(record)" right>
+          {{ record.register_height | blockHeight }}
+        </q-item-side>
+
+        <q-context-menu>
           <q-list link separator style="min-width: 150px; max-height: 300px;">
-            <q-item v-close-overlay @click.native="copyName(record, $event)">
-              <q-item-main :label="$t('menuItems.copyName')" />
+            <template v-if="!isLocked(record)">
+              <q-item v-close-overlay @click.native="copy(record.name, $event, $t('notification.positive.nameCopied'))">
+                <q-item-main :label="$t('menuItems.copyName')" />
+              </q-item>
+
+              <q-item v-close-overlay @click.native="copyValue(record, $event)">
+                <q-item-main :label="record | copyValue" />
+              </q-item>
+            </template>
+
+            <q-item v-close-overlay @click.native="copy(record.owner, $event, $t('notification.positive.ownerCopied'))">
+              <q-item-main :label="$t('menuItems.copyOwner')" />
             </q-item>
 
-            <q-item v-close-overlay @click.native="copyValue(record, $event)">
-              <q-item-main :label="record | copyValue" />
+            <q-item
+              v-if="record.backup_owner !== ''"
+              v-close-overlay
+              @click.native="copy(record.backup_owner, $event, $t('notification.positive.backupOwnerCopied'))"
+            >
+              <q-item-main :label="$t('menuItems.copyBackupOwner')" />
             </q-item>
           </q-list>
         </q-context-menu>
@@ -61,7 +89,7 @@ export default {
         } else if (a.name && b.name) {
           return a.name.localeCompare(b.name);
         }
-        return a.name_hash.localeCompare(b.name_hash);
+        return b.register_height - a.register_height;
       });
     }
   }),
@@ -80,8 +108,8 @@ export default {
     bindClass(record) {
       return [this.isLocked(record) ? "locked" : "unlocked"];
     },
-    copyName(record, event) {
-      this.copy(record.name, event, this.$t("notification.positive.nameCopied"));
+    onUpdate(record) {
+      this.$emit("onUpdate", record);
     },
     copyValue(record, event) {
       let message = this.$t("notification.positive.addressCopied");
@@ -110,7 +138,7 @@ export default {
   .height {
     font-size: 0.9em;
   }
-  .q-item.locked {
+  .q-item {
     cursor: default;
   }
 }

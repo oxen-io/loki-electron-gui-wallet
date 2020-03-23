@@ -1,18 +1,23 @@
 <template>
   <q-page class="lns-page">
-    <LNSPurchase />
-    <LNSRecordList />
+    <LNSInput ref="input" />
+    <LNSRecordList @onUpdate="onUpdate" />
   </q-page>
 </template>
 
 <script>
-import LNSPurchase from "components/lns_purchase";
+import LNSInput from "components/lns_input";
 import LNSRecordList from "components/lns_record_list";
 
 export default {
   components: {
-    LNSPurchase,
+    LNSInput,
     LNSRecordList
+  },
+  methods: {
+    onUpdate(record) {
+      this.$refs.input.startUpdating(record);
+    }
   }
 };
 </script>

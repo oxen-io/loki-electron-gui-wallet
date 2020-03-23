@@ -41,6 +41,7 @@ export default {
     stake: "STAKE",
     sweepAll: "SWEEP ALL",
     unlock: "UNLOCK",
+    update: "UPDATE",
     viewOnExplorer: "VIEW ON EXPLORER"
   },
   dialog: {
@@ -86,6 +87,11 @@ export default {
       message: "Do you want to {type} key images?",
       export: "Export",
       import: "Import"
+    },
+    lnsUpdate: {
+      title: "Update LNS record",
+      message: "Do you want to update the LNS record?",
+      ok: "UPDATE"
     },
     noPassword: {
       title: "No password set",
@@ -240,7 +246,9 @@ export default {
     about: "About",
     changePassword: "Change Password",
     copyAddress: "Copy address",
+    copyBackupOwner: "Copy backup owner",
     copyName: "Copy name",
+    copyOwner: "Copy owner",
     copyQR: "Copy QR code",
     copySeedWords: "Copy seed words",
     copySessionId: "Copy session ID",
@@ -269,6 +277,7 @@ export default {
   notification: {
     positive: {
       addressCopied: "Address copied to clipboard",
+      backupOwnerCopied: "Backup owner copied to clipboard",
       bannedPeer: "Banned {host} until {time}",
       copied: "{item} copied to clipboard",
       itemSaved: "{item} saved to {filename}",
@@ -276,9 +285,11 @@ export default {
         exported: "Key images exported to {filename}",
         imported: "Key images imported"
       },
+      lnsRecordUpdated: "LNS Record was successfully updated",
       passwordUpdated: "Password updated",
       namePurchased: "Name successfully purchased",
       nameCopied: "Name copied to clipboard",
+      ownerCopied: "Owner copied to clipboard",
       qrCopied: "QR code copied to clipboard",
       registerServiceNodeSuccess: "Successfully registered service node",
       sendSuccess: "Transaction successfully sent",
@@ -421,7 +432,8 @@ export default {
     },
     destinationUnknown: "Destination Unknown",
     editAddressBookEntry: "Edit address book entry",
-    lnsDescription: "Purchase a name for a Session ID. The current wallet will become the owner of the name.",
+    lnsDescription:
+      "Purchase or update a name for a Session ID. If you purchase a name, it may take a minute or two for it to show up in the list.",
     loadingSettings: "Loading settings",
     lokiBalance: "Balance",
     lokiUnlockedBalance: "Unlocked balance",
@@ -512,6 +524,7 @@ export default {
     changePassword: "Change password",
     configure: "Configure",
     currentlyStakedNodes: "Currently staked nodes",
+    lnsRecordDetails: "LNS record details",
     privateKeys: "Private keys",
     rescanWallet: "Rescan wallet",
     serviceNode: {

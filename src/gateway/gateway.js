@@ -170,9 +170,14 @@ export class Gateway extends EventEmitter {
 
       case "set_lns_status": {
         const data = { ...decrypted_data.data };
-        if (data.i18n) {
-          data.message = this.geti18n(data.i18n);
+
+        // We have multiple nested objects in service_node_status
+        for (const key in data) {
+          if (data[key].i18n) {
+            data[key].message = this.geti18n(data[key].i18n);
+          }
         }
+
         this.app.store.commit("gateway/set_lns_status", data);
         break;
       }

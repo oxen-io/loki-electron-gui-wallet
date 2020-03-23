@@ -29,6 +29,7 @@ export class WalletRPC {
     this.isRPCSyncing = false;
     this.dirs = null;
     this.last_height_send_time = Date.now();
+    this.purchasedNames = new Set();
 
     this.height_regexes = [
       {
@@ -298,8 +299,20 @@ export class WalletRPC {
           params.name,
           params.value,
           params.owner || "",
-          params.backupOwner || ""
+          params.backup_owner || ""
         );
+        break;
+
+      case "update_lns_mapping":
+        this.updateLNSMapping(
+          params.password,
+          params.type,
+          params.name,
+          params.value,
+          params.owner || "",
+          params.backup_owner || ""
+        );
+
         break;
 
       case "prove_transaction":
@@ -726,9 +739,9 @@ export class WalletRPC {
 
     clearInterval(this.lnsHeartbeat);
     this.lnsHeartbeat = setInterval(() => {
-      this.updateLNSRecords();
+      this.updateLocalLNSRecords();
     }, 30 * 1000); // Every 30 seconds
-    this.updateLNSRecords();
+    this.updateLocalLNSRecords();
   }
 
   heartbeatAction(extended = false) {
@@ -828,7 +841,7 @@ export class WalletRPC {
     });
   }
 
-  async updateLNSRecords() {
+  async updateLocalLNSRecords() {
     try {
       const addressData = await this.sendRPC("get_address", { account_index: 0 }, 5000);
       if (addressData.hasOwnProperty("error") || !addressData.hasOwnProperty("result")) {
@@ -844,7 +857,7 @@ export class WalletRPC {
 
       // We need to ensure that we decrypt any incoming records that we already have
       const currentRecords = this.wallet_state.lnsRecords;
-      const recordsToUpdate = [];
+      const recordsToUpdate = new Set(this.purchasedNames);
       const newRecords = records.map(record => {
         // If we have a new record or we haven't decrypted our current record then we should return the new record
         const current = currentRecords.find(c => c.name_hash === record.name_hash);
@@ -855,7 +868,7 @@ export class WalletRPC {
         const needsToUpdate = current.encrypted_value !== record.encrypted_value;
         if (needsToUpdate) {
           const { name } = current;
-          recordsToUpdate.push(name);
+          recordsToUpdate.add(name);
 
           return {
             name,
@@ -876,7 +889,7 @@ export class WalletRPC {
       const updatePromise = Promise.resolve();
       for (const name of recordsToUpdate) {
         updatePromise.then(() => {
-          this.updateLNSRecord(name);
+          this.updateLocalLNSRecord(name);
         });
       }
     } catch (e) {
@@ -887,7 +900,7 @@ export class WalletRPC {
   /*
   Get a LNS record and update our wallet state with decrypted values
   */
-  async updateLNSRecord(name) {
+  async updateLocalLNSRecord(name) {
     try {
       const record = await this.getLNSRecord(name);
       if (!record) return;
@@ -912,7 +925,7 @@ export class WalletRPC {
   */
   async getLNSRecord(name) {
     // TODO: Hash name here
-    const nameHash = "hashthename";
+    const nameHash = name.toLowerCase();
     const record = await this.backend.daemon.getLNSRecord(nameHash);
     if (!record) return null;
     // TODO: Decrypt encrypted_value here
@@ -1189,7 +1202,7 @@ export class WalletRPC {
   purchaseLNS(password, type, name, value, owner, backupOwner) {
     const _name = name.trim().toLowerCase();
     const _owner = owner.trim() === "" ? null : owner;
-    const _backupOwner = backupOwner.trim() === "" ? null : backupOwner;
+    const backup_owner = backupOwner.trim() === "" ? null : backupOwner;
 
     crypto.pbkdf2(password, this.auth[2], 1000, 64, "sha512", (err, password_hash) => {
       if (err) {
@@ -1212,7 +1225,7 @@ export class WalletRPC {
       const params = {
         type,
         owner: _owner,
-        backup_owner: _backupOwner,
+        backup_owner,
         name: _name,
         value
       };
@@ -1228,14 +1241,70 @@ export class WalletRPC {
           return;
         }
 
+        this.purchasedNames.add(name.trim());
+
         // Fetch new records and then get the decrypted record for the one we just inserted
-        this.updateLNSRecords().then(() => {
-          this.decryptLNSRecord(_name);
-        });
+        setTimeout(() => this.updateLocalLNSRecords(), 5000);
 
         this.sendGateway("set_lns_status", {
           code: 0,
           i18n: "notification.positive.namePurchased",
+          sending: false
+        });
+      });
+    });
+  }
+
+  updateLNSMapping(password, type, name, value, owner, backupOwner) {
+    const _name = name.trim().toLowerCase();
+    const _owner = owner.trim() === "" ? null : owner;
+    const backup_owner = backupOwner.trim() === "" ? null : backupOwner;
+
+    crypto.pbkdf2(password, this.auth[2], 1000, 64, "sha512", (err, password_hash) => {
+      if (err) {
+        this.sendGateway("set_lns_status", {
+          code: -1,
+          i18n: "notification.errors.internalError",
+          sending: false
+        });
+        return;
+      }
+      if (!this.isValidPasswordHash(password_hash)) {
+        this.sendGateway("set_lns_status", {
+          code: -1,
+          i18n: "notification.errors.invalidPassword",
+          sending: false
+        });
+        return;
+      }
+
+      const params = {
+        type,
+        owner: _owner,
+        backup_owner,
+        name: _name,
+        value
+      };
+
+      this.sendRPC("lns_update_mapping", params).then(data => {
+        if (data.hasOwnProperty("error")) {
+          let error = data.error.message.charAt(0).toUpperCase() + data.error.message.slice(1);
+          this.sendGateway("set_lns_status", {
+            code: -1,
+            message: error,
+            sending: false
+          });
+          return;
+        }
+
+        this.purchasedNames.add(name.trim());
+
+        // Fetch new records and then get the decrypted record for the one we just inserted
+        setTimeout(() => this.updateLocalLNSRecords(), 5000);
+
+        this.sendGateway("set_lns_status", {
+          code: 0,
+          i18n: "notification.positive.lnsRecordUpdated",
           sending: false
         });
       });
