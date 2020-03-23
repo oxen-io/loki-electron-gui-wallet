@@ -437,7 +437,17 @@ export class Daemon {
     const data = await this.sendRPC("lns_owners_to_names", { entries: owners });
     if (!data.hasOwnProperty("result")) return [];
 
-    return this._sanitizeLNSRecords(data.result.entries);
+    // We need to map request_index to owner
+    const { entries } = data.result;
+    const recordsWithOwners = (entries || []).map(record => {
+      const owner = owners[record.request_index];
+      return {
+        ...record,
+        owner
+      };
+    });
+
+    return this._sanitizeLNSRecords(recordsWithOwners);
   }
 
   async getLNSRecord(nameHash) {
