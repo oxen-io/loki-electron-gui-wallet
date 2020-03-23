@@ -8,7 +8,7 @@
       <q-list link no-border :dark="theme == 'dark'" class="loki-list">
         <q-item
           v-for="entry in address_book_combined"
-          :key="`${entry.address}-${entry.name}`"
+          :key="`${entry.address}-${entry.name}-${entry.payment_id}`"
           class="loki-list-item"
           @click.native="details(entry)"
         >
