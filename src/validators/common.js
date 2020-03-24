@@ -21,7 +21,7 @@ export const session_id = input => {
 };
 
 export const lns_name = input => {
-  return /^[a-z0-9_]([a-z0-9-_]*[a-z0-9_])?$/.test(input.toLowerCase());
+  return input.length === 0 || /^[a-z0-9_]([a-z0-9-_]*[a-z0-9_])?$/.test(input.toLowerCase());
 };
 
 export const address = (input, gateway) => {

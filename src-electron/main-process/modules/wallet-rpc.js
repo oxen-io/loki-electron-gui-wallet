@@ -222,6 +222,10 @@ export class WalletRPC {
         this.validateAddress(params.address);
         break;
 
+      case "decrypt_record":
+        this.decryptLNSRecord(params.name);
+        break;
+
       case "copy_old_gui_wallets":
         this.copyOldGuiWallets(params.wallets || []);
         break;
@@ -903,7 +907,7 @@ export class WalletRPC {
   async updateLocalLNSRecord(name) {
     try {
       const record = await this.getLNSRecord(name);
-      if (!record) return;
+      if (!record) return null;
 
       // Update our current records with the new decrypted record
       const currentRecords = this.wallet_state.lnsRecords;
@@ -915,8 +919,10 @@ export class WalletRPC {
       });
       this.wallet_state.lnsRecords = newRecords;
       this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
+      return record;
     } catch (e) {
       console.debug("Something went wrong when updating lns record: ", e);
+      return null;
     }
   }
 
@@ -924,6 +930,8 @@ export class WalletRPC {
   Get a LNS record associated with the given name
   */
   async getLNSRecord(name) {
+    if (!name || name.trim().length === 0) return null;
+
     // TODO: Hash name here
     const nameHash = name.toLowerCase();
     const record = await this.backend.daemon.getLNSRecord(nameHash);
@@ -933,6 +941,14 @@ export class WalletRPC {
       name,
       ...record
     };
+  }
+
+  async decryptLNSRecord(name) {
+    const record = await this.updateLocalLNSRecord(name);
+    this.sendGateway("set_decrypt_record_result", {
+      record,
+      decrypted: !!record
+    });
   }
 
   stake(password, amount, service_node_key, destination) {

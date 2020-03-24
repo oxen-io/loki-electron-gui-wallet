@@ -142,6 +142,9 @@ export class Gateway extends EventEmitter {
       case "set_valid_address":
         this.emit("validate_address", decrypted_data.data);
         break;
+      case "set_decrypt_record_result":
+        this.emit("decrypt_record_result", decrypted_data.data);
+        break;
       case "set_app_data":
         this.app.store.commit("gateway/set_app_data", decrypted_data.data);
         break;
