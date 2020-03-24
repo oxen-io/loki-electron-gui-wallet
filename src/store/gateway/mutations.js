@@ -34,5 +34,5 @@ export const set_check_transaction_status = (state, data) => {
   };
 };
 export const set_lns_status = (state, data) => {
-  state.lns_status = objectAssignDeep.noMutate(state.lns_status, data);
+  state.lns_status = data;
 };

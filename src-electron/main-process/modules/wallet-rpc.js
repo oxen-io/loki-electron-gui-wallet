@@ -890,9 +890,9 @@ export class WalletRPC {
       this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
 
       // Decrypt the records serially
-      const updatePromise = Promise.resolve();
+      let updatePromise = Promise.resolve();
       for (const name of recordsToUpdate) {
-        updatePromise.then(() => {
+        updatePromise = updatePromise.then(() => {
           this.updateLocalLNSRecord(name);
         });
       }
@@ -902,7 +902,8 @@ export class WalletRPC {
   }
 
   /*
-  Get a LNS record and update our wallet state with decrypted values
+  Get our LNS record and update our wallet state with decrypted values.
+  This will return `null` if the record is not in our currently stored records.
   */
   async updateLocalLNSRecord(name) {
     try {
@@ -911,6 +912,9 @@ export class WalletRPC {
 
       // Update our current records with the new decrypted record
       const currentRecords = this.wallet_state.lnsRecords;
+      const isOurRecord = currentRecords.find(c => c.name_hash === record.name_hash);
+      if (!isOurRecord) return null;
+
       const newRecords = currentRecords.map(current => {
         if (current.name_hash === record.name_hash) {
           return record;
