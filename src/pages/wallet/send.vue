@@ -237,7 +237,7 @@ export default {
           case -1:
             this.$q.notify({
               type: "negative",
-              timeout: 1000,
+              timeout: 3000,
               message: this.tx_status.message
             });
             break;

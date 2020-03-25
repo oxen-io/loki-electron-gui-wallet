@@ -122,7 +122,11 @@ export class Gateway extends EventEmitter {
     // shouldn't happen outside of dev environment
     let decrypted_data = JSON.parse(this.scee.decryptString(message, this.token));
 
-    if (!decrypted_data || !decrypted_data.event || !decrypted_data.data) {
+    if (
+      typeof decrypted_data !== "object" ||
+      !decrypted_data.hasOwnProperty("event") ||
+      !decrypted_data.hasOwnProperty("data")
+    ) {
       return;
     }
 
