@@ -459,7 +459,7 @@ export class Daemon {
       entries: [
         {
           name_hash: nameHash,
-          types: []
+          types: [0] // Update this when we have other types. Type 0 = session
         }
       ]
     };

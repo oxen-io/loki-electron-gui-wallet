@@ -165,7 +165,10 @@ export default {
         }
         this.decrypting = false;
       });
-      this.$gateway.send("wallet", "decrypt_record", { name });
+      this.$gateway.send("wallet", "decrypt_record", {
+        name,
+        type: "session"
+      });
       this.decrypting = true;
     },
     blurEventButton(event) {

@@ -147,7 +147,7 @@ export default {
         })
         .catch(() => {});
     },
-    purchase(record) {
+    _purchase(record) {
       this.showPasswordConfirmation({
         title: this.$t("dialog.purchase.title"),
         noPasswordMessage: this.$t("dialog.purchase.message"),

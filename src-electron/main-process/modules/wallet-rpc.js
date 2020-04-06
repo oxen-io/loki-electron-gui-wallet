@@ -223,7 +223,7 @@ export class WalletRPC {
         break;
 
       case "decrypt_record":
-        this.decryptLNSRecord(params.name);
+        this.decryptLNSRecord(params.type, params.name);
         break;
 
       case "copy_old_gui_wallets":
@@ -871,8 +871,11 @@ export class WalletRPC {
         // This is only necessary if the encrypted_value changed.
         const needsToUpdate = current.encrypted_value !== record.encrypted_value;
         if (needsToUpdate) {
-          const { name } = current;
-          recordsToUpdate.add(name);
+          const { name, type } = current;
+          recordsToUpdate.add({
+            name,
+            type
+          });
 
           return {
             name,
@@ -891,9 +894,9 @@ export class WalletRPC {
 
       // Decrypt the records serially
       let updatePromise = Promise.resolve();
-      for (const name of recordsToUpdate) {
+      for (const record of recordsToUpdate) {
         updatePromise = updatePromise.then(() => {
-          this.updateLocalLNSRecord(name);
+          this.updateLocalLNSRecord(record.type, record.name);
         });
       }
     } catch (e) {
@@ -905,9 +908,9 @@ export class WalletRPC {
   Get our LNS record and update our wallet state with decrypted values.
   This will return `null` if the record is not in our currently stored records.
   */
-  async updateLocalLNSRecord(name) {
+  async updateLocalLNSRecord(type, name) {
     try {
-      const record = await this.getLNSRecord(name);
+      const record = await this.getLNSRecord(type, name);
       if (!record) return null;
 
       // Update our current records with the new decrypted record
@@ -933,26 +936,73 @@ export class WalletRPC {
   /*
   Get a LNS record associated with the given name
   */
-  async getLNSRecord(name) {
+  async getLNSRecord(type, name) {
+    const types = ["session"]; // We currently only support session
+    if (!types.includes(type)) return null;
+
     if (!name || name.trim().length === 0) return null;
 
-    // TODO: Hash name here
-    const nameHash = name.toLowerCase();
+    const nameHash = await this.hashLNSName(type, name.toLowerCase());
+    if (!nameHash) return null;
+
     const record = await this.backend.daemon.getLNSRecord(nameHash);
-    if (!record) return null;
-    // TODO: Decrypt encrypted_value here
+    if (!record || !record.encrypted_value) return null;
+
+    // Decrypt the value if possible
+    const value = await this.decryptLNSValue(type, name, record.encrypted_value);
+
     return {
       name,
+      value,
       ...record
     };
   }
 
-  async decryptLNSRecord(name) {
-    const record = await this.updateLocalLNSRecord(name);
+  async decryptLNSRecord(type, name) {
+    const record = await this.updateLocalLNSRecord(type, name);
     this.sendGateway("set_decrypt_record_result", {
       record,
       decrypted: !!record
     });
+  }
+
+  async hashLNSName(type, name) {
+    try {
+      const data = await this.sendRPC("lns_hash_name", {
+        type,
+        name
+      });
+
+      if (data.hasOwnProperty("error")) {
+        let error = data.error.message.charAt(0).toUpperCase() + data.error.message.slice(1);
+        throw new Error(error);
+      }
+
+      return (data.result && data.result.name) || null;
+    } catch (e) {
+      console.debug("Failed to hash lsn name: ", e);
+      return null;
+    }
+  }
+
+  async decryptLNSValue(type, name, encrypted_value) {
+    try {
+      const data = await this.sendRPC("lns_decrypt_value", {
+        type,
+        name,
+        encrypted_value
+      });
+
+      if (data.hasOwnProperty("error")) {
+        let error = data.error.message.charAt(0).toUpperCase() + data.error.message.slice(1);
+        throw new Error(error);
+      }
+
+      return (data.result && data.result.value) || null;
+    } catch (e) {
+      console.debug("Failed to decrypt lsn value: ", e);
+      return null;
+    }
   }
 
   stake(password, amount, service_node_key, destination) {

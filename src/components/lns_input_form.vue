@@ -59,7 +59,12 @@
     </div>
 
     <q-field class="buttons q-pt-sm">
-      <q-btn :disable="!is_able_to_send" color="primary" :label="submitLabel" @click="submit()" />
+      <q-btn
+        :disable="!is_able_to_send || unlocked_balance <= 0"
+        color="primary"
+        :label="submitLabel"
+        @click="submit()"
+      />
       <q-btn v-if="showClearButton" color="secondary" :label="$t('buttons.clear')" @click="clear()" />
     </q-field>
   </div>
@@ -118,6 +123,7 @@ export default {
   computed: mapState({
     theme: state => state.gateway.app.config.appearance.theme,
     our_address: state => state.gateway.wallet.info.address,
+    unlocked_balance: state => state.gateway.wallet.info.unlocked_balance,
     is_able_to_send() {
       return this.$store.getters["gateway/isAbleToSend"];
     },
