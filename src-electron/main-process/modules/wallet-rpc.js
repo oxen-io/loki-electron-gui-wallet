@@ -942,14 +942,16 @@ export class WalletRPC {
 
     if (!name || name.trim().length === 0) return null;
 
-    const nameHash = await this.hashLNSName(type, name.toLowerCase());
+    const lowerCaseName = name.toLowerCase();
+
+    const nameHash = await this.hashLNSName(type, lowerCaseName);
     if (!nameHash) return null;
 
     const record = await this.backend.daemon.getLNSRecord(nameHash);
     if (!record || !record.encrypted_value) return null;
 
     // Decrypt the value if possible
-    const value = await this.decryptLNSValue(type, name, record.encrypted_value);
+    const value = await this.decryptLNSValue(type, lowerCaseName, record.encrypted_value);
 
     return {
       name,
@@ -986,6 +988,8 @@ export class WalletRPC {
   }
 
   async decryptLNSValue(type, name, encrypted_value) {
+    if (!type || !name || !encrypted_value) return null;
+
     try {
       const data = await this.sendRPC("lns_decrypt_value", {
         type,
@@ -1371,6 +1375,23 @@ export class WalletRPC {
 
         // Fetch new records and then get the decrypted record for the one we just inserted
         setTimeout(() => this.updateLocalLNSRecords(), 5000);
+
+        // Optimistically update our record
+        const { lnsRecords } = this.wallet_state;
+        const newRecords = lnsRecords.map(record => {
+          if (record.type === type && record.name && record.name.toLowerCase() === _name) {
+            return {
+              ...record,
+              owner: _owner,
+              backup_owner,
+              value
+            };
+          }
+
+          return record;
+        });
+        this.wallet_state.lnsRecords = newRecords;
+        this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
 
         this.sendGateway("set_lns_status", {
           code: 0,

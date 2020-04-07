@@ -103,10 +103,21 @@ export default {
   },
   computed: mapState({
     theme: state => state.gateway.app.config.appearance.theme,
+    ourAddresses(state) {
+      const { address_list } = state.gateway.wallet;
+      const { used, unused, primary } = address_list;
+      const all = [...used, ...unused, ...primary];
+      return all.map(a => a.address).filter(a => !!a);
+    },
     records(state) {
+      const ourAddresses = this.ourAddresses;
       const records = state.gateway.wallet.lnsRecords;
+      const ourRecords = records.filter(record => {
+        return ourAddresses.includes(record.owner) || ourAddresses.includes(record.backup_owner);
+      });
+
       // Sort the records by decrypted ones first, followed by non-decrypted
-      return records.sort((a, b) => {
+      return ourRecords.sort((a, b) => {
         if (a.name && !b.name) {
           return -1;
         } else if (b.name && !a.name) {

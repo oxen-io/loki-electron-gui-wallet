@@ -6,10 +6,10 @@
       </div>
       <LNSInputForm
         ref="form"
-        :record="record"
         :submit-label="submit_label"
         :disable-name="updating"
         :show-clear-button="updating"
+        :disable-submit-button="disable_submit_button"
         @onSubmit="onSubmit"
         @onClear="onClear"
       />
@@ -33,22 +33,18 @@ export default {
   },
   mixins: [WalletPassword],
   data() {
-    const cleanRecord = {
-      type: "session",
-      name: "",
-      value: "",
-      owner: "",
-      backup_owner: ""
-    };
     return {
-      updating: false,
-      cleanRecord,
-      record: cleanRecord
+      updating: false
     };
   },
   computed: mapState({
     theme: state => state.gateway.app.config.appearance.theme,
     lns_status: state => state.gateway.lns_status,
+    unlocked_balance: state => state.gateway.wallet.info.unlocked_balance,
+    disable_submit_button() {
+      const minBalance = this.updating ? 0.05 : 21;
+      return this.unlocked_balance < minBalance * 1e9;
+    },
     submit_label() {
       const label = this.updating ? "buttons.update" : "buttons.purchase";
       return this.$t(label);
@@ -67,9 +63,8 @@ export default {
               timeout: 1000,
               message
             });
-            if (!this.updating) {
-              this.record = this.cleanRecord;
-            }
+
+            this.$refs.form.reset();
             break;
           case -1:
             this.$q.notify({
@@ -85,31 +80,25 @@ export default {
   },
   methods: {
     startUpdating(record) {
-      this.record = {
-        ...this.cleanRecord,
-        ...record
-      };
+      this.$refs.form.setRecord(record);
       this.updating = true;
-      this.$refs.form.reset();
     },
-    onSubmit(record) {
+    onSubmit(record, oldRecord) {
       if (this.updating) {
-        this._update(record);
+        this.update(record, oldRecord);
       } else {
         this._purchase(record);
       }
     },
     onClear() {
-      this.record = this.cleanRecord;
-      this.updating = false;
       this.$refs.form.reset();
+      this.updating = false;
     },
-    update(record) {
+    update(record, oldRecord) {
       // Make sure we have a diff between the 2 records
-      const currentRecord = this.record;
-      const isOwnerDifferent = record.owner !== "" && record.owner !== currentRecord.owner;
-      const isBackupOwnerDifferent = record.backup_owner !== "" && record.backup_owner !== currentRecord.backup_owner;
-      const isValueDifferent = record.value !== currentRecord.value;
+      const isOwnerDifferent = record.owner !== "" && record.owner !== oldRecord.owner;
+      const isBackupOwnerDifferent = record.backup_owner !== "" && record.backup_owner !== oldRecord.backup_owner;
+      const isValueDifferent = record.value !== oldRecord.value;
       const different = isOwnerDifferent || isBackupOwnerDifferent || isValueDifferent;
       if (!different) {
         this.$q.notify({

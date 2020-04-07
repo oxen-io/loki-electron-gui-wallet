@@ -2,65 +2,60 @@
   <div class="lns-input-form">
     <!-- Name -->
     <div class="col q-mt-sm">
-      <LokiField :label="$t('fieldLabels.name')" :disable="disableName" :error="$v.localRecord.name.$error">
+      <LokiField :label="$t('fieldLabels.name')" :disable="disableName" :error="$v.record.name.$error">
         <q-input
-          v-model.trim="localRecord.name"
+          v-model.trim="record.name"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsName')"
           hide-underline
           :disable="disableName"
-          @blur="$v.localRecord.name.$touch"
+          @blur="$v.record.name.$touch"
         />
       </LokiField>
     </div>
 
     <!-- Value (Session ID, Wallet Address or .loki address) -->
     <div class="col q-mt-sm">
-      <LokiField class="q-mt-md" :label="value_field_label" :error="$v.localRecord.value.$error">
+      <LokiField class="q-mt-md" :label="value_field_label" :error="$v.record.value.$error">
         <q-input
-          v-model.trim="localRecord.value"
+          v-model.trim="record.value"
           :dark="theme == 'dark'"
           :placeholder="value_placeholder"
           hide-underline
-          @blur="$v.localRecord.value.$touch"
+          @blur="$v.record.value.$touch"
         />
       </LokiField>
     </div>
 
     <!-- Owner -->
     <div class="col q-mt-sm">
-      <LokiField class="q-mt-md" :label="$t('fieldLabels.owner')" :error="$v.localRecord.owner.$error" optional>
+      <LokiField class="q-mt-md" :label="$t('fieldLabels.owner')" :error="$v.record.owner.$error" optional>
         <q-input
-          v-model.trim="localRecord.owner"
+          v-model.trim="record.owner"
           :dark="theme == 'dark'"
           :placeholder="owner_placeholder"
           hide-underline
-          @blur="$v.localRecord.owner.$touch"
+          @blur="$v.record.owner.$touch"
         />
       </LokiField>
     </div>
 
     <!-- Backup owner -->
     <div class="col q-mt-sm">
-      <LokiField
-        class="q-mt-md"
-        :label="$t('fieldLabels.backupOwner')"
-        :error="$v.localRecord.backup_owner.$error"
-        optional
-      >
+      <LokiField class="q-mt-md" :label="$t('fieldLabels.backupOwner')" :error="$v.record.backup_owner.$error" optional>
         <q-input
-          v-model.trim="localRecord.backup_owner"
+          v-model.trim="record.backup_owner"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsBackupOwner')"
           hide-underline
-          @blur="$v.localRecord.backup_owner.$touch"
+          @blur="$v.record.backup_owner.$touch"
         />
       </LokiField>
     </div>
 
     <q-field class="buttons q-pt-sm">
       <q-btn
-        :disable="!is_able_to_send || unlocked_balance <= 0"
+        :disable="!is_able_to_send || disableSubmitButton"
         color="primary"
         :label="submitLabel"
         @click="submit()"
@@ -84,10 +79,6 @@ export default {
   },
   mixins: [WalletPassword],
   props: {
-    record: {
-      type: Object,
-      required: true
-    },
     submitLabel: {
       type: String,
       required: true
@@ -101,6 +92,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    disableSubmitButton: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data() {
@@ -111,19 +107,15 @@ export default {
       owner: "",
       backup_owner: ""
     };
-    const localRecord = {
-      ...cleanRecord,
-      ...this.record
-    };
     return {
       cleanRecord,
-      localRecord
+      record: cleanRecord,
+      initialRecord: cleanRecord
     };
   },
   computed: mapState({
     theme: state => state.gateway.app.config.appearance.theme,
     our_address: state => state.gateway.wallet.info.address,
-    unlocked_balance: state => state.gateway.wallet.info.unlocked_balance,
     is_able_to_send() {
       return this.$store.getters["gateway/isAbleToSend"];
     },
@@ -134,7 +126,7 @@ export default {
       return this.$t("placeholders.sessionId");
     },
     owner_placeholder() {
-      const { owner } = this.record;
+      const { owner } = this.initialRecord || {};
       if (!owner || owner.trim() === "") {
         return this.our_address;
       }
@@ -143,6 +135,13 @@ export default {
     }
   }),
   methods: {
+    setRecord(record) {
+      this.initialRecord = {
+        ...this.cleanRecord,
+        ...(record || {})
+      };
+      this.record = { ...this.initialRecord };
+    },
     isAddress: function(value) {
       if (value === "") return true;
 
@@ -153,18 +152,14 @@ export default {
       });
     },
     reset() {
-      this.$nextTick(() => {
-        this.localRecord = {
-          ...this.cleanRecord,
-          ...this.record
-        };
-        this.$v.$reset();
-      });
+      this.initialRecord = { ...this.cleanRecord };
+      this.record = { ...this.cleanRecord };
+      this.$v.$reset();
     },
     submit() {
-      this.$v.localRecord.$touch();
+      this.$v.record.$touch();
 
-      const nameValidator = this.$v.localRecord.name;
+      const nameValidator = this.$v.record.name;
       if (nameValidator.$error) {
         let message;
         if (!nameValidator.required) {
@@ -185,9 +180,9 @@ export default {
         return;
       }
 
-      if (this.$v.localRecord.value.$error) {
+      if (this.$v.record.value.$error) {
         let message = "Invalid value provided";
-        if (this.localRecord.type === "session") {
+        if (this.record.type === "session") {
           message = this.$t("notification.errors.invalidSessionId");
         }
         this.$q.notify({
@@ -198,7 +193,7 @@ export default {
         return;
       }
 
-      if (this.$v.localRecord.backup_owner.$error) {
+      if (this.$v.record.backup_owner.$error) {
         this.$q.notify({
           type: "negative",
           timeout: 3000,
@@ -207,7 +202,7 @@ export default {
         return;
       }
 
-      if (this.$v.localRecord.owner.$error) {
+      if (this.$v.record.owner.$error) {
         this.$q.notify({
           type: "negative",
           timeout: 3000,
@@ -216,14 +211,14 @@ export default {
         return;
       }
 
-      this.$emit("onSubmit", this.localRecord);
+      this.$emit("onSubmit", this.record, this.initialRecord);
     },
     clear() {
       this.$emit("onClear");
     }
   },
   validations: {
-    localRecord: {
+    record: {
       name: {
         required,
         maxLength: maxLength(64),
@@ -241,7 +236,7 @@ export default {
       value: {
         required,
         validate: function(value) {
-          if (this.localRecord.type === "session") {
+          if (this.record.type === "session") {
             return session_id(value);
           }
 
