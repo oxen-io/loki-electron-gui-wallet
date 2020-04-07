@@ -87,7 +87,7 @@ export default {
       if (this.updating) {
         this.update(record, oldRecord);
       } else {
-        this._purchase(record);
+        this.purchase(record);
       }
     },
     onClear() {
@@ -136,7 +136,7 @@ export default {
         })
         .catch(() => {});
     },
-    _purchase(record) {
+    purchase(record) {
       this.showPasswordConfirmation({
         title: this.$t("dialog.purchase.title"),
         noPasswordMessage: this.$t("dialog.purchase.message"),

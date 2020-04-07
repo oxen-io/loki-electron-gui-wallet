@@ -29,7 +29,9 @@ export class WalletRPC {
     this.isRPCSyncing = false;
     this.dirs = null;
     this.last_height_send_time = Date.now();
-    this.purchasedNames = new Set();
+
+    // A mapping of name => type
+    this.purchasedNames = {};
 
     this.height_regexes = [
       {
@@ -210,7 +212,7 @@ export class WalletRPC {
     });
   }
 
-  handle(data) {
+  async handle(data) {
     let params = data.data;
 
     switch (data.method) {
@@ -222,9 +224,14 @@ export class WalletRPC {
         this.validateAddress(params.address);
         break;
 
-      case "decrypt_record":
-        this.decryptLNSRecord(params.type, params.name);
+      case "decrypt_record": {
+        const record = await this.decryptLNSRecord(params.type, params.name);
+        this.sendGateway("set_decrypt_record_result", {
+          record,
+          decrypted: !!record
+        });
         break;
+      }
 
       case "copy_old_gui_wallets":
         this.copyOldGuiWallets(params.wallets || []);
@@ -718,6 +725,8 @@ export class WalletRPC {
 
       this.startHeartbeat();
 
+      this.purchasedNames = {};
+
       // Check if we have a view only wallet by querying the spend key
       this.sendRPC("query_key", { key_type: "spend_key" }).then(data => {
         if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
@@ -861,7 +870,7 @@ export class WalletRPC {
 
       // We need to ensure that we decrypt any incoming records that we already have
       const currentRecords = this.wallet_state.lnsRecords;
-      const recordsToUpdate = new Set(this.purchasedNames);
+      const recordsToUpdate = { ...this.purchasedNames };
       const newRecords = records.map(record => {
         // If we have a new record or we haven't decrypted our current record then we should return the new record
         const current = currentRecords.find(c => c.name_hash === record.name_hash);
@@ -872,10 +881,7 @@ export class WalletRPC {
         const needsToUpdate = current.encrypted_value !== record.encrypted_value;
         if (needsToUpdate) {
           const { name, type } = current;
-          recordsToUpdate.add({
-            name,
-            type
-          });
+          recordsToUpdate[name] = type;
 
           return {
             name,
@@ -894,9 +900,9 @@ export class WalletRPC {
 
       // Decrypt the records serially
       let updatePromise = Promise.resolve();
-      for (const record of recordsToUpdate) {
+      for (const [name, type] of Object.entries(recordsToUpdate)) {
         updatePromise = updatePromise.then(() => {
-          this.updateLocalLNSRecord(record.type, record.name);
+          this.decryptLNSRecord(type, name);
         });
       }
     } catch (e) {
@@ -908,7 +914,7 @@ export class WalletRPC {
   Get our LNS record and update our wallet state with decrypted values.
   This will return `null` if the record is not in our currently stored records.
   */
-  async updateLocalLNSRecord(type, name) {
+  async decryptLNSRecord(type, name) {
     try {
       const record = await this.getLNSRecord(type, name);
       if (!record) return null;
@@ -960,15 +966,9 @@ export class WalletRPC {
     };
   }
 
-  async decryptLNSRecord(type, name) {
-    const record = await this.updateLocalLNSRecord(type, name);
-    this.sendGateway("set_decrypt_record_result", {
-      record,
-      decrypted: !!record
-    });
-  }
-
   async hashLNSName(type, name) {
+    if (!type || !name) return null;
+
     try {
       const data = await this.sendRPC("lns_hash_name", {
         type,
@@ -1315,7 +1315,7 @@ export class WalletRPC {
           return;
         }
 
-        this.purchasedNames.add(name.trim());
+        this.purchasedNames[name.trim()] = type;
 
         // Fetch new records and then get the decrypted record for the one we just inserted
         setTimeout(() => this.updateLocalLNSRecords(), 5000);
@@ -1371,7 +1371,7 @@ export class WalletRPC {
           return;
         }
 
-        this.purchasedNames.add(name.trim());
+        this.purchasedNames[name.trim()] = type;
 
         // Fetch new records and then get the decrypted record for the one we just inserted
         setTimeout(() => this.updateLocalLNSRecords(), 5000);
@@ -2164,6 +2164,8 @@ export class WalletRPC {
       unlocked_balance: null,
       lnsRecords: []
     };
+
+    this.purchasedNames = {};
 
     await this.saveWallet();
     await this.sendRPC("close_wallet");

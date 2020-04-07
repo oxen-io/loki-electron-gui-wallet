@@ -100,7 +100,7 @@ export default {
     }
   },
   data() {
-    const cleanRecord = {
+    const initialRecord = {
       type: "session",
       name: "",
       value: "",
@@ -108,9 +108,8 @@ export default {
       backup_owner: ""
     };
     return {
-      cleanRecord,
-      record: cleanRecord,
-      initialRecord: cleanRecord
+      record: { ...initialRecord },
+      initialRecord
     };
   },
   computed: mapState({
@@ -132,6 +131,15 @@ export default {
       }
 
       return owner;
+    },
+    cleanRecord() {
+      return {
+        type: "session",
+        name: "",
+        value: "",
+        owner: "",
+        backup_owner: ""
+      };
     }
   }),
   methods: {
