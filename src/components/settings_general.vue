@@ -110,7 +110,7 @@
       </LokiField>
     </div>
 
-    <q-collapsible
+    <q-expansion-item
       :label="$t('strings.advancedOptions')"
       header-class="q-mt-sm non-selectable row reverse advanced-options-label"
     >
@@ -276,7 +276,7 @@
           ]"
         />
       </q-field>
-    </q-collapsible>
+    </q-expansion-item>
   </div>
 </template>
 

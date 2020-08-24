@@ -37,7 +37,7 @@
       </div>
     </template>
 
-    <q-collapsible label="Advanced" header-class="q-mt-sm non-selectable row reverse advanced-options-label">
+    <q-expansion-item label="Advanced" header-class="q-mt-sm non-selectable row reverse advanced-options-label">
       <template v-if="secret.view_key != secret.spend_key">
         <h6 class="q-mb-xs title">{{ $t("strings.viewKey") }}</h6>
         <div class="row">
@@ -81,7 +81,7 @@
           </div>
         </div>
       </template>
-    </q-collapsible>
+    </q-expansion-item>
 
     <q-btn class="q-mt-lg" color="primary" :label="$t('buttons.openWallet')" @click="open" />
   </q-page>
