@@ -127,17 +127,17 @@
             </q-list-header>
             <q-item class="q-px-none">
               <q-item-main>
-                <q-item-tile label class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-tile>
-                <q-item-tile class="monospace ellipsis" sublabel>{{ in_tx_address_used.address }}</q-item-tile>
+                <q-item-label header class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-label>
+                <q-item-label class="monospace ellipsis" caption>{{ in_tx_address_used.address }}</q-item-label>
               </q-item-main>
 
-              <q-context-menu>
+              <q-menu context-menu>
                 <q-list link separator style="min-width: 150px; max-height: 300px;">
                   <q-item v-close-popup @click.native="copyAddress(in_tx_address_used.address, $event)">
                     <q-item-main :label="$t('menuItems.copyAddress')" />
                   </q-item>
                 </q-list>
-              </q-context-menu>
+              </q-menu>
             </q-item>
           </q-list>
         </div>
@@ -154,23 +154,23 @@
             <template v-if="out_destinations">
               <q-item v-for="destination in out_destinations" :key="destination.address" class="q-px-none">
                 <q-item-main>
-                  <q-item-tile label>{{ destination.name }}</q-item-tile>
-                  <q-item-tile class="monospace ellipsis" sublabel>{{ destination.address }}</q-item-tile>
-                  <q-item-tile sublabel><FormatLoki :amount="destination.amount"/></q-item-tile>
+                  <q-item-label header>{{ destination.name }}</q-item-label>
+                  <q-item-label class="monospace ellipsis" caption>{{ destination.address }}</q-item-label>
+                  <q-item-label caption><FormatLoki :amount="destination.amount"/></q-item-label>
                 </q-item-main>
-                <q-context-menu>
+                <q-menu context-menu>
                   <q-list link separator style="min-width: 150px; max-height: 300px;">
                     <q-item v-close-popup @click.native="copyAddress(destination.address, $event)">
                       <q-item-main :label="$t('menuItems.copyAddress')" />
                     </q-item>
                   </q-list>
-                </q-context-menu>
+                </q-menu>
               </q-item>
             </template>
             <template v-else>
               <q-item class="q-px-none">
                 <q-item-main>
-                  <q-item-tile label>{{ $t("strings.destinationUnknown") }}</q-item-tile>
+                  <q-item-label header>{{ $t("strings.destinationUnknown") }}</q-item-label>
                 </q-item-main>
               </q-item>
             </template>

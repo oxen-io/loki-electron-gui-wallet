@@ -7,7 +7,7 @@
             <q-checkbox v-model="state.selected" />
           </q-item-side>
           <q-item-main @click.native="state.selected = !state.selected">
-            <q-item-tile label>{{ state.directory }}</q-item-tile>
+            <q-item-label header>{{ state.directory }}</q-item-label>
           </q-item-main>
           <q-item-side>
             <q-select v-model="state.type" hide-underline dark class="q-ma-none full-width" :options="selectOptions" />

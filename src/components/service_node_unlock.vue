@@ -7,11 +7,11 @@
       <q-list class="service-node-list" no-border>
         <q-item v-for="node in service_nodes" :key="node.service_node_pubkey" @click.native="details(node)">
           <q-item-main>
-            <q-item-tile class="ellipsis" label>{{ node.service_node_pubkey }}</q-item-tile>
-            <q-item-tile sublabel class="non-selectable"
+            <q-item-label class="ellipsis" header>{{ node.service_node_pubkey }}</q-item-label>
+            <q-item-label caption class="non-selectable"
               >{{ getRole(node) }} • {{ getFee(node) }} • {{ $t("strings.contribution") }}:
               <FormatLoki :amount="node.ourContributionAmount"
-            /></q-item-tile>
+            /></q-item-label>
           </q-item-main>
           <q-item-side>
             <q-btn
@@ -22,15 +22,15 @@
               :disabled="!is_ready || unlock_status.sending"
               @click.native="unlockWarning(node.service_node_pubkey, $event)"
             />
-            <q-item-tile v-if="node.requested_unlock_height > 0" label>
+            <q-item-label v-if="node.requested_unlock_height > 0" header>
               {{
                 $t("strings.unlockingAtHeight", {
                   number: node.requested_unlock_height
                 })
               }}
-            </q-item-tile>
+            </q-item-label>
           </q-item-side>
-          <q-context-menu>
+          <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="copyKey(node.service_node_pubkey, $event)">
                 <q-item-main :label="$t('menuItems.copyServiceNodeKey')" />
@@ -39,7 +39,7 @@
                 <q-item-main :label="$t('menuItems.viewOnExplorer')" />
               </q-item>
             </q-list>
-          </q-context-menu>
+          </q-menu>
         </q-item>
       </q-list>
     </div>

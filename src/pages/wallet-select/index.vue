@@ -52,22 +52,22 @@
               </svg>
             </div>
           </q-item-side>
-          <q-item-main>
-            <q-item-tile label>{{ wallet.name }}</q-item-tile>
-            <q-item-tile class="monospace ellipsis" sublabel>{{ wallet.address }}</q-item-tile>
-          </q-item-main>
+          <q-item-label>
+            <q-item-leable header>{{ wallet.name }}</q-item-leable>
+            <q-item-leable class="monospace ellipsis" caption>{{ wallet.address }}</q-item-leable>
+          </q-item-label>
 
-          <q-context-menu>
+          <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="openWallet(wallet)">
-                <q-item-main :label="$t('menuItems.openWallet')" />
+                <q-item-label :label="$t('menuItems.openWallet')" />
               </q-item>
 
               <q-item v-close-popup @click.native="copyAddress(wallet.address, $event)">
-                <q-item-main :label="$t('menuItems.copyAddress')" />
+                <q-item-label :label="$t('menuItems.copyAddress')" />
               </q-item>
             </q-list>
-          </q-context-menu>
+          </q-menu>
         </q-item>
         <q-separator />
       </template>

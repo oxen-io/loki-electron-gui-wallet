@@ -63,7 +63,7 @@
             <q-list link dark no-border>
               <q-item v-for="option in remotes" :key="option.host" v-close-popup @click.native="setPreset(option)">
                 <q-item-main>
-                  <q-item-tile label>{{ option.host }}:{{ option.port }}</q-item-tile>
+                  <q-item-label header>{{ option.host }}:{{ option.port }}</q-item-label>
                 </q-item-main>
               </q-item>
             </q-list>

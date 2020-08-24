@@ -56,7 +56,7 @@
       <q-modal v-model="QR.visible" minimized :content-css="{ padding: '25px' }">
         <div class="text-center q-mb-sm q-pa-md" style="background: white;">
           <QrcodeVue ref="qr" :value="QR.address" size="240"> </QrcodeVue>
-          <q-context-menu>
+          <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="copyQR()">
                 <q-item-main :label="$t('menuItems.copyQR')" />
@@ -65,7 +65,7 @@
                 <q-item-main :label="$t('menuItems.saveQR')" />
               </q-item>
             </q-list>
-          </q-context-menu>
+          </q-menu>
         </div>
 
         <q-btn color="primary" :label="$t('buttons.close')" @click="QR.visible = false" />

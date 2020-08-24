@@ -13,8 +13,8 @@
           @click.native="details(entry)"
         >
           <q-item-main>
-            <q-item-tile class="ellipsis" label>{{ entry.address }}</q-item-tile>
-            <q-item-tile sublabel class="non-selectable">{{ entry.name }}</q-item-tile>
+            <q-item-label class="ellipsis" header>{{ entry.address }}</q-item-label>
+            <q-item-label caption class="non-selectable">{{ entry.name }}</q-item-label>
           </q-item-main>
           <q-item-side>
             <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
@@ -27,7 +27,7 @@
             />
           </q-item-side>
 
-          <q-context-menu>
+          <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="details(entry)">
                 <q-item-main :label="$t('menuItems.showDetails')" />
@@ -41,7 +41,7 @@
                 <q-item-main :label="$t('menuItems.copyAddress')" />
               </q-item>
             </q-list>
-          </q-context-menu>
+          </q-menu>
         </q-item>
       </q-list>
     </template>

@@ -5,27 +5,27 @@
         <q-list separator link>
           <q-item v-close-popup :disabled="!is_ready" @click.native="getPrivateKeys()">
             <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.showPrivateKeys") }}</q-item-tile>
+              <q-item-label header>{{ $t("menuItems.showPrivateKeys") }}</q-item-label>
             </q-item-main>
           </q-item>
           <q-item v-close-popup :disabled="!is_ready" @click.native="showModal('change_password')">
             <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.changePassword") }}</q-item-tile>
+              <q-item-label header>{{ $t("menuItems.changePassword") }}</q-item-label>
             </q-item-main>
           </q-item>
           <q-item v-close-popup :disabled="!is_ready" @click.native="showModal('rescan')">
             <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.rescanWallet") }}</q-item-tile>
+              <q-item-label header>{{ $t("menuItems.rescanWallet") }}</q-item-label>
             </q-item-main>
           </q-item>
           <q-item v-close-popup :disabled="!is_ready" @click.native="showModal('key_image')">
             <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.manageKeyImages") }}</q-item-tile>
+              <q-item-label header>{{ $t("menuItems.manageKeyImages") }}</q-item-label>
             </q-item-main>
           </q-item>
           <q-item v-close-popup :disabled="!is_ready" @click.native="deleteWallet()">
             <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.deleteWallet") }}</q-item-tile>
+              <q-item-label header>{{ $t("menuItems.deleteWallet") }}</q-item-label>
             </q-item-main>
           </q-item>
         </q-list>

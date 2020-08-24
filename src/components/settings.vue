@@ -26,8 +26,8 @@
 
           <q-item v-for="entry in daemon.connections" :key="entry.address" link @click.native="showPeerDetails(entry)">
             <q-item-main>
-              <q-item-tile label>{{ entry.address }}</q-item-tile>
-              <q-item-tile sublabel>{{ $t("strings.blockHeight") }}: {{ entry.height }}</q-item-tile>
+              <q-item-label header>{{ entry.address }}</q-item-label>
+              <q-item-label caption>{{ $t("strings.blockHeight") }}: {{ entry.height }}</q-item-label>
             </q-item-main>
           </q-item>
 
@@ -35,12 +35,12 @@
             <q-list-header>{{ $t("strings.bannedPeers.title") }}</q-list-header>
             <q-item v-for="entry in daemon.bans" :key="entry.host">
               <q-item-main>
-                <q-item-tile label>{{ entry.host }}</q-item-tile>
-                <q-item-tile sublabel>{{
+                <q-item-label header>{{ entry.host }}</q-item-label>
+                <q-item-label caption>{{
                   $t("strings.bannedPeers.bannedUntil", {
                     time: new Date(Date.now() + entry.seconds * 1000).toLocaleString()
                   })
-                }}</q-item-tile>
+                }}</q-item-label>
               </q-item-main>
             </q-item>
           </template>

@@ -20,19 +20,19 @@
               <div>{{ tx.type | typeToString }}</div>
             </q-item-side>
             <q-item-main class="main">
-              <q-item-tile class="amount" label>
+              <q-item-label class="amount" header>
                 <FormatLoki :amount="tx.amount" />
-              </q-item-tile>
-              <q-item-tile sublabel>{{ tx.txid }}</q-item-tile>
+              </q-item-label>
+              <q-item-label caption>{{ tx.txid }}</q-item-label>
             </q-item-main>
             <q-item-side class="meta">
-              <q-item-tile label>
+              <q-item-label header>
                 <timeago :datetime="tx.timestamp * 1000" :auto-update="60" :locale="$i18n.locale" />
-              </q-item-tile>
-              <q-item-tile sublabel>{{ formatHeight(tx) }}</q-item-tile>
+              </q-item-label>
+              <q-item-label caption>{{ formatHeight(tx) }}</q-item-label>
             </q-item-side>
 
-            <q-context-menu>
+            <q-menu context-menu>
               <q-list link separator style="min-width: 150px; max-height: 300px;">
                 <q-item v-close-popup @click.native="details(tx)">
                   <q-item-main :label="$t('menuItems.showDetails')" />
@@ -46,7 +46,7 @@
                   <q-item-main :label="$t('menuItems.viewOnExplorer')" />
                 </q-item>
               </q-list>
-            </q-context-menu>
+            </q-menu>
           </q-item>
           <QSpinnerDots slot="message" :size="40"></QSpinnerDots>
         </q-list>

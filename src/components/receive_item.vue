@@ -2,8 +2,8 @@
   <q-list class="loki-list-item" no-border @click.native="details(address)">
     <q-item>
       <q-item-main>
-        <q-item-tile class="ellipsis" label>{{ address.address }}</q-item-tile>
-        <q-item-tile v-if="sublabel" sublabel class="non-selectable">{{ sublabel }}</q-item-tile>
+        <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
+        <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
       </q-item-main>
       <q-item-side>
         <q-btn flat style="width:25px;" size="md" @click="showQR(address.address, $event)">
@@ -38,7 +38,7 @@
         </q-item-main>
       </q-item>
     </template>
-    <q-context-menu>
+    <q-menu context-menu>
       <q-list link separator style="min-width: 150px; max-height: 300px;">
         <q-item v-close-popup @click.native="details(address)">
           <q-item-main :label="$t('menuItems.showDetails')" />
@@ -48,7 +48,7 @@
           <q-item-main :label="$t('menuItems.copyAddress')" />
         </q-item>
       </q-list>
-    </q-context-menu>
+    </q-menu>
   </q-list>
 </template>
 
