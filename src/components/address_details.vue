@@ -1,6 +1,6 @@
 <template>
-  <q-modal v-model="isVisible" maximized>
-    <q-modal-layout>
+  <q-dialog v-model="isVisible" maximized>
+    <q-layout container>
       <q-toolbar slot="header" color="dark" inverted>
         <q-btn flat round dense icon="reply" @click="isVisible = false" />
         <q-toolbar-title>
@@ -103,10 +103,10 @@
           </div>
         </template>
       </div>
-    </q-modal-layout>
+    </q-layout>
 
     <template v-if="address != null">
-      <q-modal v-model="isQRCodeVisible" minimized :content-css="{ padding: '25px' }">
+      <q-dialog v-model="isQRCodeVisible" minimized :content-css="{ padding: '25px' }">
         <div class="text-center q-mb-sm q-pa-md" style="background: white;">
           <QrcodeVue ref="qr" :value="address.address" size="240"> </QrcodeVue>
           <q-menu content-menu>
@@ -122,9 +122,9 @@
         </div>
 
         <q-btn color="primary" :label="$t('buttons.close')" @click="isQRCodeVisible = false" />
-      </q-modal>
+      </q-dialog>
     </template>
-  </q-modal>
+  </q-dialog>
 </template>
 
 <script>

@@ -33,7 +33,7 @@
     </q-btn>
 
     <!-- Modals -->
-    <q-modal v-model="modals.private_keys.visible" minimized class="private-key-modal" @hide="closePrivateKeys()">
+    <q-dialog v-model="modals.private_keys.visible" minimized class="private-key-modal" @hide="closePrivateKeys()">
       <div class="modal-header">{{ $t("titles.privateKeys") }}</div>
       <div class="q-ma-lg">
         <template v-if="secret.mnemonic">
@@ -111,9 +111,9 @@
           <q-btn color="primary" :label="$t('buttons.close')" @click="hideModal('private_keys')" />
         </div>
       </div>
-    </q-modal>
+    </q-dialog>
 
-    <q-modal v-model="modals.rescan.visible" minimized>
+    <q-dialog v-model="modals.rescan.visible" minimized>
       <div class="modal-header">{{ $t("titles.rescanWallet") }}</div>
       <div class="q-ma-lg">
         <p>{{ $t("strings.rescanModalDescription") }}</p>
@@ -130,9 +130,9 @@
           <q-btn color="primary" :label="$t('buttons.rescan')" @click="rescanWallet()" />
         </div>
       </div>
-    </q-modal>
+    </q-dialog>
 
-    <q-modal v-model="modals.key_image.visible" class="key-image-modal" minimized>
+    <q-dialog v-model="modals.key_image.visible" class="key-image-modal" minimized>
       <div class="modal-header">
         <!-- Export/Import key images -->
         {{
@@ -185,9 +185,9 @@
           <q-btn color="primary" :label="$t('buttons.' + modals.key_image.type.toLowerCase())" @click="doKeyImages()" />
         </div>
       </div>
-    </q-modal>
+    </q-dialog>
 
-    <q-modal v-model="modals.change_password.visible" minimized @hide="clearChangePassword()">
+    <q-dialog v-model="modals.change_password.visible" minimized @hide="clearChangePassword()">
       <div class="modal-header">{{ $t("titles.changePassword") }}</div>
       <div class="q-ma-lg">
         <q-field>
@@ -222,7 +222,7 @@
           <q-btn color="primary" :label="$t('buttons.change')" @click="doChangePassword()" />
         </div>
       </div>
-    </q-modal>
+    </q-dialog>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
-  <q-modal v-model="isVisible" maximized class="address-book-details">
-    <q-modal-layout v-if="mode == 'edit' || mode == 'new'">
+  <q-dialog v-model="isVisible" maximized class="address-book-details">
+    <q-layout v-if="mode == 'edit' || mode == 'new'" container>
       <q-toolbar slot="header" color="dark" inverted>
         <q-btn flat round dense icon="reply" @click="close()" />
         <q-toolbar-title v-if="mode == 'new'">
@@ -60,9 +60,9 @@
           <q-btn class="float-right" color="red" :label="$t('buttons.delete')" @click="deleteEntry()" />
         </q-field>
       </div>
-    </q-modal-layout>
+    </q-layout>
 
-    <q-modal-layout v-else>
+    <q-layout v-else container>
       <q-toolbar slot="header" color="dark" inverted>
         <q-btn flat round dense icon="reply" @click="close()" />
         <q-toolbar-title>
@@ -90,8 +90,8 @@
           </div>
         </template>
       </div>
-    </q-modal-layout>
-  </q-modal>
+    </q-layout>
+  </q-dialog>
 </template>
 
 <script>

@@ -27,7 +27,7 @@
       </q-menu>
     </q-btn>
     <SettingsModal ref="settingsModal" />
-    <q-modal ref="aboutModal" minimized>
+    <q-dialog ref="aboutModal" minimized>
       <div class="about-modal">
         <img class="q-mb-md" src="statics/loki.svg" height="42" />
 
@@ -54,7 +54,7 @@
 
         <q-btn color="primary" label="Close" @click="showAbout(false)" />
       </div>
-    </q-modal>
+    </q-dialog>
   </div>
 </template>
 

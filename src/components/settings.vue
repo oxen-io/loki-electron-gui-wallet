@@ -1,6 +1,6 @@
 <template>
-  <q-modal v-model="isVisible" maximized class="settings-modal">
-    <q-modal-layout>
+  <q-dialog v-model="isVisible" maximized class="settings-modal">
+    <q-layout container>
       <q-toolbar slot="header" color="dark" inverted>
         <q-btn flat round dense icon="reply" @click="isVisible = false" />
         <q-toolbar-title shrink>
@@ -50,8 +50,8 @@
       <div v-if="page === 'language'">
         <LanguageSelect />
       </div>
-    </q-modal-layout>
-  </q-modal>
+    </q-layout>
+  </q-dialog>
 </template>
 
 <script>

@@ -1,6 +1,6 @@
 <template>
-  <q-modal v-model="isVisible" class="serviceNodeDetails" maximized>
-    <q-modal-layout>
+  <q-dialog v-model="isVisible" class="serviceNodeDetails" maximized>
+    <q-layout container>
       <q-toolbar slot="header" color="dark" inverted>
         <q-btn flat round dense icon="reply" @click="isVisible = false" />
         <q-toolbar-title>
@@ -124,8 +124,8 @@
       <q-inner-loading :visible="unlock_status.sending" :dark="theme == 'dark'">
         <q-spinner color="primary" :size="30" />
       </q-inner-loading>
-    </q-modal-layout>
-  </q-modal>
+    </q-layout>
+  </q-dialog>
 </template>
 
 <script>

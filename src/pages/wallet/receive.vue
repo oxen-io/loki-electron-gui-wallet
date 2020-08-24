@@ -53,7 +53,7 @@
 
     <!-- QR Code -->
     <template v-if="QR.address != null">
-      <q-modal v-model="QR.visible" minimized :content-css="{ padding: '25px' }">
+      <q-dialog v-model="QR.visible" minimized :content-css="{ padding: '25px' }">
         <div class="text-center q-mb-sm q-pa-md" style="background: white;">
           <QrcodeVue ref="qr" :value="QR.address" size="240"> </QrcodeVue>
           <q-menu context-menu>
@@ -69,7 +69,7 @@
         </div>
 
         <q-btn color="primary" :label="$t('buttons.close')" @click="QR.visible = false" />
-      </q-modal>
+      </q-dialog>
     </template>
   </q-page>
 </template>
