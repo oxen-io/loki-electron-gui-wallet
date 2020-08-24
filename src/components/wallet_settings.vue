@@ -1,7 +1,7 @@
 <template>
   <div class="wallet-settings">
     <q-btn icon-right="more_vert" :label="$t('buttons.settings')" size="md" flat>
-      <q-popover anchor="bottom right" self="top right">
+      <q-menu anchor="bottom right" self="top right">
         <q-list separator link>
           <q-item v-close-popup :disabled="!is_ready" @click.native="getPrivateKeys()">
             <q-item-label>
@@ -29,7 +29,7 @@
             </q-item-label>
           </q-item>
         </q-list>
-      </q-popover>
+      </q-menu>
     </q-btn>
 
     <!-- Modals -->

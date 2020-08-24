@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-btn class="menu" icon="menu" size="md" flat>
-      <q-popover>
+      <q-menu>
         <q-list separator link>
           <q-item v-if="!disableSwitchWallet" v-close-popup @click.native="switchWallet">
             <q-item-label>
@@ -24,7 +24,7 @@
             </q-item-label>
           </q-item>
         </q-list>
-      </q-popover>
+      </q-menu>
     </q-btn>
     <SettingsModal ref="settingsModal" />
     <q-modal ref="aboutModal" minimized>
