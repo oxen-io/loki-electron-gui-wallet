@@ -18,7 +18,10 @@ export default ({ app, Vue }) => {
 };
 
 const changeLanguage = lang => {
-  const quasarLang = Quasar.i18n.lang;
+  console.log("changeLanguage, lang: " + lang);
+  const quasarLang = Quasar.lang;
+  console.log("quasarLang is: ");
+  console.log(quasarLang);
   return new Promise((resolve, reject) => {
     import(`src/i18n/${lang}`)
       .then(({ default: messages }) => {
@@ -28,13 +31,17 @@ const changeLanguage = lang => {
         // Setting the quasar language is optional
         // There may be cases where they don't have the language
         import(`quasar/lang/${lang}`)
-          .then(lang => {
-            quasarLang.set(lang.default);
+          .then(resultLang => {
+            console.log("lang in import and lang.default are:");
+            console.log(resultLang);
+            console.log(resultLang.default);
+            quasarLang.set(resultLang.default);
           })
           .catch(() => {
             console.warn(`Failed to set quasar language: ${lang}`);
           })
           .finally(() => {
+            console.log("lang in resolve: " + lang);
             resolve(lang);
           });
       })
