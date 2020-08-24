@@ -27,7 +27,7 @@ const changeLanguage = lang => {
 
         // Setting the quasar language is optional
         // There may be cases where they don't have the language
-        import(`quasar-framework/lang/${lang}`)
+        import(`quasar/lang/${lang}`)
           .then(lang => {
             quasarLang.set(lang.default);
           })
