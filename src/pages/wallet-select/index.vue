@@ -53,8 +53,8 @@
             </div>
           </q-section>
           <q-item-label>
-            <q-item-leable header>{{ wallet.name }}</q-item-leable>
-            <q-item-leable class="monospace ellipsis" caption>{{ wallet.address }}</q-item-leable>
+            <q-item-label header>{{ wallet.name }}</q-item-label>
+            <q-item-label class="monospace ellipsis" caption>{{ wallet.address }}</q-item-label>
           </q-item-label>
 
           <q-menu context-menu>
