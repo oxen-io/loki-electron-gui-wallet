@@ -1,17 +1,17 @@
 /* eslint-disable no-template-curly-in-string */
 // Configuration for your app
 
-module.exports = function(ctx) {
+module.exports = function() {
   return {
-    // app plugins (/src/plugins)
-    plugins: ["i18n", "axios", "vuelidate", "gateway", "timeago"],
+    // app boot (/src/boot)
+    boot: ["i18n", "axios", "vuelidate", "gateway", "timeago"],
     css: ["app.styl", "~flag-icon-css/css/flag-icon.min.css"],
     extras: [
-      ctx.theme.mat ? "roboto-font" : null,
+      // ctx.theme.mat ? "roboto-font" : null,
       "material-icons" // optional, you are not bound to it
-      // "ionicons",
-      // "mdi",
-      // "fontawesome"
+      // "ionicons-v4",
+      // "mdi-v5",
+      // "fontawesome-v5"
     ],
     supportIE: false,
     build: {
@@ -88,7 +88,7 @@ module.exports = function(ctx) {
       directives: ["Ripple", "CloseOverlay"],
       // Quasar plugins
       plugins: ["Notify", "Loading", "LocalStorage", "Dialog"]
-      // iconSet: ctx.theme.mat ? "material-icons" : "ionicons"
+      // iconSet: ctx.theme.mat ? "material-icons" : "ionicons-v4"
       // i18n: "de" // Quasar language
     },
     // animations: "all" --- includes all animations
