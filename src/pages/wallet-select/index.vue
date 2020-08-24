@@ -171,7 +171,7 @@ export default {
               color: this.theme == "dark" ? "white" : "dark"
             }
           })
-          .then(password => {
+          .onOk(password => {
             this.$q.loading.show({
               delay: 0
             });
@@ -180,7 +180,8 @@ export default {
               password: password
             });
           })
-          .catch(() => {});
+          .onCancel(() => {})
+          .onDismiss(() => {});
       } else {
         this.$q.loading.show({
           delay: 0
