@@ -74,7 +74,7 @@
 <script>
 const { clipboard } = require("electron");
 import { mapState } from "vuex";
-import { i18n } from "plugins/i18n";
+import { i18n } from "boot/i18n";
 import LokiField from "components/loki_field";
 import { lns_name } from "src/validators/common";
 

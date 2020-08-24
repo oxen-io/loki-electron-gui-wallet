@@ -2,7 +2,7 @@ import { ipcRenderer } from "electron";
 import { Notify, Dialog, Loading, LocalStorage } from "quasar";
 import { EventEmitter } from "events";
 import { SCEE } from "./SCEE-Node";
-import { i18n, changeLanguage } from "src/plugins/i18n";
+import { i18n, changeLanguage } from "src/i18n";
 
 export class Gateway extends EventEmitter {
   constructor(app, router) {
@@ -13,10 +13,10 @@ export class Gateway extends EventEmitter {
     this.scee = new SCEE();
 
     // Set the initial language
-    let language = LocalStorage.has("language") ? LocalStorage.get.item("language") : "en-us";
+    let language = LocalStorage.has("language") ? LocalStorage.getItem("language") : "en-us";
     this.setLanguage(language);
 
-    let theme = LocalStorage.has("theme") ? LocalStorage.get.item("theme") : "dark";
+    let theme = LocalStorage.has("theme") ? LocalStorage.getItem("theme") : "dark";
     this.app.store.commit("gateway/set_app_data", {
       config: {
         appearance: {

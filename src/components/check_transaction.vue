@@ -74,7 +74,7 @@
 import { mapState } from "vuex";
 import { required } from "vuelidate/lib/validators";
 import { address } from "src/validators/common";
-import { i18n } from "plugins/i18n";
+import { i18n } from "boot/i18n";
 import LokiField from "components/loki_field";
 import FormatLoki from "components/format_loki";
 

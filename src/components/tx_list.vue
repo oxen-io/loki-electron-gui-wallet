@@ -63,7 +63,7 @@ import { mapState } from "vuex";
 import { QSpinnerDots } from "quasar";
 import TxDetails from "components/tx_details";
 import FormatLoki from "components/format_loki";
-import { i18n } from "plugins/i18n";
+import { i18n } from "boot/i18n";
 
 export default {
   name: "TxList",

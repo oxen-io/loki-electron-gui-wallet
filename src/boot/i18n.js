@@ -1,6 +1,6 @@
-import VueI18n from "src/boot/vue-i18n";
-import messages from "src/boot/src/i18n";
-import { Quasar } from "src/boot/quasar";
+import VueI18n from "vue-i18n";
+import messages from "src/i18n";
+import { Quasar } from "quasar";
 
 let i18n;
 
@@ -20,7 +20,7 @@ export default ({ app, Vue }) => {
 const changeLanguage = lang => {
   const quasarLang = Quasar.i18n.lang;
   return new Promise((resolve, reject) => {
-    import(`src/lang/${lang}`)
+    import(`src/i18n/${lang}`)
       .then(({ default: messages }) => {
         i18n.locale = lang;
         i18n.setLocaleMessage(lang, messages);

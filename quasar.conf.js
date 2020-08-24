@@ -1,7 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
 // Configuration for your app
 
-module.exports = function() {
+module.exports = function(ctx) {
+  console.log(ctx);
   return {
     // app boot (/src/boot)
     boot: ["i18n", "axios", "vuelidate", "gateway", "timeago"],
@@ -41,9 +42,9 @@ module.exports = function() {
     framework: {
       components: [
         "QLayout",
-        "QLayoutHeader",
-        "QLayoutFooter",
-        "QLayoutDrawer",
+        "QHeader",
+        "QFooter",
+        "QDrawer",
         "QPageContainer",
         "QPage",
         "QToolbar",
@@ -60,32 +61,29 @@ module.exports = function() {
         "QTab",
         "QRouteTab",
         "QBtnDropdown",
-        "QPopover",
-        "QModal",
-        "QModalLayout",
+        "QMenu",
+        "QDialog",
         "QStep",
         "QStepper",
         "QStepperNavigation",
         "QSpinner",
         "QList",
-        "QListHeader",
+        "QItemLabel",
         "QItem",
-        "QItemMain",
-        "QItemSeparator",
-        "QItemSide",
-        "QItemTile",
+        "QSeparator",
+        "QItemSection",
         "QSelect",
         "QToggle",
         "QPageSticky",
-        "QCollapsible",
+        "QExpansionItem",
         "QCheckbox",
         "QInnerLoading",
         "QInfiniteScroll",
-        "QDatetime",
-        "QContextMenu",
+        "QDate",
+        "QTime",
         "QScrollArea"
       ],
-      directives: ["Ripple", "CloseOverlay"],
+      directives: ["Ripple"],
       // Quasar plugins
       plugins: ["Notify", "Loading", "LocalStorage", "Dialog"]
       // iconSet: ctx.theme.mat ? "material-icons" : "ionicons-v4"
