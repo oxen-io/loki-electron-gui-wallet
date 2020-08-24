@@ -1,18 +1,18 @@
 <template>
   <q-item class="address-header">
-    <q-item-main class="self-start">
+    <q-item-label class="self-start">
       <q-item-label caption class="title non-selectable">{{ title }}</q-item-label>
       <q-item-label class="break-all" header>{{ address }}</q-item-label>
       <q-item-label v-if="paymentId" caption>{{ $t("fieldLabels.paymentId") }}: {{ paymentId }}</q-item-label>
       <q-item-label v-if="extra" caption class="extra non-selectable">{{ extra }}</q-item-label>
-    </q-item-main>
-    <q-item-side v-if="showCopy">
+    </q-item-label>
+    <q-section v-if="showCopy">
       <q-btn ref="copy" color="primary" style="width:25px;" size="sm" icon="file_copy" @click="copyAddress">
         <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
           {{ $t("menuItems.copyAddress") }}
         </q-tooltip>
       </q-btn>
-    </q-item-side>
+    </q-section>
 
     <q-menu context-menu>
       <q-list link separator style="min-width: 150px; max-height: 300px;">
@@ -113,7 +113,7 @@ export default {
     display: table;
   }
 
-  .q-item-main {
+  .q-item-label {
     .q-item-label {
       font-weight: 400;
     }

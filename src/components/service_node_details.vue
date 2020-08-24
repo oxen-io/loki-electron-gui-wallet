@@ -98,7 +98,7 @@
         <q-list no-border :dark="theme == 'dark'" class="loki-list">
           <q-list-header class="q-px-none">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-list-header>
           <q-item v-for="contributor in contributors" :key="contributor.address" class="loki-list-item">
-            <q-item-main>
+            <q-item-label>
               <q-item-section v-if="isMe(contributor)" class="name non-selectable">{{
                 $t("strings.me")
               }}</q-item-section>
@@ -109,7 +109,7 @@
                 {{ $t("strings.contribution") }}:
                 <FormatLoki :amount="contributor.amount" raw-value />
               </q-item-label>
-            </q-item-main>
+            </q-item-label>
             <q-menu context-menu>
               <q-list link separator style="min-width: 150px; max-height: 300px;">
                 <q-item v-close-popup @click.native="copyAddress(contributor.address, $event)">

@@ -25,23 +25,23 @@
           <q-list-header>{{ $t("strings.peerList") }}</q-list-header>
 
           <q-item v-for="entry in daemon.connections" :key="entry.address" link @click.native="showPeerDetails(entry)">
-            <q-item-main>
+            <q-item-label>
               <q-item-label header>{{ entry.address }}</q-item-label>
               <q-item-label caption>{{ $t("strings.blockHeight") }}: {{ entry.height }}</q-item-label>
-            </q-item-main>
+            </q-item-label>
           </q-item>
 
           <template v-if="daemon.bans.length">
             <q-list-header>{{ $t("strings.bannedPeers.title") }}</q-list-header>
             <q-item v-for="entry in daemon.bans" :key="entry.host">
-              <q-item-main>
+              <q-item-label>
                 <q-item-label header>{{ entry.host }}</q-item-label>
                 <q-item-label caption>{{
                   $t("strings.bannedPeers.bannedUntil", {
                     time: new Date(Date.now() + entry.seconds * 1000).toLocaleString()
                   })
                 }}</q-item-label>
-              </q-item-main>
+              </q-item-label>
             </q-item>
           </template>
         </q-list>

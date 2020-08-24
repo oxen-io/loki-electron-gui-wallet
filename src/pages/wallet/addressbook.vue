@@ -12,11 +12,11 @@
           class="loki-list-item"
           @click.native="details(entry)"
         >
-          <q-item-main>
+          <q-item-label>
             <q-item-label class="ellipsis" header>{{ entry.address }}</q-item-label>
             <q-item-label caption class="non-selectable">{{ entry.name }}</q-item-label>
-          </q-item-main>
-          <q-item-side>
+          </q-item-label>
+          <q-section>
             <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
             <q-btn
               color="secondary"
@@ -25,7 +25,7 @@
               :disabled="view_only"
               @click="sendToAddress(entry, $event)"
             />
-          </q-item-side>
+          </q-section>
 
           <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
@@ -165,7 +165,7 @@ export default {
       font-weight: 400;
     }
 
-    .q-item-side {
+    .q-section {
       display: flex;
       justify-content: center;
       align-items: center;

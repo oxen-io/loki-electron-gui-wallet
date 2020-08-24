@@ -1,11 +1,11 @@
 <template>
   <q-list class="loki-list-item" no-border @click.native="details(address)">
     <q-item>
-      <q-item-main>
+      <q-item-label>
         <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
         <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
-      </q-item-main>
-      <q-item-side>
+      </q-item-label>
+      <q-section>
         <q-btn flat style="width:25px;" size="md" @click="showQR(address.address, $event)">
           <img :src="qrImage" height="20" />
           <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
@@ -17,12 +17,12 @@
             {{ $t("menuItems.copyAddress") }}
           </q-tooltip>
         </q-btn>
-      </q-item-side>
+      </q-section>
     </q-item>
     <template v-if="shouldShowInfo">
       <q-separator />
       <q-item class="info">
-        <q-item-main class="flex justify-between">
+        <q-item-label class="flex justify-between">
           <div class="column">
             <span>{{ $t("strings.lokiBalance") }}</span>
             <span class="value">{{ address.balance | currency }}</span>
@@ -35,7 +35,7 @@
             <span>{{ $t("strings.unspentOutputs") }}</span>
             <span class="value">{{ address.num_unspent_outputs | toString }}</span>
           </div>
-        </q-item-main>
+        </q-item-label>
       </q-item>
     </template>
     <q-menu context-menu>

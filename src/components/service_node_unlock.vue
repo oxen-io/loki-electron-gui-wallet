@@ -6,14 +6,14 @@
       </div>
       <q-list class="service-node-list" no-border>
         <q-item v-for="node in service_nodes" :key="node.service_node_pubkey" @click.native="details(node)">
-          <q-item-main>
+          <q-item-label>
             <q-item-label class="ellipsis" header>{{ node.service_node_pubkey }}</q-item-label>
             <q-item-label caption class="non-selectable"
               >{{ getRole(node) }} • {{ getFee(node) }} • {{ $t("strings.contribution") }}:
               <FormatLoki :amount="node.ourContributionAmount"
             /></q-item-label>
-          </q-item-main>
-          <q-item-side>
+          </q-item-label>
+          <q-section>
             <q-btn
               v-if="node.requested_unlock_height === 0"
               color="primary"
@@ -29,7 +29,7 @@
                 })
               }}
             </q-item-label>
-          </q-item-side>
+          </q-section>
           <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="copyKey(node.service_node_pubkey, $event)">

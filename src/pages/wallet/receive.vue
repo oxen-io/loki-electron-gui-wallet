@@ -174,7 +174,7 @@ export default {
       padding-bottom: 4px;
     }
 
-    .q-item-side {
+    .q-section {
       display: flex;
       justify-content: center;
       align-items: center;

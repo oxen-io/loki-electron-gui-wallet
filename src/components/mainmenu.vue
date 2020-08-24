@@ -4,24 +4,24 @@
       <q-popover>
         <q-list separator link>
           <q-item v-if="!disableSwitchWallet" v-close-popup @click.native="switchWallet">
-            <q-item-main>
+            <q-item-label>
               <q-item-label header>{{ $t("menuItems.switchWallet") }}</q-item-label>
-            </q-item-main>
+            </q-item-label>
           </q-item>
           <q-item v-close-popup @click.native="openSettings">
-            <q-item-main>
+            <q-item-label>
               <q-item-label header>{{ $t("menuItems.settings") }}</q-item-label>
-            </q-item-main>
+            </q-item-label>
           </q-item>
           <q-item v-close-popup @click.native="showAbout(true)">
-            <q-item-main>
+            <q-item-label>
               <q-item-label header>{{ $t("menuItems.about") }}</q-item-label>
-            </q-item-main>
+            </q-item-label>
           </q-item>
           <q-item v-close-popup @click.native="exit">
-            <q-item-main>
+            <q-item-label>
               <q-item-label header>{{ $t("menuItems.exit") }}</q-item-label>
-            </q-item-main>
+            </q-item-label>
           </q-item>
         </q-list>
       </q-popover>

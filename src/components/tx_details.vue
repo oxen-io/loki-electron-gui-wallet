@@ -126,10 +126,10 @@
               }}:
             </q-list-header>
             <q-item class="q-px-none">
-              <q-item-main>
+              <q-item-label>
                 <q-item-label header class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-label>
                 <q-item-label class="monospace ellipsis" caption>{{ in_tx_address_used.address }}</q-item-label>
-              </q-item-main>
+              </q-item-label>
 
               <q-menu context-menu>
                 <q-list link separator style="min-width: 150px; max-height: 300px;">
@@ -153,11 +153,11 @@
             </q-list-header>
             <template v-if="out_destinations">
               <q-item v-for="destination in out_destinations" :key="destination.address" class="q-px-none">
-                <q-item-main>
+                <q-item-label>
                   <q-item-label header>{{ destination.name }}</q-item-label>
                   <q-item-label class="monospace ellipsis" caption>{{ destination.address }}</q-item-label>
                   <q-item-label caption><FormatLoki :amount="destination.amount"/></q-item-label>
-                </q-item-main>
+                </q-item-label>
                 <q-menu context-menu>
                   <q-list link separator style="min-width: 150px; max-height: 300px;">
                     <q-item v-close-popup @click.native="copyAddress(destination.address, $event)">
@@ -169,9 +169,9 @@
             </template>
             <template v-else>
               <q-item class="q-px-none">
-                <q-item-main>
+                <q-item-label>
                   <q-item-label header>{{ $t("strings.destinationUnknown") }}</q-item-label>
-                </q-item-main>
+                </q-item-label>
               </q-item>
             </template>
           </q-list>

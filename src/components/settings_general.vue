@@ -62,9 +62,9 @@
           <q-btn-dropdown v-if="config.app.net_type === 'mainnet'" class="remote-dropdown" flat>
             <q-list link dark no-border>
               <q-item v-for="option in remotes" :key="option.host" v-close-popup @click.native="setPreset(option)">
-                <q-item-main>
+                <q-item-label>
                   <q-item-label header>{{ option.host }}:{{ option.port }}</q-item-label>
-                </q-item-main>
+                </q-item-label>
               </q-item>
             </q-list>
           </q-btn-dropdown>
