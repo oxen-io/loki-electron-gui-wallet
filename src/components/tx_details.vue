@@ -133,7 +133,7 @@
 
               <q-context-menu>
                 <q-list link separator style="min-width: 150px; max-height: 300px;">
-                  <q-item v-close-overlay @click.native="copyAddress(in_tx_address_used.address, $event)">
+                  <q-item v-close-popup @click.native="copyAddress(in_tx_address_used.address, $event)">
                     <q-item-main :label="$t('menuItems.copyAddress')" />
                   </q-item>
                 </q-list>
@@ -160,7 +160,7 @@
                 </q-item-main>
                 <q-context-menu>
                   <q-list link separator style="min-width: 150px; max-height: 300px;">
-                    <q-item v-close-overlay @click.native="copyAddress(destination.address, $event)">
+                    <q-item v-close-popup @click.native="copyAddress(destination.address, $event)">
                       <q-item-main :label="$t('menuItems.copyAddress')" />
                     </q-item>
                   </q-list>

@@ -1,5 +1,5 @@
 <template>
-  <q-layout-footer class="status-footer">
+  <q-footer class="status-footer">
     <div class="status-line row items-center">
       <div class="status row items-center">
         <span>{{ $t("footer.status") }}:</span>
@@ -21,7 +21,7 @@
       <div :style="{ width: daemon_pct + '%' }"></div>
       <div :style="{ width: wallet_pct + '%' }"></div>
     </div>
-  </q-layout-footer>
+  </q-footer>
 </template>
 
 <script>

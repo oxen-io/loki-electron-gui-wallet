@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr lFf">
-    <q-layout-header class="shift-title">
+    <q-header class="shift-title">
       <template v-if="show_menu">
         <MainMenu :disable-switch-wallet="true" />
       </template>
@@ -16,7 +16,7 @@
       <q-toolbar-title v-else>
         {{ page_title }}
       </q-toolbar-title>
-    </q-layout-header>
+    </q-header>
 
     <q-page-container>
       <router-view ref="page" />

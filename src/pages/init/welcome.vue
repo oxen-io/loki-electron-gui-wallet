@@ -16,7 +16,7 @@
       </q-step>
     </q-stepper>
 
-    <q-layout-footer v-if="!is_first_page" class="no-shadow q-pa-sm">
+    <q-footer v-if="!is_first_page" class="no-shadow q-pa-sm">
       <div class="row justify-end">
         <div>
           <q-btn flat :label="$t('buttons.back')" @click="clickPrev()" />
@@ -25,7 +25,7 @@
           <q-btn class="q-ml-sm" color="primary" :label="$t('buttons.next')" @click="clickNext()" />
         </div>
       </div>
-    </q-layout-footer>
+    </q-footer>
   </q-page>
 </template>
 

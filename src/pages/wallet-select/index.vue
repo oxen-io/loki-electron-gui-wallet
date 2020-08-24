@@ -59,17 +59,17 @@
 
           <q-context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-overlay @click.native="openWallet(wallet)">
+              <q-item v-close-popup @click.native="openWallet(wallet)">
                 <q-item-main :label="$t('menuItems.openWallet')" />
               </q-item>
 
-              <q-item v-close-overlay @click.native="copyAddress(wallet.address, $event)">
+              <q-item v-close-popup @click.native="copyAddress(wallet.address, $event)">
                 <q-item-main :label="$t('menuItems.copyAddress')" />
               </q-item>
             </q-list>
           </q-context-menu>
         </q-item>
-        <q-item-separator />
+        <q-separator />
       </template>
       <template v-else>
         <q-item v-for="action in actions" :key="action.name" @click.native="action.handler">

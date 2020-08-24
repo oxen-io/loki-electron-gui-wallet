@@ -20,7 +20,7 @@
       </q-item-side>
     </q-item>
     <template v-if="shouldShowInfo">
-      <q-item-separator />
+      <q-separator />
       <q-item class="info">
         <q-item-main class="flex justify-between">
           <div class="column">
@@ -40,11 +40,11 @@
     </template>
     <q-context-menu>
       <q-list link separator style="min-width: 150px; max-height: 300px;">
-        <q-item v-close-overlay @click.native="details(address)">
+        <q-item v-close-popup @click.native="details(address)">
           <q-item-main :label="$t('menuItems.showDetails')" />
         </q-item>
 
-        <q-item v-close-overlay @click.native="copyAddress(address.address, $event)">
+        <q-item v-close-popup @click.native="copyAddress(address.address, $event)">
           <q-item-main :label="$t('menuItems.copyAddress')" />
         </q-item>
       </q-list>

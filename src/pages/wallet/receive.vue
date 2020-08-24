@@ -58,10 +58,10 @@
           <QrcodeVue ref="qr" :value="QR.address" size="240"> </QrcodeVue>
           <q-context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-overlay @click.native="copyQR()">
+              <q-item v-close-popup @click.native="copyQR()">
                 <q-item-main :label="$t('menuItems.copyQR')" />
               </q-item>
-              <q-item v-close-overlay @click.native="saveQR()">
+              <q-item v-close-popup @click.native="saveQR()">
                 <q-item-main :label="$t('menuItems.saveQR')" />
               </q-item>
             </q-list>

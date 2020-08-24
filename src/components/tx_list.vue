@@ -34,15 +34,15 @@
 
             <q-context-menu>
               <q-list link separator style="min-width: 150px; max-height: 300px;">
-                <q-item v-close-overlay @click.native="details(tx)">
+                <q-item v-close-popup @click.native="details(tx)">
                   <q-item-main :label="$t('menuItems.showDetails')" />
                 </q-item>
 
-                <q-item v-close-overlay @click.native="copyTxid(tx.txid, $event)">
+                <q-item v-close-popup @click.native="copyTxid(tx.txid, $event)">
                   <q-item-main :label="$t('menuItems.copyTransactionId')" />
                 </q-item>
 
-                <q-item v-close-overlay @click.native="openExplorer(tx.txid)">
+                <q-item v-close-popup @click.native="openExplorer(tx.txid)">
                   <q-item-main :label="$t('menuItems.viewOnExplorer')" />
                 </q-item>
               </q-list>
