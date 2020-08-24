@@ -112,10 +112,10 @@
           <q-menu content-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="copyQR()">
-                <q-item-main :label="$t('menuItems.copyQR')" />
+                <q-item-label :label="$t('menuItems.copyQR')" />
               </q-item>
               <q-item v-close-popup @click.native="saveQR()">
-                <q-item-main :label="$t('menuItems.saveQR')" />
+                <q-item-label :label="$t('menuItems.saveQR')" />
               </q-item>
             </q-list>
           </q-menu>

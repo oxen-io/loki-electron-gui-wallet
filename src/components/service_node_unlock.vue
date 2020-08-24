@@ -33,10 +33,10 @@
           <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="copyKey(node.service_node_pubkey, $event)">
-                <q-item-main :label="$t('menuItems.copyServiceNodeKey')" />
+                <q-item-label :label="$t('menuItems.copyServiceNodeKey')" />
               </q-item>
               <q-item v-close-popup @click.native="openExplorer(node.service_node_pubkey)">
-                <q-item-main :label="$t('menuItems.viewOnExplorer')" />
+                <q-item-label :label="$t('menuItems.viewOnExplorer')" />
               </q-item>
             </q-list>
           </q-menu>

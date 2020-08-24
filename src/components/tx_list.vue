@@ -19,12 +19,12 @@
             <q-section class="type">
               <div>{{ tx.type | typeToString }}</div>
             </q-section>
-            <q-item-main class="main">
+            <q-item-label class="main">
               <q-item-label class="amount" header>
                 <FormatLoki :amount="tx.amount" />
               </q-item-label>
               <q-item-label caption>{{ tx.txid }}</q-item-label>
-            </q-item-main>
+            </q-item-label>
             <q-section class="meta">
               <q-item-label header>
                 <timeago :datetime="tx.timestamp * 1000" :auto-update="60" :locale="$i18n.locale" />
@@ -35,15 +35,15 @@
             <q-menu context-menu>
               <q-list link separator style="min-width: 150px; max-height: 300px;">
                 <q-item v-close-popup @click.native="details(tx)">
-                  <q-item-main :label="$t('menuItems.showDetails')" />
+                  <q-item-label :label="$t('menuItems.showDetails')" />
                 </q-item>
 
                 <q-item v-close-popup @click.native="copyTxid(tx.txid, $event)">
-                  <q-item-main :label="$t('menuItems.copyTransactionId')" />
+                  <q-item-label :label="$t('menuItems.copyTransactionId')" />
                 </q-item>
 
                 <q-item v-close-popup @click.native="openExplorer(tx.txid)">
-                  <q-item-main :label="$t('menuItems.viewOnExplorer')" />
+                  <q-item-label :label="$t('menuItems.viewOnExplorer')" />
                 </q-item>
               </q-list>
             </q-menu>

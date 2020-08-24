@@ -10,7 +10,7 @@
             <q-popover class="header-popover">
               <q-list separator link>
                 <q-item v-for="action in actions" :key="action.name" @click.native="action.handler">
-                  <q-item-main :label="action.name" />
+                  <q-item-label :label="action.name" />
                 </q-item>
               </q-list>
             </q-popover>
@@ -73,7 +73,7 @@
       </template>
       <template v-else>
         <q-item v-for="action in actions" :key="action.name" @click.native="action.handler">
-          <q-item-main :label="action.name" />
+          <q-item-label :label="action.name" />
         </q-item>
       </template>
     </q-list>
@@ -92,7 +92,7 @@ export default {
     actions() {
       // TODO: Add this in once LOKI has the functionality
       // <q-item @click.native="restoreViewWallet()">
-      //     <q-item-main label="Restore view-only wallet" />
+      //     <q-item-label label="Restore view-only wallet" />
       // </q-item>
       const actions = [
         {

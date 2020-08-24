@@ -113,7 +113,7 @@
             <q-menu context-menu>
               <q-list link separator style="min-width: 150px; max-height: 300px;">
                 <q-item v-close-popup @click.native="copyAddress(contributor.address, $event)">
-                  <q-item-main :label="$t('menuItems.copyAddress')" />
+                  <q-item-label :label="$t('menuItems.copyAddress')" />
                 </q-item>
               </q-list>
             </q-menu>

@@ -45,16 +45,16 @@
           <q-list link separator style="min-width: 150px; max-height: 300px;">
             <template v-if="!isLocked(record)">
               <q-item v-close-popup @click.native="copy(record.name, $event, $t('notification.positive.nameCopied'))">
-                <q-item-main :label="$t('menuItems.copyName')" />
+                <q-item-label :label="$t('menuItems.copyName')" />
               </q-item>
 
               <q-item v-close-popup @click.native="copyValue(record, $event)">
-                <q-item-main :label="record | copyValue" />
+                <q-item-label :label="record | copyValue" />
               </q-item>
             </template>
 
             <q-item v-close-popup @click.native="copy(record.owner, $event, $t('notification.positive.ownerCopied'))">
-              <q-item-main :label="$t('menuItems.copyOwner')" />
+              <q-item-label :label="$t('menuItems.copyOwner')" />
             </q-item>
 
             <q-item
@@ -62,7 +62,7 @@
               v-close-popup
               @click.native="copy(record.backup_owner, $event, $t('notification.positive.backupOwnerCopied'))"
             >
-              <q-item-main :label="$t('menuItems.copyBackupOwner')" />
+              <q-item-label :label="$t('menuItems.copyBackupOwner')" />
             </q-item>
           </q-list>
         </q-menu>
