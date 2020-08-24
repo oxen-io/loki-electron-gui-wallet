@@ -22,7 +22,7 @@
           :key="`${wallet.address}-${wallet.name}`"
           @click.native="openWallet(wallet)"
         >
-          <q-section>
+          <q-item-section>
             <div class="wallet-icon">
               <svg
                 width="48"
@@ -51,7 +51,7 @@
                 </g>
               </svg>
             </div>
-          </q-section>
+          </q-item-section>
           <q-item-label>
             <q-item-label header>{{ wallet.name }}</q-item-label>
             <q-item-label class="monospace ellipsis" caption>{{ wallet.address }}</q-item-label>

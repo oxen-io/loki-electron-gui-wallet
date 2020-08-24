@@ -16,7 +16,7 @@
             <q-item-label class="ellipsis" header>{{ entry.address }}</q-item-label>
             <q-item-label caption class="non-selectable">{{ entry.name }}</q-item-label>
           </q-item-label>
-          <q-section>
+          <q-item-section>
             <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
             <q-btn
               color="secondary"
@@ -25,7 +25,7 @@
               :disabled="view_only"
               @click="sendToAddress(entry, $event)"
             />
-          </q-section>
+          </q-item-section>
 
           <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
@@ -165,7 +165,7 @@ export default {
       font-weight: 400;
     }
 
-    .q-section {
+    .q-item-section {
       display: flex;
       justify-content: center;
       align-items: center;

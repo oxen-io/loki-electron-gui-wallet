@@ -16,21 +16,21 @@
             :class="'tx-' + tx.type"
             @click.native="details(tx)"
           >
-            <q-section class="type">
+            <q-item-section class="type">
               <div>{{ tx.type | typeToString }}</div>
-            </q-section>
+            </q-item-section>
             <q-item-label class="main">
               <q-item-label class="amount" header>
                 <FormatLoki :amount="tx.amount" />
               </q-item-label>
               <q-item-label caption>{{ tx.txid }}</q-item-label>
             </q-item-label>
-            <q-section class="meta">
+            <q-item-section class="meta">
               <q-item-label header>
                 <timeago :datetime="tx.timestamp * 1000" :auto-update="60" :locale="$i18n.locale" />
               </q-item-label>
               <q-item-label caption>{{ formatHeight(tx) }}</q-item-label>
-            </q-section>
+            </q-item-section>
 
             <q-menu context-menu>
               <q-list link separator style="min-width: 150px; max-height: 300px;">

@@ -5,7 +5,7 @@
         <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
         <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
       </q-item-label>
-      <q-section>
+      <q-item-section>
         <q-btn flat style="width:25px;" size="md" @click="showQR(address.address, $event)">
           <img :src="qrImage" height="20" />
           <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
@@ -17,7 +17,7 @@
             {{ $t("menuItems.copyAddress") }}
           </q-tooltip>
         </q-btn>
-      </q-section>
+      </q-item-section>
     </q-item>
     <template v-if="shouldShowInfo">
       <q-separator />

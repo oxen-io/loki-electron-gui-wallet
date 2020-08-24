@@ -13,7 +13,7 @@
               <FormatLoki :amount="node.ourContributionAmount"
             /></q-item-label>
           </q-item-label>
-          <q-section>
+          <q-item-section>
             <q-btn
               v-if="node.requested_unlock_height === 0"
               color="primary"
@@ -29,7 +29,7 @@
                 })
               }}
             </q-item-label>
-          </q-section>
+          </q-item-section>
           <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
               <q-item v-close-popup @click.native="copyKey(node.service_node_pubkey, $event)">

@@ -17,9 +17,9 @@
     </div>
     <q-list link no-border :dark="theme == 'dark'" class="loki-list">
       <q-item v-for="record in records" :key="record.name_hash" class="loki-list-item">
-        <q-section class="type">
+        <q-item-section class="type">
           <q-icon :name="isLocked(record) ? 'lock' : 'lock_open'" size="24px" />
-        </q-section>
+        </q-item-section>
         <q-item-label class="main">
           <q-item-label header :class="bindClass(record)">
             {{ isLocked(record) ? record.name_hash : record.name }}
@@ -27,19 +27,19 @@
           <q-item-label v-if="!isLocked(record)" caption>{{ record.value }}</q-item-label>
         </q-item-label>
         <template v-if="isLocked(record)">
-          <q-section right class="height">
+          <q-item-section right class="height">
             {{ record.register_height | blockHeight }}
-          </q-section>
+          </q-item-section>
         </template>
         <template v-else>
-          <q-section right>
+          <q-item-section right>
             <q-btn color="secondary" :label="$t('buttons.update')" @click="onUpdate(record)" />
-          </q-section>
+          </q-item-section>
         </template>
 
-        <q-section v-if="!isLocked(record)" right>
+        <q-item-section v-if="!isLocked(record)" right>
           {{ record.register_height | blockHeight }}
-        </q-section>
+        </q-item-section>
 
         <q-menu context-menu>
           <q-list link separator style="min-width: 150px; max-height: 300px;">
