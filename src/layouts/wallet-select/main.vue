@@ -10,7 +10,7 @@
 
       <q-toolbar-title v-if="page_title == 'Loki'">
         <div class="flex items-center justify-center" style="margin-top:7px">
-          <img src="statics/loki.svg" height="32" />
+          <img src="loki.svg" height="32" />
         </div>
       </q-toolbar-title>
       <q-toolbar-title v-else>
