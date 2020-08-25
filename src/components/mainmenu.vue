@@ -2,7 +2,7 @@
   <div>
     <q-btn class="menu" icon="menu" size="md" flat>
       <q-menu>
-        <q-list separator link>
+        <q-list separator>
           <q-item v-if="!disableSwitchWallet" v-close-popup @click.native="switchWallet">
             <q-item-label>
               <q-item-label header>{{ $t("menuItems.switchWallet") }}</q-item-label>
@@ -27,6 +27,7 @@
       </q-menu>
     </q-btn>
     <SettingsModal ref="settingsModal" />
+    <!-- TODO: Move this to it's own component -->
     <q-dialog ref="aboutModal" minimized>
       <div class="about-modal">
         <img class="q-mb-md" src="loki.svg" height="42" />
@@ -51,7 +52,6 @@
             <a href="#" @click="openExternal('https://github.com/loki-project/loki-electron-gui-wallet')">Github</a>
           </p>
         </div>
-
         <q-btn color="primary" label="Close" @click="showAbout(false)" />
       </div>
     </q-dialog>
@@ -149,6 +149,8 @@ export default {
 <style lang="scss">
 .about-modal {
   padding: 25px;
+  background-color: $dark;
+  color: white;
 
   .external-links {
     a {

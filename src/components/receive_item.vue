@@ -103,7 +103,7 @@ export default {
   computed: {
     qrImage() {
       const image = this.whiteQRIcon ? "qr-code" : "qr-code-grey";
-      return `statics/${image}.svg`;
+      return `${image}.svg`;
     }
   }
 };

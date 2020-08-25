@@ -84,21 +84,23 @@ export class Gateway extends EventEmitter {
       title: i18n.t(`dialog.${key}.title`),
       message: msg,
       ok: {
-        label: i18n.t(`dialog.${key}.ok`)
+        label: i18n.t(`dialog.${key}.ok`),
+        color: "positive"
       },
       cancel: {
         flat: true,
         label: i18n.t("dialog.buttons.cancel"),
         color: this.app.store.state.gateway.app.config.appearance.theme === "dark" ? "white" : "dark"
-      }
+      },
+      dark: this.app.store.state.gateway.app.config.appearance.theme === "dark"
     })
-      .then(() => {
+      .onOk(() => {
         this.closeDialog = false;
         Loading.hide();
         this.router.replace({ path: "/quit" });
         ipcRenderer.send("confirmClose", restart);
       })
-      .catch(() => {
+      .onCancel(() => {
         this.closeDialog = false;
       });
   }

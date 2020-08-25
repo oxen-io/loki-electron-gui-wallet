@@ -1,55 +1,63 @@
 <template>
   <q-dialog v-model="isVisible" maximized class="settings-modal">
     <q-layout container>
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="isVisible = false" />
-        <q-toolbar-title shrink>
-          {{ $t("titles.settings.title") }}
-        </q-toolbar-title>
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="isVisible = false" />
+          <q-toolbar-title shrink>
+            {{ $t("titles.settings.title") }}
+          </q-toolbar-title>
 
-        <div class="row col justify-center q-pr-xl">
-          <q-btn-toggle v-model="page" toggle-color="primary" color="tertiary" size="md" :options="tabs" />
+          <div class="row col justify-center q-pr-xl">
+            <q-btn-toggle v-model="page" toggle-color="primary" color="tertiary" size="md" :options="tabs" />
+          </div>
+
+          <q-btn color="primary" :label="$t('buttons.save')" @click="save" />
+        </q-toolbar>
+      </q-header>
+      <q-page-container>
+        <div v-if="page == 'general'">
+          <div class="q-pa-lg">
+            <SettingsGeneral ref="settingsGeneral"></SettingsGeneral>
+          </div>
         </div>
 
-        <q-btn color="primary" :label="$t('buttons.save')" @click="save" />
-      </q-toolbar>
+        <div v-if="page == 'peers'">
+          <q-list :dark="theme == 'dark'" no-border>
+            <q-list-header>{{ $t("strings.peerList") }}</q-list-header>
 
-      <div v-if="page == 'general'">
-        <div class="q-pa-lg">
-          <SettingsGeneral ref="settingsGeneral"></SettingsGeneral>
-        </div>
-      </div>
-
-      <div v-if="page == 'peers'">
-        <q-list :dark="theme == 'dark'" no-border>
-          <q-list-header>{{ $t("strings.peerList") }}</q-list-header>
-
-          <q-item v-for="entry in daemon.connections" :key="entry.address" link @click.native="showPeerDetails(entry)">
-            <q-item-label>
-              <q-item-label header>{{ entry.address }}</q-item-label>
-              <q-item-label caption>{{ $t("strings.blockHeight") }}: {{ entry.height }}</q-item-label>
-            </q-item-label>
-          </q-item>
-
-          <template v-if="daemon.bans.length">
-            <q-list-header>{{ $t("strings.bannedPeers.title") }}</q-list-header>
-            <q-item v-for="entry in daemon.bans" :key="entry.host">
+            <q-item
+              v-for="entry in daemon.connections"
+              :key="entry.address"
+              link
+              @click.native="showPeerDetails(entry)"
+            >
               <q-item-label>
-                <q-item-label header>{{ entry.host }}</q-item-label>
-                <q-item-label caption>{{
-                  $t("strings.bannedPeers.bannedUntil", {
-                    time: new Date(Date.now() + entry.seconds * 1000).toLocaleString()
-                  })
-                }}</q-item-label>
+                <q-item-label header>{{ entry.address }}</q-item-label>
+                <q-item-label caption>{{ $t("strings.blockHeight") }}: {{ entry.height }}</q-item-label>
               </q-item-label>
             </q-item>
-          </template>
-        </q-list>
-      </div>
 
-      <div v-if="page === 'language'">
-        <LanguageSelect />
-      </div>
+            <template v-if="daemon.bans.length">
+              <q-list-header>{{ $t("strings.bannedPeers.title") }}</q-list-header>
+              <q-item v-for="entry in daemon.bans" :key="entry.host">
+                <q-item-label>
+                  <q-item-label header>{{ entry.host }}</q-item-label>
+                  <q-item-label caption>{{
+                    $t("strings.bannedPeers.bannedUntil", {
+                      time: new Date(Date.now() + entry.seconds * 1000).toLocaleString()
+                    })
+                  }}</q-item-label>
+                </q-item-label>
+              </q-item>
+            </template>
+          </q-list>
+        </div>
+
+        <div v-if="page === 'language'">
+          <LanguageSelect />
+        </div>
+      </q-page-container>
     </q-layout>
   </q-dialog>
 </template>
