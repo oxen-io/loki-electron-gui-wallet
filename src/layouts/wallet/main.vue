@@ -105,7 +105,6 @@ export default {
   .large-btn {
     min-width: 160px;
     .q-btn-inner > *:last-child {
-      text-decoration: none;
       margin-left: auto;
       padding-left: 16px;
     }

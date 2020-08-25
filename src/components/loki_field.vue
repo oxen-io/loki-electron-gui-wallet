@@ -88,6 +88,7 @@ export default {
     .q-select,
     .q-datetime-input {
       flex: 1;
+      margin: 0;
     }
 
     .q-btn {

@@ -5,10 +5,12 @@
       <LokiField :label="$t('fieldLabels.name')" :disable="disableName" :error="$v.record.name.$error">
         <q-input
           v-model.trim="record.name"
+          v-model="text"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsName')"
-          hide-underline
           :disable="disableName"
+          borderless
+          dense
           @blur="$v.record.name.$touch"
         />
       </LokiField>
@@ -21,7 +23,8 @@
           v-model.trim="record.value"
           :dark="theme == 'dark'"
           :placeholder="value_placeholder"
-          hide-underline
+          borderless
+          dense
           @blur="$v.record.value.$touch"
         />
       </LokiField>
@@ -34,7 +37,8 @@
           v-model.trim="record.owner"
           :dark="theme == 'dark'"
           :placeholder="owner_placeholder"
-          hide-underline
+          borderless
+          dense
           @blur="$v.record.owner.$touch"
         />
       </LokiField>
@@ -47,7 +51,8 @@
           v-model.trim="record.backup_owner"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsBackupOwner')"
-          hide-underline
+          borderless
+          dense
           @blur="$v.record.backup_owner.$touch"
         />
       </LokiField>

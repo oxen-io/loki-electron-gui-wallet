@@ -18,7 +18,8 @@
                 min="0"
                 :max="unlocked_balance / 1e9"
                 placeholder="0"
-                hide-underline
+                borderless
+                dense
                 @blur="$v.newTx.amount.$touch"
               />
               <q-btn
@@ -34,7 +35,7 @@
           <!-- Priority -->
           <div class="col-6">
             <LokiField :label="$t('fieldLabels.priority')">
-              <q-select v-model="newTx.priority" :dark="theme == 'dark'" :options="priorityOptions" hide-underline />
+              <q-select v-model="newTx.priority" :dark="theme == 'dark'" :options="priorityOptions" borderless dense />
             </LokiField>
           </div>
         </div>
@@ -46,7 +47,8 @@
               v-model.trim="newTx.address"
               :dark="theme == 'dark'"
               :placeholder="address_placeholder"
-              hide-underline
+              borderless
+              dense
               @blur="$v.newTx.address.$touch"
             />
             <q-btn color="secondary" :text-color="theme == 'dark' ? 'white' : 'dark'" to="addressbook">
@@ -66,7 +68,8 @@
                   count: '16 or 64'
                 })
               "
-              hide-underline
+              borderless
+              dense
               @blur="$v.newTx.payment_id.$touch"
             />
           </LokiField>
@@ -77,10 +80,12 @@
           <LokiField :label="$t('fieldLabels.notes')" optional>
             <q-input
               v-model="newTx.note"
+              class="full-width"
               type="textarea"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.transactionNotes')"
-              hide-underline
+              borderless
+              dense
             />
           </LokiField>
         </div>
