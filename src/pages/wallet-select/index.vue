@@ -6,11 +6,14 @@
           <div class="header-title">
             {{ $t("titles.yourWallets") }}
           </div>
+          <!-- fix the drop down here -->
           <q-btn v-if="wallets.list.length" class="add" icon="add" size="md" color="primary">
             <q-menu class="header-popover">
               <q-list separator link>
                 <q-item v-for="action in actions" :key="action.name" @click.native="action.handler">
-                  <q-item-label :label="action.name" />
+                  <q-item-label>
+                    {{ action.name }}
+                  </q-item-label>
                 </q-item>
               </q-list>
             </q-menu>
@@ -154,6 +157,7 @@ export default {
   methods: {
     openWallet(wallet) {
       if (wallet.password_protected !== false) {
+        // TODO: Password box into one component, it's duplicated
         this.$q
           .dialog({
             title: this.$t("dialog.password.title"),
@@ -169,7 +173,9 @@ export default {
               flat: true,
               label: this.$t("dialog.buttons.cancel"),
               color: this.theme == "dark" ? "white" : "dark"
-            }
+            },
+            dark: this.theme == "dark",
+            color: "positive"
           })
           .onOk(password => {
             this.$q.loading.show({

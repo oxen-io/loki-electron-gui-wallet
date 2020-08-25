@@ -1,21 +1,21 @@
 <template>
   <q-layout view="hHh Lpr lFf">
-    <q-header class="shift-title">
-      <template v-if="show_menu">
-        <MainMenu :disable-switch-wallet="true" />
-      </template>
-      <template v-else>
-        <q-btn class="cancel" icon="reply" flat round dense @click="cancel()" />
-      </template>
+    <q-header class="shift-title q-header">
+      <q-toolbar>
+        <template v-if="show_menu">
+          <MainMenu :disable-switch-wallet="true" />
+        </template>
+        <template v-else>
+          <q-btn class="cancel" icon="reply" flat round dense @click="cancel()" />
+        </template>
 
-      <q-toolbar-title v-if="page_title == 'Loki'">
-        <div class="flex items-center justify-center" style="margin-top:7px">
-          <img src="loki.svg" height="32" />
-        </div>
-      </q-toolbar-title>
-      <q-toolbar-title v-else>
-        {{ page_title }}
-      </q-toolbar-title>
+        <q-toolbar-title v-if="page_title == 'Loki'">
+          <div class="flex items-center justify-center" style="margin-top:7px">
+            <img src="loki.svg" height="32" />
+          </div>
+        </q-toolbar-title>
+        <q-toolbar-title v-else>{{ page_title }}</q-toolbar-title>
+      </q-toolbar>
     </q-header>
 
     <q-page-container>
@@ -79,4 +79,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+/* .shift-title {
+  text-align: center;
+} */
+</style>

@@ -524,7 +524,9 @@ export default {
               flat: true,
               label: this.$t("dialog.buttons.cancel"),
               color: this.theme == "dark" ? "white" : "dark"
-            }
+            },
+            dark: this.theme == "dark",
+            color: "positive"
           });
         })
         .then(password => {

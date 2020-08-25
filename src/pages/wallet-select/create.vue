@@ -137,6 +137,7 @@ export default {
       // Warn user if no password is set
       let passwordPromise = Promise.resolve();
       if (!this.wallet.password) {
+        // TODO: Password box de-duplicate
         passwordPromise = this.$q.dialog({
           title: this.$t("dialog.noPassword.title"),
           message: this.$t("dialog.noPassword.message"),
@@ -147,7 +148,9 @@ export default {
             flat: true,
             label: this.$t("dialog.buttons.cancel"),
             color: this.theme === "dark" ? "white" : "dark"
-          }
+          },
+          dark: this.theme == "dark",
+          color: "positive"
         });
       }
 
