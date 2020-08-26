@@ -1,15 +1,16 @@
 <template>
   <q-dialog v-model="isVisible" maximized>
     <q-layout container>
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="isVisible = false" />
-        <q-toolbar-title>
-          {{ $t("titles.transactionDetails") }}
-        </q-toolbar-title>
-        <q-btn flat class="q-mr-sm" :label="$t('buttons.showTxDetails')" @click="showTxDetails" />
-        <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
-      </q-toolbar>
-
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="isVisible = false" />
+          <q-toolbar-title>
+            {{ $t("titles.transactionDetails") }}
+          </q-toolbar-title>
+          <q-btn flat class="q-mr-sm" :label="$t('buttons.showTxDetails')" @click="showTxDetails" />
+          <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
+        </q-toolbar>
+      </q-header>
       <div class="layout-padding">
         <div class="row items-center non-selectable">
           <div class="q-mr-sm">
@@ -118,13 +119,13 @@
 
         <div v-if="tx.type == 'in' || tx.type == 'pool'">
           <q-list no-border>
-            <q-list-header class="q-px-none">
+            <q-list-item header class="q-px-none">
               {{
                 $t("strings.transactions.sentTo", {
                   type: $t("strings.transactions.types.incoming")
                 })
               }}:
-            </q-list-header>
+            </q-list-item>
             <q-item class="q-px-none">
               <q-item-label>
                 <q-item-label header class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-label>
@@ -144,13 +145,13 @@
 
         <div v-else-if="tx.type == 'out' || tx.type == 'pending'">
           <q-list no-border>
-            <q-list-header class="q-px-none">
+            <q-list-item header class="q-px-none">
               {{
                 $t("strings.transactions.sentTo", {
                   type: $t("strings.transactions.types.outgoing")
                 })
               }}:
-            </q-list-header>
+            </q-list-item>
             <template v-if="out_destinations">
               <q-item v-for="destination in out_destinations" :key="destination.address" class="q-px-none">
                 <q-item-label>
@@ -177,24 +178,24 @@
           </q-list>
         </div>
 
-        <q-field class="q-mt-md">
-          <q-input
-            v-model="txNotes"
-            :float-label="$t('fieldLabels.transactionNotes')"
-            :dark="theme == 'dark'"
-            type="textarea"
-            rows="2"
-          />
-        </q-field>
+        <q-input
+          v-model="txNotes"
+          :label="$t('fieldLabels.transactionNotes')"
+          :dark="theme == 'dark'"
+          :text-color="theme == 'dark' ? 'white' : 'dark'"
+          type="textarea"
+          rows="2"
+          borderless
+          dense
+        />
 
-        <q-field class="q-mt-sm">
-          <q-btn
-            :disable="!is_ready"
-            :text-color="theme == 'dark' ? 'white' : 'dark'"
-            :label="$t('buttons.saveTxNotes')"
-            @click="saveTxNotes"
-          />
-        </q-field>
+        <q-btn
+          :disable="!is_ready"
+          :text-color="theme == 'dark' ? 'white' : 'dark'"
+          :label="$t('buttons.saveTxNotes')"
+          color="primary"
+          @click="saveTxNotes"
+        />
       </div>
     </q-layout>
   </q-dialog>
@@ -297,10 +298,12 @@ export default {
           ok: {
             label: this.$t("dialog.transactionDetails.ok"),
             color: "primary"
-          }
+          },
+          dark: this.theme == "dark"
         })
-        .then(() => {})
-        .catch(() => {});
+        .onOk(() => {})
+        .onCancel(() => {})
+        .onDismiss(() => {});
     },
     openExplorer() {
       this.$gateway.send("core", "open_explorer", {

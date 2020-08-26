@@ -8,7 +8,8 @@
             v-model.trim="txid"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.pasteTransactionId')"
-            hide-underline
+            borderless
+            dense
             @blur="$v.txid.$touch"
           />
         </LokiField>
@@ -17,7 +18,8 @@
             v-model.trim="address"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.recipientWalletAddress')"
-            hide-underline
+            borderless
+            dense
             @blur="$v.address.$touch"
           />
         </LokiField>
@@ -26,7 +28,8 @@
             v-model.trim="message"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.proveOptionalMessage')"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="q-mt-md" :label="$t('fieldLabels.signature')" :error="$v.signature.$error">
@@ -34,13 +37,14 @@
             v-model.trim="signature"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.pasteTransactionProof')"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
-        <q-field class="buttons q-pt-sm">
+        <div class="buttons">
           <q-btn color="primary" :label="$t('buttons.check')" @click="check" />
           <q-btn v-if="canClear" color="secondary" :label="$t('buttons.clear')" @click="clear" />
-        </q-field>
+        </div>
       </div>
       <div v-if="status.state.txid">
         <div class="q-mb-sm">
@@ -193,6 +197,8 @@ export default {
     white-space: pre-line;
   }
   .buttons {
+    margin-top: 6px;
+
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }

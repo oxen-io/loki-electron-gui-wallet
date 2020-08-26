@@ -1,7 +1,7 @@
 <template>
   <q-page class="receive">
     <q-list link no-border :dark="theme == 'dark'" class="loki-list">
-      <q-list-header>{{ $t("strings.addresses.myPrimaryAddress") }}</q-list-header>
+      <q-item-label header>{{ $t("strings.addresses.myPrimaryAddress") }}</q-item-label>
       <ReceiveItem
         v-for="address in address_list.primary"
         :key="address.address"
@@ -15,7 +15,7 @@
       />
 
       <template v-if="address_list.used.length">
-        <q-list-header>{{ $t("strings.addresses.myUsedAddresses") }}</q-list-header>
+        <q-item-label header>{{ $t("strings.addresses.myUsedAddresses") }}</q-item-label>
         <ReceiveItem
           v-for="address in address_list.used"
           :key="address.address"
@@ -32,7 +32,7 @@
       </template>
 
       <template v-if="address_list.unused.length">
-        <q-list-header>{{ $t("strings.addresses.myUnusedAddresses") }}</q-list-header>
+        <q-item-label header>{{ $t("strings.addresses.myUnusedAddresses") }}</q-item-label>
         <ReceiveItem
           v-for="address in address_list.unused"
           :key="address.address"
@@ -162,7 +162,7 @@ export default {
   }
 
   .q-item-sublabel,
-  .q-list-header {
+  .q-list-item {
     font-size: 13px;
   }
 

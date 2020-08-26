@@ -16,7 +16,8 @@
           :dark="theme == 'dark'"
           placeholder="register_service_node ..."
           :disabled="registration_status.sending"
-          hide-underline
+          borderless
+          dense
           @blur="$v.registration_string.$touch"
           @paste="onPaste"
         />

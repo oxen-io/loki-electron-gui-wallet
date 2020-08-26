@@ -10,7 +10,8 @@
             v-model.trim="txid"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.pasteTransactionId')"
-            hide-underline
+            borderless
+            dense
             @blur="$v.txid.$touch"
           />
         </LokiField>
@@ -19,7 +20,8 @@
             v-model.trim="address"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.recipientWalletAddress')"
-            hide-underline
+            borderless
+            dense
             @blur="$v.address.$touch"
           />
         </LokiField>
@@ -28,7 +30,8 @@
             v-model.trim="message"
             :dark="theme == 'dark'"
             :placeholder="$t('placeholders.proveOptionalMessage')"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <q-field class="buttons q-pt-sm">

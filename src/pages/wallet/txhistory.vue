@@ -10,12 +10,13 @@
           v-model="tx_filter"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.filterTx')"
-          hide-underline
+          borderless
+          dense
         />
       </LokiField>
 
       <LokiField class="col-2" :label="$t('fieldLabels.filterTransactionType')">
-        <q-select v-model="tx_type" :dark="theme == 'dark'" :options="tx_type_options" hide-underline />
+        <q-select v-model="tx_type" :dark="theme == 'dark'" :options="tx_type_options" borderless dense />
       </LokiField>
     </div>
     <TxList :type="tx_type" :filter="tx_filter" />
