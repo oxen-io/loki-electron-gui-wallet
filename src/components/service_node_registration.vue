@@ -14,6 +14,7 @@
           v-model.trim="registration_string"
           type="textarea"
           :dark="theme == 'dark'"
+          class="full-width text-area-loki"
           placeholder="register_service_node ..."
           :disabled="registration_status.sending"
           borderless
@@ -22,14 +23,13 @@
           @paste="onPaste"
         />
       </LokiField>
-      <q-field class="q-pt-sm">
-        <q-btn
-          color="primary"
-          :label="$t('buttons.registerServiceNode')"
-          :disabled="registration_status.sending"
-          @click="register()"
-        />
-      </q-field>
+      <q-btn
+        class="register-button"
+        color="primary"
+        :label="$t('buttons.registerServiceNode')"
+        :disabled="registration_status.sending"
+        @click="register()"
+      />
     </div>
 
     <q-inner-loading :visible="registration_status.sending" :dark="theme == 'dark'">
@@ -133,4 +133,12 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.text-area-loki {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.register {
+  margin-top: 6px;
+}
+</style>
