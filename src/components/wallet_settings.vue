@@ -33,6 +33,7 @@
     </q-btn>
 
     <!-- Modals -->
+    <!-- PRIVATE KEY MODAL -->
     <q-dialog v-model="modals.private_keys.visible" minimized class="private-key-modal" @hide="closePrivateKeys()">
       <div class="modal-header">{{ $t("titles.privateKeys") }}</div>
       <div class="q-ma-lg">
@@ -113,6 +114,7 @@
       </div>
     </q-dialog>
 
+    <!-- RESCAN MODAL -->
     <q-dialog v-model="modals.rescan.visible" minimized>
       <div class="modal-header">{{ $t("titles.rescanWallet") }}</div>
       <div class="q-ma-lg">
@@ -132,6 +134,7 @@
       </div>
     </q-dialog>
 
+    <!-- KEY IMAGE MODAL -->
     <q-dialog v-model="modals.key_image.visible" class="key-image-modal" minimized>
       <div class="modal-header">
         <!-- Export/Import key images -->
@@ -187,26 +190,24 @@
       </div>
     </q-dialog>
 
-    <q-dialog v-model="modals.change_password.visible" minimized @hide="clearChangePassword()">
+    <!-- CHANGE PASSWORD MODAL -->
+    <q-dialog v-model="modals.change_password.visible" class="modal" minimized @hide="clearChangePassword()">
       <div class="modal-header">{{ $t("titles.changePassword") }}</div>
       <div class="q-ma-lg">
-        <q-field>
-          <q-input
-            v-model="modals.change_password.old_password"
-            type="password"
-            :float-label="$t('fieldLabels.oldPassword')"
-            :dark="theme == 'dark'"
-          />
-        </q-field>
-
-        <q-field>
-          <q-input
-            v-model="modals.change_password.new_password"
-            type="password"
-            :float-label="$t('fieldLabels.newPassword')"
-            :dark="theme == 'dark'"
-          />
-        </q-field>
+        <q-input
+          v-model="modals.change_password.old_password"
+          type="password"
+          :float-label="$t('fieldLabels.oldPassword')"
+          :dark="theme == 'dark'"
+          dense
+        />
+        <q-input
+          v-model="modals.change_password.new_password"
+          type="password"
+          :float-label="$t('fieldLabels.newPassword')"
+          :dark="theme == 'dark'"
+          dense
+        />
 
         <q-field>
           <q-input

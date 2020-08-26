@@ -57,8 +57,7 @@
         />
       </LokiField>
     </div>
-
-    <q-field class="buttons q-pt-sm">
+    <div class="buttons">
       <q-btn
         :disable="!is_able_to_send || disableSubmitButton"
         color="primary"
@@ -66,7 +65,7 @@
         @click="submit()"
       />
       <q-btn v-if="showClearButton" color="secondary" :label="$t('buttons.clear')" @click="clear()" />
-    </q-field>
+    </div>
   </div>
 </template>
 
@@ -269,6 +268,8 @@ export default {
 <style lang="scss">
 .lns-input-form {
   .buttons {
+    margin-top: 6px;
+
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }

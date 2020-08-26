@@ -80,7 +80,7 @@
           <LokiField :label="$t('fieldLabels.notes')" optional>
             <q-input
               v-model="newTx.note"
-              class="full-width"
+              class="full-width text-area-loki"
               type="textarea"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.transactionNotes')"
@@ -90,37 +90,36 @@
           </LokiField>
         </div>
 
-        <!-- Save to address book -->
-        <q-field>
-          <q-checkbox
-            v-model="newTx.address_book.save"
-            :label="$t('strings.saveToAddressBook')"
-            :dark="theme == 'dark'"
-          />
-        </q-field>
-
+        <q-checkbox
+          v-model="newTx.address_book.save"
+          :label="$t('strings.saveToAddressBook')"
+          :dark="theme == 'dark'"
+        />
         <div v-if="newTx.address_book.save">
           <LokiField :label="$t('fieldLabels.name')" optional>
             <q-input
               v-model="newTx.address_book.name"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.addressBookName')"
-              hide-underline
+              borderless
+              dense
             />
           </LokiField>
           <LokiField class="q-mt-sm" :label="$t('fieldLabels.notes')" optional>
             <q-input
               v-model="newTx.address_book.description"
               type="textarea"
+              class="full-width text-area-loki"
               rows="2"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.additionalNotes')"
-              hide-underline
+              borderless
+              dense
             />
           </LokiField>
         </div>
-
-        <q-field class="q-pt-sm">
+        <!-- div required so button below checkbox -->
+        <div>
           <q-btn
             class="send-btn"
             :disable="!is_able_to_send"
@@ -128,7 +127,7 @@
             :label="$t('buttons.send')"
             @click="send()"
           />
-        </q-field>
+        </div>
       </div>
 
       <q-inner-loading :visible="tx_status.sending" :dark="theme == 'dark'">
@@ -341,6 +340,7 @@ export default {
 <style lang="scss">
 .send {
   .send-btn {
+    margin-top: 6px;
     width: 200px;
   }
 }

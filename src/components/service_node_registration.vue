@@ -134,11 +134,7 @@ export default {
 </script>
 
 <style lang="scss">
-.text-area-loki {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-.register {
+.register-button {
   margin-top: 6px;
 }
 </style>

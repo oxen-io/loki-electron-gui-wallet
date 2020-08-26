@@ -34,11 +34,11 @@
             dense
           />
         </LokiField>
-        <q-field class="buttons q-pt-sm">
+        <div class="buttons">
           <q-btn color="primary" :label="$t('buttons.generate')" @click="generate" />
           <q-btn v-if="canClear" color="secondary" :label="$t('buttons.clear')" @click="clear" />
           <q-btn v-if="status.state.signature" color="secondary" :label="$t('buttons.copySignature')" @click="copy" />
-        </q-field>
+        </div>
       </div>
       <div v-if="status.state.signature">
         <div class="txid q-mb-sm">
@@ -164,6 +164,8 @@ export default {
     white-space: pre-line;
   }
   .buttons {
+    margin-top: 6px;
+
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }
