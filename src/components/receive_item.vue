@@ -1,10 +1,8 @@
 <template>
   <q-list class="loki-list-item" no-border @click.native="details(address)">
     <q-item>
-      <q-item-label>
-        <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
-        <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
-      </q-item-label>
+      <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
+      <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
       <q-item-section>
         <q-btn flat style="width:25px;" size="md" @click="showQR(address.address, $event)">
           <img :src="qrImage" height="20" />
@@ -22,18 +20,20 @@
     <template v-if="shouldShowInfo">
       <q-separator />
       <q-item class="info">
-        <q-item-label class="flex justify-between">
-          <div class="column">
-            <span>{{ $t("strings.lokiBalance") }}</span>
-            <span class="value">{{ address.balance | currency }}</span>
-          </div>
-          <div class="column">
-            <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
-            <span class="value">{{ address.unlocked_balance | currency }}</span>
-          </div>
-          <div class="column">
-            <span>{{ $t("strings.unspentOutputs") }}</span>
-            <span class="value">{{ address.num_unspent_outputs | toString }}</span>
+        <q-item-label class="flex">
+          <div class="column items-start">
+            <div class="col">
+              <span>{{ $t("strings.lokiBalance") }}</span>
+              <span class="value">{{ address.balance | currency }}</span>
+            </div>
+            <div class="col">
+              <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
+              <span class="value">{{ address.unlocked_balance | currency }}</span>
+            </div>
+            <div class="col">
+              <span>{{ $t("strings.unspentOutputs") }}</span>
+              <span class="value">{{ address.num_unspent_outputs | toString }}</span>
+            </div>
           </div>
         </q-item-label>
       </q-item>

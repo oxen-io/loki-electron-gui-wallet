@@ -20,8 +20,6 @@ export default {
 
       return this.hasPassword()
         .then(hasPassword => {
-          console.log("has password:", hasPassword);
-          // this is quasar "promise" (uses onOk)
           const sharedOpts = {
             cancel: {
               flat: true,

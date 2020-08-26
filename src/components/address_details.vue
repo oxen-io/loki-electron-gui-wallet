@@ -1,110 +1,112 @@
 <template>
   <q-dialog v-model="isVisible" maximized>
-    <q-layout container>
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="isVisible = false" />
-        <q-toolbar-title>
-          {{ $t("titles.addressDetails") }}
-        </q-toolbar-title>
-        <q-btn flat :label="$t('buttons.showQRCode')" @click="isQRCodeVisible = true" />
-        <q-btn class="q-ml-sm" color="primary" :label="$t('buttons.copyAddress')" @click="copyAddress()" />
-      </q-toolbar>
+    <q-layout>
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="isVisible = false" />
+          <q-toolbar-title>
+            {{ $t("titles.addressDetails") }}
+          </q-toolbar-title>
+          <q-btn flat :label="$t('buttons.showQRCode')" @click="isQRCodeVisible = true" />
+          <q-btn class="q-ml-sm" color="primary" :label="$t('buttons.copyAddress')" @click="copyAddress()" />
+        </q-toolbar>
+      </q-header>
+      <q-page-container>
+        <div class="layout-padding">
+          <template v-if="address != null">
+            <AddressHeader
+              :address="address.address"
+              :title="addressHeaderInfo.title"
+              :extra="addressHeaderInfo.extra"
+              :show-copy="false"
+            />
 
-      <div class="layout-padding">
-        <template v-if="address != null">
-          <AddressHeader
-            :address="address.address"
-            :title="addressHeaderInfo.title"
-            :extra="addressHeaderInfo.extra"
-            :show-copy="false"
-          />
-
-          <template v-if="address.used">
-            <div class="row justify-between" style="max-width: 768px">
-              <div class="infoBox">
-                <div class="infoBoxContent">
-                  <div class="text">
-                    <span>{{ $t("strings.lokiBalance") }}</span>
+            <template v-if="address.used">
+              <div class="row justify-between" style="max-width: 768px">
+                <div class="infoBox">
+                  <div class="infoBoxContent">
+                    <div class="text">
+                      <span>{{ $t("strings.lokiBalance") }}</span>
+                    </div>
+                    <div class="value">
+                      <span><FormatLoki :amount="address.balance"/></span>
+                    </div>
                   </div>
-                  <div class="value">
-                    <span><FormatLoki :amount="address.balance"/></span>
+                </div>
+
+                <div class="infoBox">
+                  <div class="infoBoxContent">
+                    <div class="text">
+                      <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
+                    </div>
+                    <div class="value">
+                      <span><FormatLoki :amount="address.unlocked_balance"/></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="infoBox">
+                  <div class="infoBoxContent">
+                    <div class="text">
+                      <span>{{ $t("strings.numberOfUnspentOutputs") }}</span>
+                    </div>
+                    <div class="value">
+                      <span>{{ address.num_unspent_outputs }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              <div class="infoBox">
-                <div class="infoBoxContent">
-                  <div class="text">
-                    <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
+            </template>
+            <template v-else>
+              <div class="row justify-between" style="max-width: 768px">
+                <div class="infoBox">
+                  <div class="infoBoxContent">
+                    <div class="text">
+                      <span>{{ $t("strings.lokiBalance") }}</span>
+                    </div>
+                    <div class="value"><span>N/A</span></div>
                   </div>
-                  <div class="value">
-                    <span><FormatLoki :amount="address.unlocked_balance"/></span>
+                </div>
+
+                <div class="infoBox">
+                  <div class="infoBoxContent">
+                    <div class="text">
+                      <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
+                    </div>
+                    <div class="value"><span>N/A</span></div>
+                  </div>
+                </div>
+
+                <div class="infoBox">
+                  <div class="infoBoxContent">
+                    <div class="text">
+                      <span>{{ $t("strings.numberOfUnspentOutputs") }}</span>
+                    </div>
+                    <div class="value"><span>N/A</span></div>
                   </div>
                 </div>
               </div>
+            </template>
 
-              <div class="infoBox">
-                <div class="infoBoxContent">
-                  <div class="text">
-                    <span>{{ $t("strings.numberOfUnspentOutputs") }}</span>
-                  </div>
-                  <div class="value">
-                    <span>{{ address.num_unspent_outputs }}</span>
-                  </div>
-                </div>
+            <div class="q-mt-sm">
+              <div class="non-selectable">
+                <q-icon name="history" size="24px" />
+                <span class="vertical-middle q-ml-xs">{{ $t("strings.recentIncomingTransactionsToAddress") }}</span>
+              </div>
+
+              <div style="margin: 0 -16px;">
+                <TxList
+                  :key="address.address"
+                  type="all_in"
+                  :limit="5"
+                  :to-incoming-address-index="address.address_index"
+                />
               </div>
             </div>
           </template>
-          <template v-else>
-            <div class="row justify-between" style="max-width: 768px">
-              <div class="infoBox">
-                <div class="infoBoxContent">
-                  <div class="text">
-                    <span>{{ $t("strings.lokiBalance") }}</span>
-                  </div>
-                  <div class="value"><span>N/A</span></div>
-                </div>
-              </div>
-
-              <div class="infoBox">
-                <div class="infoBoxContent">
-                  <div class="text">
-                    <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
-                  </div>
-                  <div class="value"><span>N/A</span></div>
-                </div>
-              </div>
-
-              <div class="infoBox">
-                <div class="infoBoxContent">
-                  <div class="text">
-                    <span>{{ $t("strings.numberOfUnspentOutputs") }}</span>
-                  </div>
-                  <div class="value"><span>N/A</span></div>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <div class="q-mt-sm">
-            <div class="non-selectable">
-              <q-icon name="history" size="24px" />
-              <span class="vertical-middle q-ml-xs">{{ $t("strings.recentIncomingTransactionsToAddress") }}</span>
-            </div>
-
-            <div style="margin: 0 -16px;">
-              <TxList
-                :key="address.address"
-                type="all_in"
-                :limit="5"
-                :to-incoming-address-index="address.address_index"
-              />
-            </div>
-          </div>
-        </template>
-      </div>
+        </div>
+      </q-page-container>
     </q-layout>
-
     <template v-if="address != null">
       <q-dialog v-model="isQRCodeVisible" minimized :content-css="{ padding: '25px' }">
         <div class="text-center q-mb-sm q-pa-md" style="background: white;">

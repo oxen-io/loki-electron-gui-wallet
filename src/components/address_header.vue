@@ -1,11 +1,11 @@
 <template>
-  <q-item class="address-header">
-    <q-item-label class="self-start">
-      <q-item-label caption class="title non-selectable">{{ title }}</q-item-label>
+  <div>
+    <q-item-section class="self-start">
+      <q-item-label header="" class="title non-selectable">{{ title }}</q-item-label>
       <q-item-label class="break-all" header>{{ address }}</q-item-label>
-      <q-item-label v-if="paymentId" caption>{{ $t("fieldLabels.paymentId") }}: {{ paymentId }}</q-item-label>
-      <q-item-label v-if="extra" caption class="extra non-selectable">{{ extra }}</q-item-label>
-    </q-item-label>
+      <q-item-label v-if="paymentId" header>{{ $t("fieldLabels.paymentId") }}: {{ paymentId }}</q-item-label>
+      <q-item-label v-if="extra" header class="extra non-selectable">{{ extra }}</q-item-label>
+    </q-item-section>
     <q-item-section v-if="showCopy">
       <q-btn ref="copy" color="primary" style="width:25px;" size="sm" icon="file_copy" @click="copyAddress">
         <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
@@ -21,7 +21,7 @@
         </q-item>
       </q-list>
     </q-menu>
-  </q-item>
+  </div>
 </template>
 
 <script>
@@ -95,6 +95,17 @@ export default {
 </script>
 
 <style lang="scss">
+.title {
+  font-size: 16px;
+  margin-bottom: 2px;
+  color: white;
+}
+
+.extra {
+  margin-top: 8px;
+  color: white;
+}
+
 .address-header {
   padding: 0;
   img {
@@ -107,6 +118,7 @@ export default {
   p {
     word-break: break-all;
   }
+
   &::after {
     content: "";
     clear: both;
@@ -116,20 +128,6 @@ export default {
   .q-item-label {
     .q-item-label {
       font-weight: 400;
-    }
-
-    .q-item-sublabel,
-    .q-list-header {
-      font-size: 13px;
-    }
-
-    .title {
-      font-size: 14px;
-      margin-bottom: 2px;
-    }
-
-    .extra {
-      margin-top: 8px;
     }
   }
 }

@@ -3,30 +3,20 @@
     <q-btn icon-right="more_vert" :label="$t('buttons.settings')" size="md" flat>
       <q-menu anchor="bottom right" self="top right">
         <q-list separator link>
-          <q-item v-close-popup :disabled="!is_ready" @click.native="getPrivateKeys()">
-            <q-item-label>
-              <q-item-label header>{{ $t("menuItems.showPrivateKeys") }}</q-item-label>
-            </q-item-label>
+          <q-item v-close-popup clickable :disabled="!is_ready" @click.native="getPrivateKeys()">
+            <q-item-label header>{{ $t("menuItems.showPrivateKeys") }}</q-item-label>
           </q-item>
-          <q-item v-close-popup :disabled="!is_ready" @click.native="showModal('change_password')">
-            <q-item-label>
-              <q-item-label header>{{ $t("menuItems.changePassword") }}</q-item-label>
-            </q-item-label>
+          <q-item v-close-popup clickable :disabled="!is_ready" @click.native="showModal('change_password')">
+            <q-item-label header>{{ $t("menuItems.changePassword") }}</q-item-label>
           </q-item>
-          <q-item v-close-popup :disabled="!is_ready" @click.native="showModal('rescan')">
-            <q-item-label>
-              <q-item-label header>{{ $t("menuItems.rescanWallet") }}</q-item-label>
-            </q-item-label>
+          <q-item v-close-popup clickable :disabled="!is_ready" @click.native="showModal('rescan')">
+            <q-item-label header>{{ $t("menuItems.rescanWallet") }}</q-item-label>
           </q-item>
-          <q-item v-close-popup :disabled="!is_ready" @click.native="showModal('key_image')">
-            <q-item-label>
-              <q-item-label header>{{ $t("menuItems.manageKeyImages") }}</q-item-label>
-            </q-item-label>
+          <q-item v-close-popup clickable :disabled="!is_ready" @click.native="showModal('key_image')">
+            <q-item-label header>{{ $t("menuItems.manageKeyImages") }}</q-item-label>
           </q-item>
-          <q-item v-close-popup :disabled="!is_ready" @click.native="deleteWallet()">
-            <q-item-label>
-              <q-item-label header>{{ $t("menuItems.deleteWallet") }}</q-item-label>
-            </q-item-label>
+          <q-item v-close-popup clickable :disabled="!is_ready" @click.native="deleteWallet()">
+            <q-item-label header>{{ $t("menuItems.deleteWallet") }}</q-item-label>
           </q-item>
         </q-list>
       </q-menu>

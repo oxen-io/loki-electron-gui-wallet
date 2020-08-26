@@ -22,42 +22,28 @@
       </div>
       <div class="wallet-address row justify-center items-center">
         <div class="address">{{ info.address }}</div>
-        <q-btn ref="copy" color="primary" style="width:25px;" size="sm" icon="file_copy" @click="copyAddress">
-          <q-tooltip anchor="center right" self="center left" :offset="[5, 10]">
-            {{ $t("menuItems.copyAddress") }}
-          </q-tooltip>
-        </q-btn>
+        <CopyIcon :content="info.address" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-const { clipboard } = require("electron");
 import { mapState } from "vuex";
 import FormatLoki from "components/format_loki";
 import WalletSettings from "components/wallet_settings";
+import CopyIcon from "components/icons/copy_icon";
 export default {
   name: "WalletDetails",
   components: {
     FormatLoki,
-    WalletSettings
+    WalletSettings,
+    CopyIcon
   },
   computed: mapState({
     theme: state => state.gateway.app.config.appearance.theme,
     info: state => state.gateway.wallet.info
-  }),
-  methods: {
-    copyAddress() {
-      this.$refs.copy.$el.blur();
-      clipboard.writeText(this.info.address);
-      this.$q.notify({
-        type: "positive",
-        timeout: 1000,
-        message: this.$t("notification.positive.addressCopied")
-      });
-    }
-  }
+  })
 };
 </script>
 
