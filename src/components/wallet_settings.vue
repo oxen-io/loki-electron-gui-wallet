@@ -35,81 +35,83 @@
     <!-- Modals -->
     <!-- PRIVATE KEY MODAL -->
     <q-dialog v-model="modals.private_keys.visible" minimized class="private-key-modal" @hide="closePrivateKeys()">
-      <div class="modal-header">{{ $t("titles.privateKeys") }}</div>
-      <div class="q-ma-lg">
-        <template v-if="secret.mnemonic">
-          <h6 class="q-mb-xs q-mt-lg">
-            {{ $t("strings.seedWords") }}
-          </h6>
-          <div class="row">
-            <div class="col">
-              {{ secret.mnemonic }}
+      <div class="modal">
+        <div class="modal-header">{{ $t("titles.privateKeys") }}</div>
+        <div class="q-ma-lg">
+          <template v-if="secret.mnemonic">
+            <h6 class="q-mb-xs q-mt-lg">
+              {{ $t("strings.seedWords") }}
+            </h6>
+            <div class="row">
+              <div class="col">
+                {{ secret.mnemonic }}
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  class="copy-btn"
+                  color="primary"
+                  style="width:25px;"
+                  size="sm"
+                  icon="file_copy"
+                  @click="copyPrivateKey('mnemonic', $event)"
+                >
+                  <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
+                    {{ $t("menuItems.copySeedWords") }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
             </div>
-            <div class="col-auto">
-              <q-btn
-                class="copy-btn"
-                color="primary"
-                style="width:25px;"
-                size="sm"
-                icon="file_copy"
-                @click="copyPrivateKey('mnemonic', $event)"
-              >
-                <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
-                  {{ $t("menuItems.copySeedWords") }}
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </div>
-        </template>
+          </template>
 
-        <template v-if="secret.view_key != secret.spend_key">
-          <h6 class="q-mb-xs">{{ $t("strings.viewKey") }}</h6>
-          <div class="row">
-            <div class="col" style="word-break:break-all;">
-              {{ secret.view_key }}
+          <template v-if="secret.view_key != secret.spend_key">
+            <h6 class="q-mb-xs">{{ $t("strings.viewKey") }}</h6>
+            <div class="row">
+              <div class="col" style="word-break:break-all;">
+                {{ secret.view_key }}
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  class="copy-btn"
+                  color="primary"
+                  style="width:25px;"
+                  size="sm"
+                  icon="file_copy"
+                  @click="copyPrivateKey('view_key', $event)"
+                >
+                  <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
+                    {{ $t("menuItems.copyViewKey") }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
             </div>
-            <div class="col-auto">
-              <q-btn
-                class="copy-btn"
-                color="primary"
-                style="width:25px;"
-                size="sm"
-                icon="file_copy"
-                @click="copyPrivateKey('view_key', $event)"
-              >
-                <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
-                  {{ $t("menuItems.copyViewKey") }}
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </div>
-        </template>
+          </template>
 
-        <template v-if="!/^0*$/.test(secret.spend_key)">
-          <h6 class="q-mb-xs">{{ $t("strings.spendKey") }}</h6>
-          <div class="row">
-            <div class="col" style="word-break:break-all;">
-              {{ secret.spend_key }}
+          <template v-if="!/^0*$/.test(secret.spend_key)">
+            <h6 class="q-mb-xs">{{ $t("strings.spendKey") }}</h6>
+            <div class="row">
+              <div class="col" style="word-break:break-all;">
+                {{ secret.spend_key }}
+              </div>
+              <div class="col-auto">
+                <q-btn
+                  class="copy-btn"
+                  color="primary"
+                  style="width:25px;"
+                  size="sm"
+                  icon="file_copy"
+                  @click="copyPrivateKey('spend_key', $event)"
+                >
+                  <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
+                    {{ $t("menuItems.copySpendKey") }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
             </div>
-            <div class="col-auto">
-              <q-btn
-                class="copy-btn"
-                color="primary"
-                style="width:25px;"
-                size="sm"
-                icon="file_copy"
-                @click="copyPrivateKey('spend_key', $event)"
-              >
-                <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
-                  {{ $t("menuItems.copySpendKey") }}
-                </q-tooltip>
-              </q-btn>
-            </div>
-          </div>
-        </template>
+          </template>
 
-        <div class="q-mt-lg">
-          <q-btn color="primary" :label="$t('buttons.close')" @click="hideModal('private_keys')" />
+          <div class="q-mt-lg">
+            <q-btn color="primary" :label="$t('buttons.close')" @click="hideModal('private_keys')" />
+          </div>
         </div>
       </div>
     </q-dialog>
@@ -376,21 +378,27 @@ export default {
           });
         });
     },
-    getPrivateKeys() {
+    async getPrivateKeys() {
       if (!this.is_ready) return;
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.showPrivateKeys.title"),
         noPasswordMessage: this.$t("dialog.showPrivateKeys.message"),
         ok: {
-          label: this.$t("dialog.showPrivateKeys.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.showPrivateKeys.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          password = password || "";
           this.$gateway.send("wallet", "get_private_keys", {
             password
           });
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     closePrivateKeys() {
       this.hideModal("private_keys");
@@ -513,12 +521,13 @@ export default {
             flat: true,
             label: this.$t("dialog.buttons.cancel"),
             color: this.theme == "dark" ? "white" : "dark"
-          }
+          },
+          dark: this.theme == "dark"
         })
-        .then(() => {
+        .onOk(() => {
           return this.hasPassword();
         })
-        .then(hasPassword => {
+        .onOk(hasPassword => {
           if (!hasPassword) return "";
           return this.$q.dialog({
             title: this.$t("dialog.deleteWallet.title"),
@@ -540,10 +549,11 @@ export default {
             color: "positive"
           });
         })
-        .then(password => {
+        .onOk(password => {
           this.$gateway.send("wallet", "delete_wallet", { password });
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     }
   }
 };

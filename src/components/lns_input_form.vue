@@ -5,7 +5,6 @@
       <LokiField :label="$t('fieldLabels.name')" :disable="disableName" :error="$v.record.name.$error">
         <q-input
           v-model.trim="record.name"
-          v-model="text"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsName')"
           :disable="disableName"
