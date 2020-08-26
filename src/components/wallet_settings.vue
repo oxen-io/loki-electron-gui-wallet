@@ -116,111 +116,119 @@
 
     <!-- RESCAN MODAL -->
     <q-dialog v-model="modals.rescan.visible" minimized>
-      <div class="modal-header">{{ $t("titles.rescanWallet") }}</div>
-      <div class="q-ma-lg">
-        <p>{{ $t("strings.rescanModalDescription") }}</p>
+      <div class="modal">
+        <div class="modal-header">{{ $t("titles.rescanWallet") }}</div>
+        <div class="q-ma-lg">
+          <p>{{ $t("strings.rescanModalDescription") }}</p>
 
-        <div class="q-mt-lg">
-          <q-radio v-model="modals.rescan.type" val="full" :label="$t('fieldLabels.rescanFullBlockchain')" />
-        </div>
-        <div class="q-mt-sm">
-          <q-radio v-model="modals.rescan.type" val="spent" :label="$t('fieldLabels.rescanSpentOutputs')" />
-        </div>
+          <div class="q-mt-lg">
+            <q-radio v-model="modals.rescan.type" val="full" :label="$t('fieldLabels.rescanFullBlockchain')" />
+          </div>
+          <div class="q-mt-sm">
+            <q-radio v-model="modals.rescan.type" val="spent" :label="$t('fieldLabels.rescanSpentOutputs')" />
+          </div>
 
-        <div class="q-mt-xl text-right">
-          <q-btn flat class="q-mr-sm" :label="$t('buttons.close')" @click="hideModal('rescan')" />
-          <q-btn color="primary" :label="$t('buttons.rescan')" @click="rescanWallet()" />
+          <div class="q-mt-xl text-right">
+            <q-btn flat class="q-mr-sm" :label="$t('buttons.close')" @click="hideModal('rescan')" />
+            <q-btn color="primary" :label="$t('buttons.rescan')" @click="rescanWallet()" />
+          </div>
         </div>
       </div>
     </q-dialog>
 
     <!-- KEY IMAGE MODAL -->
     <q-dialog v-model="modals.key_image.visible" class="key-image-modal" minimized>
-      <div class="modal-header">
-        <!-- Export/Import key images -->
-        {{
-          $t("dialog.keyImages.title", {
-            type: $t(`dialog.keyImages.${modals.key_image.type.toLowerCase()}`)
-          })
-        }}
-      </div>
-      <div class="q-ma-lg">
-        <div class="row q-mb-md">
-          <div class="q-mr-xl">
-            <q-radio v-model="modals.key_image.type" val="Export" :label="$t('dialog.keyImages.export')" />
-          </div>
-          <div>
-            <q-radio v-model="modals.key_image.type" val="Import" :label="$t('dialog.keyImages.import')" />
-          </div>
+      <div class="modal key-image-modal">
+        <div class="modal-header">
+          <!-- Export/Import key images -->
+          {{
+            $t("dialog.keyImages.title", {
+              type: $t(`dialog.keyImages.${modals.key_image.type.toLowerCase()}`)
+            })
+          }}
         </div>
+        <div class="q-ma-lg">
+          <div class="row q-mb-md">
+            <div class="q-mr-xl">
+              <q-radio v-model="modals.key_image.type" val="Export" :label="$t('dialog.keyImages.export')" />
+            </div>
+            <div>
+              <q-radio v-model="modals.key_image.type" val="Import" :label="$t('dialog.keyImages.import')" />
+            </div>
+          </div>
 
-        <template v-if="modals.key_image.type == 'Export'">
-          <LokiField class="q-mt-lg" :label="$t('fieldLabels.keyImages.exportDirectory')" disable-hover>
-            <q-input v-model="modals.key_image.export_path" disable hide-underline />
-            <input
-              id="keyImageExportPath"
-              ref="keyImageExportSelect"
-              type="file"
-              webkitdirectory
-              directory
-              hidden
-              @change="setKeyImageExportPath"
-            />
-            <q-btn color="secondary" @click="selectKeyImageExportPath">{{ $t("buttons.browse") }}</q-btn>
-          </LokiField>
-        </template>
-        <template v-if="modals.key_image.type == 'Import'">
-          <LokiField class="q-mt-lg" :label="$t('fieldLabels.keyImages.importFile')" disable-hover>
-            <q-input v-model="modals.key_image.import_path" disable hide-underline />
-            <input
-              id="keyImageImportPath"
-              ref="keyImageImportSelect"
-              type="file"
-              hidden
-              @change="setKeyImageImportPath"
-            />
-            <q-btn color="secondary" @click="selectKeyImageImportPath">{{ $t("buttons.browse") }}</q-btn>
-          </LokiField>
-        </template>
+          <template v-if="modals.key_image.type == 'Export'">
+            <LokiField class="q-mt-lg" :label="$t('fieldLabels.keyImages.exportDirectory')" disable-hover>
+              <q-input v-model="modals.key_image.export_path" disable borderless />
+              <input
+                id="keyImageExportPath"
+                ref="keyImageExportSelect"
+                class="image-path"
+                type="file"
+                webkitdirectory
+                directory
+                hidden
+                @change="setKeyImageExportPath"
+              />
+              <q-btn color="secondary" @click="selectKeyImageExportPath">{{ $t("buttons.browse") }}</q-btn>
+            </LokiField>
+          </template>
+          <template v-if="modals.key_image.type == 'Import'">
+            <LokiField class="q-mt-lg" :label="$t('fieldLabels.keyImages.importFile')" disable-hover>
+              <q-input v-model="modals.key_image.import_path" disable borderless />
+              <input
+                id="keyImageImportPath"
+                ref="keyImageImportSelect"
+                type="file"
+                class="image-path"
+                hidden
+                @change="setKeyImageImportPath"
+              />
+              <q-btn color="secondary" @click="selectKeyImageImportPath">{{ $t("buttons.browse") }}</q-btn>
+            </LokiField>
+          </template>
 
-        <div class="q-mt-lg text-right">
-          <q-btn flat class="q-mr-sm" :label="$t('buttons.close')" @click="hideModal('key_image')" />
-          <q-btn color="primary" :label="$t('buttons.' + modals.key_image.type.toLowerCase())" @click="doKeyImages()" />
+          <div class="q-mt-lg text-right">
+            <q-btn flat class="q-mr-sm" :label="$t('buttons.close')" @click="hideModal('key_image')" />
+            <q-btn
+              color="primary"
+              :label="$t('buttons.' + modals.key_image.type.toLowerCase())"
+              @click="doKeyImages()"
+            />
+          </div>
         </div>
       </div>
     </q-dialog>
 
     <!-- CHANGE PASSWORD MODAL -->
-    <q-dialog v-model="modals.change_password.visible" class="modal" minimized @hide="clearChangePassword()">
-      <div class="modal-header">{{ $t("titles.changePassword") }}</div>
-      <div class="q-ma-lg">
-        <q-input
-          v-model="modals.change_password.old_password"
-          type="password"
-          :float-label="$t('fieldLabels.oldPassword')"
-          :dark="theme == 'dark'"
-          dense
-        />
-        <q-input
-          v-model="modals.change_password.new_password"
-          type="password"
-          :float-label="$t('fieldLabels.newPassword')"
-          :dark="theme == 'dark'"
-          dense
-        />
+    <q-dialog v-model="modals.change_password.visible" minimized @hide="clearChangePassword()">
+      <div class="modal password-modal">
+        <div class="modal-header">{{ $t("titles.changePassword") }}</div>
+        <div class="q-ma-lg">
+          <q-input
+            v-model="modals.change_password.old_password"
+            type="password"
+            :label="$t('fieldLabels.oldPassword')"
+            :dark="theme == 'dark'"
+          />
+          <q-input
+            v-model="modals.change_password.new_password"
+            type="password"
+            :label="$t('fieldLabels.newPassword')"
+            :dark="theme == 'dark'"
+          />
 
-        <q-field>
           <q-input
             v-model="modals.change_password.new_password_confirm"
             type="password"
-            :float-label="$t('fieldLabels.confirmNewPassword')"
+            :label="$t('fieldLabels.confirmNewPassword')"
             :dark="theme == 'dark'"
           />
-        </q-field>
 
-        <div class="q-mt-xl text-right">
-          <q-btn flat class="q-mr-sm" :label="$t('buttons.close')" @click="hideModal('change_password')" />
-          <q-btn color="primary" :label="$t('buttons.change')" @click="doChangePassword()" />
+          <div class="q-mt-xl text-right">
+            <q-btn flat class="q-mr-sm" :label="$t('buttons.close')" @click="hideModal('change_password')" />
+            <q-btn color="primary" :label="$t('buttons.change')" @click="doChangePassword()" />
+          </div>
         </div>
       </div>
     </q-dialog>
@@ -356,8 +364,9 @@ export default {
             label: this.$t("dialog.buttons.ok")
           }
         })
-        .catch(() => null)
-        .then(() => {
+        .onDismiss(() => null)
+        .onCancel(() => null)
+        .onOk(() => {
           this.$q.notify({
             type: "positive",
             timeout: 1000,
@@ -411,10 +420,11 @@ export default {
               color: this.theme == "dark" ? "white" : "dark"
             }
           })
-          .then(() => {
+          .onOk(() => {
             this.$gateway.send("wallet", "rescan_blockchain");
           })
-          .catch(() => {});
+          .onDismiss(() => {})
+          .onCancel(() => {});
       } else {
         this.$gateway.send("wallet", "rescan_spent");
       }
@@ -519,7 +529,7 @@ export default {
             },
             ok: {
               label: this.$t("dialog.deleteWallet.ok"),
-              color: "red"
+              color: "negative"
             },
             cancel: {
               flat: true,
@@ -540,6 +550,22 @@ export default {
 </script>
 
 <style lang="scss">
+.password-modal,
+.key-image-modal {
+  min-width: 400px;
+}
+
+.image-path {
+  opacity: 0;
+  overflow: hidden;
+}
+
+.key-image-modal {
+  label * {
+    color: #cecece !important;
+  }
+}
+
 .private-key-modal {
   .copy-btn {
     margin-left: 8px;
