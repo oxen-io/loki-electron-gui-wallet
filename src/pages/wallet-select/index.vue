@@ -75,7 +75,9 @@
       </template>
       <template v-else>
         <q-item v-for="action in actions" :key="action.name" @click.native="action.handler">
-          <q-item-label :label="action.name" />
+          <q-item-section>
+            {{ action.name }}
+          </q-item-section>
         </q-item>
       </template>
     </q-list>

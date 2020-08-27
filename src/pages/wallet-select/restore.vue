@@ -29,17 +29,19 @@
       <div class="row items-end q-mt-md">
         <div class="col-md-9 col-sm-8">
           <LokiField v-if="wallet.refresh_type == 'date'" :label="$t('fieldLabels.restoreFromDate')">
-            <q-date
-              v-model="wallet.refresh_start_date"
-              landscape
-              :min="1525305600000"
-              :max="Date.now()"
-              :options="dateRangeOptions"
-              :dark="theme == 'dark'"
-              today-btn
-              borderless
-              dense
-            />
+            <q-input v-model="wallet.refresh_start_date" mask="date" borderless dense>
+              <template v-slot:append>
+                <q-icon v-if="wallet.refresh_type == 'date'" name="event" class="cursor-pointer">
+                  <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                    <q-date v-model="wallet.refresh_start_date" :dark="theme == 'dark'" :options="dateRangeOptions">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
           </LokiField>
           <LokiField
             v-else-if="wallet.refresh_type == 'height'"
@@ -60,12 +62,12 @@
         <div class="col-sm-4 col-md-3">
           <template v-if="wallet.refresh_type == 'date'">
             <q-btn
-              style="width: 100%;"
+              class="restore-from-button"
               :text-color="theme == 'dark' ? 'white' : 'dark'"
               flat
               @click="wallet.refresh_type = 'height'"
             >
-              <div style="height: 38px;" class="column justify-center">
+              <div class="column justify-center items-center">
                 <q-icon name="clear_all" />
                 {{ $t("strings.switchToHeightSelect") }}
               </div>
@@ -73,12 +75,12 @@
           </template>
           <template v-else-if="wallet.refresh_type == 'height'">
             <q-btn
-              style="width: 100%;"
+              class="restore-from-button"
               :text-color="theme == 'dark' ? 'white' : 'dark'"
               flat
               @click="wallet.refresh_type = 'date'"
             >
-              <div style="height: 38px;" class="column justify-center">
+              <div class="column justify-center items-center">
                 <q-icon name="today" />
                 {{ $t("strings.switchToDateSelect") }}
               </div>
@@ -249,4 +251,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.restore-from-button {
+  width: 100%;
+  height: 54px;
+}
+</style>

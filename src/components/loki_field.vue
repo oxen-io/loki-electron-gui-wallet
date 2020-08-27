@@ -88,6 +88,10 @@ export default {
     .q-select {
       flex: 1;
       margin: 0;
+
+      * {
+        color: white;
+      }
     }
 
     .q-date {
