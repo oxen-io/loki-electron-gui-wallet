@@ -11,7 +11,7 @@
         <q-toolbar-title v-if="page_title == 'Loki'" class="flex items-center justify-center">
           <img src="loki.svg" height="32" />
         </q-toolbar-title>
-        <q-toolbar-title v-else class="flex items-center justify-center">{{ page_title }}-test</q-toolbar-title>
+        <q-toolbar-title v-else class="flex items-center justify-center">{{ page_title }}</q-toolbar-title>
       </q-toolbar>
     </q-header>
 

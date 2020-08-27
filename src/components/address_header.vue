@@ -74,8 +74,9 @@ export default {
               label: this.$t(`dialog.copyAddress.ok`)
             }
           })
-          .catch(() => null)
-          .then(() => {
+          .onDismiss(() => null)
+          .onCancel(() => null)
+          .onOk(() => {
             this.$q.notify({
               type: "positive",
               timeout: 1000,

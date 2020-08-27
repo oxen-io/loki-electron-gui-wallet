@@ -135,7 +135,7 @@ export default {
             color: this.theme == "dark" ? "white" : "dark"
           }
         })
-        .then(() => {
+        .onOk(() => {
           this.$q
             .dialog({
               title: this.$t("dialog.banPeer.title"),
@@ -154,15 +154,17 @@ export default {
                 color: this.theme == "dark" ? "white" : "dark"
               }
             })
-            .then(seconds => {
+            .onOk(seconds => {
               this.$gateway.send("daemon", "ban_peer", {
                 host: entry.host,
                 seconds
               });
             })
-            .catch(() => {});
+            .onCancel(() => {})
+            .onDismiss(() => null);
         })
-        .catch(() => {});
+        .onCancel(() => {})
+        .onDismiss(() => {});
     }
   }
 };

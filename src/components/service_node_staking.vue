@@ -172,10 +172,11 @@ export default {
             color: this.theme === "dark" ? "white" : "dark"
           }
         })
-        .then(() => {
+        .onOk(() => {
           this.sweepAll();
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     sweepAll: function() {
       const { unlocked_balance } = this.info;

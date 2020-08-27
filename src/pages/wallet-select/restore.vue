@@ -121,6 +121,11 @@ import { required, numeric } from "vuelidate/lib/validators";
 import { mapState } from "vuex";
 import LokiField from "components/loki_field";
 import { date } from "quasar";
+
+const timeStampFirstBlock = 1525305600000;
+const qDateFormat = "YYYY/MM/DD";
+let dateFirstBlock = date.formatDate(timeStampFirstBlock, qDateFormat);
+
 export default {
   components: {
     LokiField
@@ -132,7 +137,7 @@ export default {
         seed: "",
         refresh_type: "date",
         refresh_start_height: 0,
-        refresh_start_date: 1525305600000, // timestamp of block 1
+        refresh_start_date: dateFirstBlock, // timestamp of block 1
         password: "",
         password_confirm: ""
       }
@@ -238,11 +243,8 @@ export default {
     // Ensures the date is valid
     dateRangeOptions(dateSelected) {
       const now = Date.now();
-      const qDateFormat = "YYYY/MM/DD";
       const formattedNow = date.formatDate(now, qDateFormat);
-      // unix timestamp of earlist block date
-      const minDate = date.formatDate(1525305600000, qDateFormat);
-      return dateSelected > minDate && dateSelected <= formattedNow;
+      return dateSelected > timeStampFirstBlock && dateSelected <= formattedNow;
     },
     cancel() {
       this.$router.replace({ path: "/wallet-select" });

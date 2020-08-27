@@ -126,10 +126,11 @@ export default {
                   color: this.theme == "dark" ? "white" : "dark"
                 }
               })
-              .then(() => {
+              .onOk(() => {
                 this.gatewayUnlock(this.password, this.key, true);
               })
-              .catch(() => {});
+              .onDismiss(() => null)
+              .onCancel(() => null);
             break;
           case -1:
             this.key = null;
@@ -168,10 +169,11 @@ export default {
             color: this.theme === "dark" ? "white" : "dark"
           }
         })
-        .then(() => {
+        .onOk(() => {
           this.unlock(key);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     unlock(key) {
       // We store this as it could change between the 2 step process

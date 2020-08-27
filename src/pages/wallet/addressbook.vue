@@ -125,8 +125,9 @@ export default {
               label: this.$t("dialog.buttons.ok")
             }
           })
-          .catch(() => null)
-          .then(() => {
+          .onDismiss(() => null)
+          .onCancel(() => null)
+          .onOk(() => {
             this.$q.notify({
               type: "positive",
               timeout: 1000,

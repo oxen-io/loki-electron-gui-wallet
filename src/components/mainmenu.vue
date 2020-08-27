@@ -105,6 +105,7 @@ export default {
       this.$gateway.confirmClose(this.$t("dialog.switchWallet.restartWalletMessage"), true);
 
       // Allow switching normally because rpc won't be blocked
+      // NB: If this is added back, must use the quasar v1 APIs
       /*
       this.$q
         .dialog({
