@@ -84,12 +84,13 @@ footer,
     text-transform: none;
 }
 
-.layout-padding {
-    padding: 15px 16px !important;
+// At bottom of forms
+.submit-button {
+    margin-top: 6px;
 }
 
-.q-item-sublabel {
-    color: #cecece;
+.layout-padding {
+    padding: 15px 16px !important;
 }
 
 .advanced-options-label .q-item-side-right {
@@ -361,15 +362,21 @@ footer,
     }
 }
 
+.menu-list {
+  .q-item * {
+    color: white;
+  }
+}
+
 .header-popover {
     background: $primary;
     color: white;
     max-width: 250px !important;
-    padding-top: 4px;
+    // padding-top: 4px;
     
-    .q-list-separator > .q-item-division + .q-item-division, .q-item-division + .q-separator {
-        border-top: 1px solid $loki-green-dark-solid;
-    }
+    // .q-list-separator > .q-item-division + .q-item-division, .q-item-division + .q-separator {
+    //     border-top: 1px solid $loki-green-dark-solid;
+    // }
 }
 
 .modal.minimized {
@@ -478,9 +485,6 @@ footer,
     .q-list-header {
         color: #FFFFFF;
     }
-    .q-item-sublabel {
-        color: $loki-black-50;
-    }
 
     .q-separator-component {
         background-color: $secondary;
@@ -492,10 +496,6 @@ footer,
 
         .q-item, .q-item-side {
             color: white;
-        }
-
-        .q-item-sublabel {
-            color: rgba(255,255,255,0.9);
         }
     }
 
@@ -614,10 +614,6 @@ footer,
 .address-book, .address-header {
     .q-item-label, .header {
         color: white;
-    }
-
-    .q-item-sublabel {
-        color: $loki-black-50;
     }
 }
 

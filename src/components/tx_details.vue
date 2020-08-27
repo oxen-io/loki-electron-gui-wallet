@@ -185,7 +185,6 @@
           :text-color="theme == 'dark' ? 'white' : 'dark'"
           type="textarea"
           rows="2"
-          borderless
           dense
         />
 

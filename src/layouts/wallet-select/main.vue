@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh Lpr lFf">
-    <q-header class="shift-title q-header">
+    <q-header>
       <q-toolbar>
         <template v-if="show_menu">
           <MainMenu :disable-switch-wallet="true" />
@@ -79,8 +79,4 @@ export default {
 };
 </script>
 
-<style>
-/* .shift-title {
-  text-align: center;
-} */
-</style>
+<style></style>

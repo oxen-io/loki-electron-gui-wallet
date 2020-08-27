@@ -280,13 +280,10 @@
           />
         </LokiField>
       </div>
-      <q-field
+      <LokiField
         :helper="$t('fieldLabels.chooseNetwork')"
         :label="$t('fieldLabels.network')"
-        orientation="vertical"
-        color="white"
-        borderless
-        dense
+        class="network-group-field"
       >
         <q-option-group
           v-model="config.app.net_type"
@@ -297,7 +294,7 @@
             { label: 'Test Net', value: 'testnet' }
           ]"
         />
-      </q-field>
+      </LokiField>
     </q-expansion-item>
   </div>
 </template>
@@ -384,6 +381,11 @@ export default {
     .q-input-target {
       cursor: default !important;
     }
+  }
+
+  .network-group-field {
+    color: white;
+    display: inline-block;
   }
 
   .q-item,

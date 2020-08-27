@@ -10,9 +10,9 @@
             <q-menu class="header-popover" :content-class="'header-popover'">
               <q-list separator>
                 <q-item v-for="action in actions" :key="action.name" clickable @click.native="action.handler">
-                  <q-item-label>
+                  <q-item-section>
                     {{ action.name }}
-                  </q-item-label>
+                  </q-item-section>
                 </q-item>
               </q-list>
             </q-menu>

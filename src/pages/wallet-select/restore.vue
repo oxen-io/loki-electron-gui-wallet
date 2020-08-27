@@ -6,7 +6,8 @@
           v-model="wallet.name"
           :placeholder="$t('placeholders.walletName')"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="restore_wallet"
           @blur="$v.wallet.name.$touch"
         />
@@ -15,25 +16,29 @@
       <LokiField class="q-mt-md" :label="$t('fieldLabels.mnemonicSeed')" :error="$v.wallet.seed.$error">
         <q-input
           v-model="wallet.seed"
+          class="full-width text-area-loki"
           :placeholder="$t('placeholders.mnemonicSeed')"
           type="textarea"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @blur="$v.wallet.seed.$touch"
         />
       </LokiField>
 
       <div class="row items-end q-mt-md">
-        <div class="col">
+        <div class="col-md-9 col-sm-8">
           <LokiField v-if="wallet.refresh_type == 'date'" :label="$t('fieldLabels.restoreFromDate')">
-            <q-datetime
+            <q-date
               v-model="wallet.refresh_start_date"
-              type="date"
-              modal
+              landscape
               :min="1525305600000"
               :max="Date.now()"
+              :options="dateRangeOptions"
               :dark="theme == 'dark'"
-              hide-underline
+              today-btn
+              borderless
+              dense
             />
           </LokiField>
           <LokiField
@@ -46,39 +51,36 @@
               type="number"
               min="0"
               :dark="theme == 'dark'"
-              hide-underline
+              borderless
+              dense
               @blur="$v.wallet.refresh_start_height.$touch"
             />
           </LokiField>
         </div>
-        <div class="col-auto q-ml-sm">
+        <div class="col-sm-4 col-md-3">
           <template v-if="wallet.refresh_type == 'date'">
             <q-btn
-              class="float-right"
+              style="width: 100%;"
               :text-color="theme == 'dark' ? 'white' : 'dark'"
               flat
               @click="wallet.refresh_type = 'height'"
             >
-              <div style="min-width: 80px; height: 38px;" class="text-center flex column items-center justify-center">
-                <q-icon class="block" name="clear_all" />
-                <div style="font-size:10px">
-                  {{ $t("strings.switchToHeightSelect") }}
-                </div>
+              <div style="height: 38px;" class="column justify-center">
+                <q-icon name="clear_all" />
+                {{ $t("strings.switchToHeightSelect") }}
               </div>
             </q-btn>
           </template>
           <template v-else-if="wallet.refresh_type == 'height'">
             <q-btn
-              class="float-right"
+              style="width: 100%;"
               :text-color="theme == 'dark' ? 'white' : 'dark'"
               flat
               @click="wallet.refresh_type = 'date'"
             >
-              <div style="min-width: 80px; height: 38px;" class="text-center flex column items-center justify-center">
-                <q-icon class="block" name="today" />
-                <div style="font-size:10px">
-                  {{ $t("strings.switchToDateSelect") }}
-                </div>
+              <div style="height: 38px;" class="column justify-center">
+                <q-icon name="today" />
+                {{ $t("strings.switchToDateSelect") }}
               </div>
             </q-btn>
           </template>
@@ -91,7 +93,8 @@
           :placeholder="$t('placeholders.walletPassword')"
           type="password"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="restore_wallet"
         />
       </LokiField>
@@ -101,14 +104,12 @@
           v-model="wallet.password_confirm"
           type="password"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="restore_wallet"
         />
       </LokiField>
-
-      <q-field>
-        <q-btn color="primary" :label="$t('buttons.restoreWallet')" @click="restore_wallet" />
-      </q-field>
+      <q-btn class="submit-button" color="primary" :label="$t('buttons.restoreWallet')" @click="restore_wallet" />
     </div>
   </q-page>
 </template>
@@ -117,6 +118,7 @@
 import { required, numeric } from "vuelidate/lib/validators";
 import { mapState } from "vuex";
 import LokiField from "components/loki_field";
+import { date } from "quasar";
 export default {
   components: {
     LokiField
@@ -230,6 +232,15 @@ export default {
       });
 
       this.$gateway.send("wallet", "restore_wallet", this.wallet);
+    },
+    // Ensures the date is valid
+    dateRangeOptions(dateSelected) {
+      const now = Date.now();
+      const qDateFormat = "YYYY/MM/DD";
+      const formattedNow = date.formatDate(now, qDateFormat);
+      // unix timestamp of earlist block date
+      const minDate = date.formatDate(1525305600000, qDateFormat);
+      return dateSelected > minDate && dateSelected <= formattedNow;
     },
     cancel() {
       this.$router.replace({ path: "/wallet-select" });

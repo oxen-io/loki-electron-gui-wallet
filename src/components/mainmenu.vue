@@ -2,7 +2,7 @@
   <div>
     <q-btn class="menu" icon="menu" size="md" flat>
       <q-menu>
-        <q-list separator>
+        <q-list separator class="menu-list">
           <q-item v-if="!disableSwitchWallet" v-close-popup clickable @click.native="switchWallet">
             <q-item-label header>{{ $t("menuItems.switchWallet") }}</q-item-label>
           </q-item>

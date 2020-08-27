@@ -40,7 +40,7 @@
         />
       </LokiField>
 
-      <q-btn color="primary" :label="$t('buttons.createWallet')" @click="create" />
+      <q-btn class="submit-button" color="primary" :label="$t('buttons.createWallet')" @click="create" />
     </div>
   </q-page>
 </template>
@@ -174,10 +174,10 @@ export default {
 
 <style lang="scss">
 .create-wallet {
-  .fields {
-    > * {
-      margin-bottom: 16px;
-    }
-  }
+  // .fields {
+  //   > * {
+  //     margin-bottom: 16px;
+  //   }
+  // }
 }
 </style>

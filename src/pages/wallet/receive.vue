@@ -53,22 +53,30 @@
 
     <!-- QR Code -->
     <template v-if="QR.address != null">
-      <q-dialog v-model="QR.visible" minimized :content-css="{ padding: '25px' }">
-        <div class="text-center q-mb-sm q-pa-md" style="background: white;">
-          <QrcodeVue ref="qr" :value="QR.address" size="240"> </QrcodeVue>
-          <q-menu context-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-popup @click.native="copyQR()">
-                <q-item-label :label="$t('menuItems.copyQR')" />
-              </q-item>
-              <q-item v-close-popup @click.native="saveQR()">
-                <q-item-label :label="$t('menuItems.saveQR')" />
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div>
-
-        <q-btn color="primary" :label="$t('buttons.close')" @click="QR.visible = false" />
+      <q-dialog v-model="QR.visible" :content-class="'qr-code-modal'">
+        <q-card class="qr-code-card">
+          <div class="text-center q-mb-sm q-pa-md" style="background: white;">
+            <QrcodeVue ref="qr" :value="QR.address" size="240"> </QrcodeVue>
+            <!-- This menu appears on right click of QR code -->
+            <q-menu context-menu>
+              <q-list class="qr-options-menu">
+                <q-item v-close-popup clickable @click.native="copyQR()">
+                  <q-item-section>
+                    {{ $t("menuItems.copyQR") }}
+                  </q-item-section>
+                </q-item>
+                <q-item v-close-popup clickable @click.native="saveQR()">
+                  <q-item-section>
+                    {{ $t("menuItems.saveQR") }}
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </div>
+          <q-card-actions>
+            <q-btn color="primary" :label="$t('buttons.close')" @click="QR.visible = false" />
+          </q-card-actions>
+        </q-card>
       </q-dialog>
     </template>
   </q-page>
@@ -157,6 +165,22 @@ export default {
 </script>
 
 <style lang="scss">
+.qr-code-modal {
+  // background-color: $dark;
+  padding: "25px";
+  color: white;
+
+  .qr-code-card {
+    background-color: $dark;
+  }
+}
+
+.qr-options-menu {
+  min-width: 150px;
+  max-height: 300px;
+  color: white;
+}
+
 .receive {
   .q-item-label {
     font-weight: 400;
