@@ -40,7 +40,7 @@
                 <q-btn
                   class="copy-btn"
                   color="primary"
-                  style="width:25px;"
+                  padding="xs"
                   size="sm"
                   icon="file_copy"
                   @click="copyPrivateKey('mnemonic', $event)"
@@ -63,7 +63,7 @@
                 <q-btn
                   class="copy-btn"
                   color="primary"
-                  style="width:25px;"
+                  padding="xs"
                   size="sm"
                   icon="file_copy"
                   @click="copyPrivateKey('view_key', $event)"
@@ -86,7 +86,7 @@
                 <q-btn
                   class="copy-btn"
                   color="primary"
-                  style="width:25px;"
+                  padding="xs"
                   size="sm"
                   icon="file_copy"
                   @click="copyPrivateKey('spend_key', $event)"
@@ -410,13 +410,15 @@ export default {
             title: this.$t("dialog.rescan.title"),
             message: this.$t("dialog.rescan.message"),
             ok: {
-              label: this.$t("dialog.rescan.ok")
+              label: this.$t("dialog.rescan.ok"),
+              color: "primary"
             },
             cancel: {
               flat: true,
               label: this.$t("dialog.buttons.cancel"),
               color: this.theme == "dark" ? "white" : "dark"
-            }
+            },
+            dark: this.theme == "dark"
           })
           .onOk(() => {
             this.$gateway.send("wallet", "rescan_blockchain");
@@ -550,8 +552,7 @@ export default {
 </script>
 
 <style lang="scss">
-.password-modal,
-.key-image-modal {
+.password-modal {
   min-width: 400px;
 }
 
@@ -563,6 +564,11 @@ export default {
 .key-image-modal {
   label * {
     color: #cecece !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  input {
+    overflow: ellipsis;
   }
 }
 
@@ -571,11 +577,11 @@ export default {
     margin-left: 8px;
   }
 }
+
 .key-image-modal {
-  .modal-content {
-    min-width: 600px;
-    width: 45vw;
-  }
+  min-width: 400px;
+  width: 45vw;
+
   .loki-field {
     flex: 1;
   }
