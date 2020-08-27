@@ -6,7 +6,6 @@
           <div class="header-title">
             {{ $t("titles.yourWallets") }}
           </div>
-          <!-- fix the drop down here -->
           <q-btn v-if="wallets.list.length" class="add" icon="add" size="md" color="primary">
             <q-menu class="header-popover">
               <q-list separator link>
@@ -25,8 +24,8 @@
           :key="`${wallet.address}-${wallet.name}`"
           @click.native="openWallet(wallet)"
         >
-          <q-item-section>
-            <div class="wallet-icon">
+          <q-item-section avatar>
+            <q-icon class="wallet-icon">
               <svg
                 width="48"
                 viewBox="0 0 17 16"
@@ -53,12 +52,12 @@
                   </g>
                 </g>
               </svg>
-            </div>
+            </q-icon>
           </q-item-section>
-          <q-item-label>
-            <q-item-label header>{{ wallet.name }}</q-item-label>
+          <q-item-section>
+            <q-item-label class="wallet-name" caption>{{ wallet.name }}</q-item-label>
             <q-item-label class="monospace ellipsis" caption>{{ wallet.address }}</q-item-label>
-          </q-item-label>
+          </q-item-section>
 
           <q-menu context-menu>
             <q-list link separator style="min-width: 150px; max-height: 300px;">
@@ -241,6 +240,10 @@ export default {
 }
 
 .wallet-list {
+  .wallet-icon {
+    font-size: 3rem;
+  }
+
   .header {
     margin: 0 16px;
     margin-bottom: 8px;
@@ -255,6 +258,9 @@ export default {
       width: 38px;
       padding: 0;
     }
+  }
+  .wallet-name {
+    font-size: 1.1rem;
   }
   .q-item {
     margin: 10px 16px;
