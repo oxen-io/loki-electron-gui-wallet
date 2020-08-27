@@ -5,7 +5,8 @@
         <q-input
           v-model.trim="name"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           :placeholder="$t('placeholders.lnsDecryptName')"
           :disable="decrypting"
           @blur="$v.name.$touch"
@@ -17,27 +18,26 @@
     </div>
     <q-list link no-border :dark="theme == 'dark'" class="loki-list">
       <q-item v-for="record in records" :key="record.name_hash" class="loki-list-item">
-        <q-item-section class="type">
+        <q-item-section class="type" avatar>
           <q-icon :name="isLocked(record) ? 'lock' : 'lock_open'" size="24px" />
         </q-item-section>
-        <q-item-label class="main">
-          <q-item-label header :class="bindClass(record)">
+        <q-item-section>
+          <q-item-label :class="bindClass(record)">
             {{ isLocked(record) ? record.name_hash : record.name }}
           </q-item-label>
-          <q-item-label v-if="!isLocked(record)" caption>{{ record.value }}</q-item-label>
-        </q-item-label>
-        <template v-if="isLocked(record)">
-          <q-item-section right class="height">
+          <q-item-label v-if="!isLocked(record)">{{ record.value }}</q-item-label>
+        </q-item-section>
+        <q-item-section side class="height">
+          <template v-if="isLocked(record)">
             {{ record.register_height | blockHeight }}
-          </q-item-section>
-        </template>
-        <template v-else>
-          <q-item-section right>
-            <q-btn color="secondary" :label="$t('buttons.update')" @click="onUpdate(record)" />
-          </q-item-section>
-        </template>
-
-        <q-item-section v-if="!isLocked(record)" right>
+          </template>
+          <template v-else>
+            <q-item-section>
+              <q-btn color="secondary" :label="$t('buttons.update')" @click="onUpdate(record)" />
+            </q-item-section>
+          </template>
+        </q-item-section>
+        <q-item-section v-if="!isLocked(record)" side>
           {{ record.register_height | blockHeight }}
         </q-item-section>
 

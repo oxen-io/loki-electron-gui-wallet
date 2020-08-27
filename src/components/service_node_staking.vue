@@ -32,8 +32,7 @@
           {{ $t("buttons.all") }}
         </q-btn>
       </LokiField>
-
-      <q-field class="buttons q-pt-sm">
+      <div class="submit-button">
         <q-btn :disable="!is_able_to_send" color="primary" :label="$t('buttons.stake')" @click="stake()" />
         <q-btn
           :disable="!is_able_to_send"
@@ -41,7 +40,7 @@
           :label="$t('buttons.sweepAll')"
           @click="sweepAllWarning()"
         />
-      </q-field>
+      </div>
     </div>
 
     <ServiceNodeUnlock />
