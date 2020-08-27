@@ -8,8 +8,10 @@
 
 <script>
 const { clipboard } = require("electron");
+import { copyMixin } from "../../mixins/copyMixin.js";
 export default {
   name: "CopyIcon",
+  mixins: [copyMixin],
   props: {
     content: {
       type: String,
@@ -23,23 +25,8 @@ export default {
   },
   methods: {
     copyContent() {
+      console.log(this);
       clipboard.writeText(this.content);
-      this.$q.notify({
-        type: "positive",
-        timeout: 1000,
-        message: this.$t("notification.positive.addressCopied")
-      });
-    },
-    // May not need this...
-    copyAddressWEvent(address, event) {
-      event.stopPropagation();
-      for (let i = 0; i < event.path.length; i++) {
-        if (event.path[i].tagName == "BUTTON") {
-          event.path[i].blur();
-          break;
-        }
-      }
-      clipboard.writeText(address);
       this.$q.notify({
         type: "positive",
         timeout: 1000,

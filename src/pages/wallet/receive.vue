@@ -138,12 +138,12 @@ export default {
     },
     copyAddress(address, event) {
       event.stopPropagation();
-      for (let i = 0; i < event.path.length; i++) {
-        if (event.path[i].tagName == "BUTTON") {
-          event.path[i].blur();
-          break;
-        }
-      }
+      // for (let i = 0; i < event.path.length; i++) {
+      //   if (event.path[i].tagName == "BUTTON") {
+      //     event.path[i].blur();
+      //     break;
+      //   }
+      // }
       clipboard.writeText(address);
       this.$q.notify({
         type: "positive",

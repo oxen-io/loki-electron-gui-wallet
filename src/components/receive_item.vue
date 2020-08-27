@@ -1,16 +1,19 @@
 <template>
   <q-list class="loki-list-item" no-border @click.native="details(address)">
     <q-item>
-      <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
-      <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
-      <q-item-section>
-        <q-btn flat style="width:25px;" size="md" @click="showQR(address.address, $event)">
-          <img :src="qrImage" height="20" />
+      <q-item-section top class="flex">
+        <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
+        <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
+      </q-item-section>
+      <q-item-section side top>
+        <q-btn flat padding="xs" size="md" @click="showQR(address.address, $event)">
+          <!-- height of 24 makes it equal size as copy -->
+          <img :src="qrImage" height="24" />
           <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
             {{ $t("menuItems.showQRCode") }}
           </q-tooltip>
         </q-btn>
-        <q-btn flat style="width:25px;" size="md" icon="file_copy" @click="copyAddress(address.address, $event)">
+        <q-btn flat padding="xs" size="md" icon="file_copy" @click="copyAddress(address.address, $event)">
           <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
             {{ $t("menuItems.copyAddress") }}
           </q-tooltip>
@@ -19,23 +22,26 @@
     </q-item>
     <template v-if="shouldShowInfo">
       <q-separator />
-      <q-item class="info">
-        <q-item-label class="flex">
-          <div class="column items-start">
-            <div class="col">
+      <q-item>
+        <q-item-section>
+          <div class="row info-section">
+            <span class="col-sm-4">
               <span>{{ $t("strings.lokiBalance") }}</span>
+              <br />
               <span class="value">{{ address.balance | currency }}</span>
-            </div>
-            <div class="col">
+            </span>
+            <span class="col-sm-4">
               <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
+              <br />
               <span class="value">{{ address.unlocked_balance | currency }}</span>
-            </div>
-            <div class="col">
+            </span>
+            <span class="col-sm-4">
               <span>{{ $t("strings.unspentOutputs") }}</span>
+              <br />
               <span class="value">{{ address.num_unspent_outputs | toString }}</span>
-            </div>
+            </span>
           </div>
-        </q-item-label>
+        </q-item-section>
       </q-item>
     </template>
     <q-menu context-menu>
@@ -109,4 +115,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.info-section {
+  max-height: 3rem;
+}
+</style>
