@@ -1,12 +1,10 @@
 <template>
   <q-dialog v-model="isVisible" maximized class="settings-modal">
-    <q-layout container>
+    <q-layout>
       <q-header>
         <q-toolbar color="dark" inverted>
           <q-btn flat round dense icon="reply" @click="isVisible = false" />
-          <q-toolbar-title shrink>
-            {{ $t("titles.settings.title") }}
-          </q-toolbar-title>
+          <q-toolbar-title shrink>{{ $t("titles.settings.title") }}</q-toolbar-title>
 
           <div class="row col justify-center q-pr-xl">
             <q-btn-toggle v-model="page" toggle-color="primary" color="tertiary" size="md" :options="tabs" />
@@ -43,11 +41,13 @@
               <q-item v-for="entry in daemon.bans" :key="entry.host">
                 <q-item-label>
                   <q-item-label header>{{ entry.host }}</q-item-label>
-                  <q-item-label caption>{{
-                    $t("strings.bannedPeers.bannedUntil", {
-                      time: new Date(Date.now() + entry.seconds * 1000).toLocaleString()
-                    })
-                  }}</q-item-label>
+                  <q-item-label caption>
+                    {{
+                      $t("strings.bannedPeers.bannedUntil", {
+                        time: new Date(Date.now() + entry.seconds * 1000).toLocaleString()
+                      })
+                    }}
+                  </q-item-label>
                 </q-item-label>
               </q-item>
             </template>

@@ -119,13 +119,13 @@
 
         <div v-if="tx.type == 'in' || tx.type == 'pool'">
           <q-list no-border>
-            <q-list-item header class="q-px-none">
+            <q-item header class="q-px-none">
               {{
                 $t("strings.transactions.sentTo", {
                   type: $t("strings.transactions.types.incoming")
                 })
               }}:
-            </q-list-item>
+            </q-item>
             <q-item class="q-px-none">
               <q-item-label>
                 <q-item-label header class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-label>
@@ -145,13 +145,13 @@
 
         <div v-else-if="tx.type == 'out' || tx.type == 'pending'">
           <q-list no-border>
-            <q-list-item header class="q-px-none">
+            <q-item header class="q-px-none">
               {{
                 $t("strings.transactions.sentTo", {
                   type: $t("strings.transactions.types.outgoing")
                 })
               }}:
-            </q-list-item>
+            </q-item>
             <template v-if="out_destinations">
               <q-item v-for="destination in out_destinations" :key="destination.address" class="q-px-none">
                 <q-item-label>
@@ -299,7 +299,8 @@ export default {
             label: this.$t("dialog.transactionDetails.ok"),
             color: "primary"
           },
-          dark: this.theme == "dark"
+          dark: this.theme == "dark",
+          style: "min-width: 500px; overflow-wrap: break-word;"
         })
         .onOk(() => {})
         .onCancel(() => {})

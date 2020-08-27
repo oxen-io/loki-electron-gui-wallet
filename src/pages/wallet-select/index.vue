@@ -7,9 +7,9 @@
             {{ $t("titles.yourWallets") }}
           </div>
           <q-btn v-if="wallets.list.length" class="add" icon="add" size="md" color="primary">
-            <q-menu class="header-popover">
-              <q-list separator link>
-                <q-item v-for="action in actions" :key="action.name" @click.native="action.handler">
+            <q-menu class="header-popover" :content-class="'header-popover'">
+              <q-list separator>
+                <q-item v-for="action in actions" :key="action.name" clickable @click.native="action.handler">
                   <q-item-label>
                     {{ action.name }}
                   </q-item-label>
@@ -235,10 +235,6 @@ export default {
 </script>
 
 <style lang="scss">
-.header-popover.q-menu {
-  max-width: 250px !important;
-}
-
 .wallet-list {
   .wallet-icon {
     font-size: 3rem;

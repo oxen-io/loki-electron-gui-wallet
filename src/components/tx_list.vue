@@ -20,13 +20,13 @@
               <div>{{ tx.type | typeToString }}</div>
             </q-item-section>
             <q-item-label class="main">
-              <q-item-label class="amount" header>
+              <q-item-label class="amount">
                 <FormatLoki :amount="tx.amount" />
               </q-item-label>
               <q-item-label caption>{{ tx.txid }}</q-item-label>
             </q-item-label>
             <q-item-section class="meta">
-              <q-item-label header>
+              <q-item-label>
                 <timeago :datetime="tx.timestamp * 1000" :auto-update="60" :locale="$i18n.locale" />
               </q-item-label>
               <q-item-label caption>{{ formatHeight(tx) }}</q-item-label>
@@ -329,8 +329,9 @@ export default {
     }
 
     .type {
+      min-width: 100px;
+      max-width: 100px;
       div {
-        min-width: 100px;
         margin-right: 8px;
       }
     }
