@@ -94,6 +94,7 @@
           v-model="newTx.address_book.save"
           :label="$t('strings.saveToAddressBook')"
           :dark="theme == 'dark'"
+          color="dark"
         />
         <div v-if="newTx.address_book.save">
           <LokiField :label="$t('fieldLabels.name')" optional>

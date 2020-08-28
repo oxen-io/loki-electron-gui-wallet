@@ -26,13 +26,14 @@
               dense
               @blur="$v.newEntry.address.$touch"
             />
-            <q-checkbox
+            <q-btn
               v-model="newEntry.starred"
-              checked-icon="star"
-              unchecked-icon="star_border"
-              class="star-entry"
-              dark
+              flat
+              round
+              :icon="newEntry.starred ? 'star' : 'star_border'"
+              @click="updateStarred"
             />
+            <!-- <q-btn flat icon="star" /> -->
           </LokiField>
           <LokiField :label="$t('fieldLabels.name')">
             <q-input v-model.trim="newEntry.name" :dark="theme == 'dark'" borderless dense />
@@ -218,6 +219,11 @@ export default {
         description: "",
         starred: false
       };
+    },
+    updateStarred() {
+      console.log("update starred");
+      this.newEntry.starred = !this.newEntry.starred;
+      return;
     },
     close() {
       this.isVisible = false;

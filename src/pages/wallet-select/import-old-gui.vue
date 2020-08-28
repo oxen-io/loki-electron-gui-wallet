@@ -4,7 +4,7 @@
       <q-list link dark no-border class="wallet-list">
         <q-item v-for="state in directory_state" :key="state.directory" :class="{ selected: state.selected }">
           <q-item-section>
-            <q-checkbox v-model="state.selected" />
+            <q-checkbox v-model="state.selected" dark color="dark" />
           </q-item-section>
           <q-item-label @click.native="state.selected = !state.selected">
             <q-item-label header>{{ state.directory }}</q-item-label>

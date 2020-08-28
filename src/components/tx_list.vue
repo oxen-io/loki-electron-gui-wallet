@@ -7,7 +7,7 @@
     </template>
 
     <template v-else>
-      <q-infinite-scroll ref="scroller" :handler="loadMore">
+      <q-infinite-scroll ref="scroller" @load="loadMore">
         <q-list link no-border :dark="theme == 'dark'" class="loki-list tx-list">
           <q-item
             v-for="tx in tx_list_paged"

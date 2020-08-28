@@ -276,7 +276,7 @@ export default {
 
 <style lang="scss">
 .service-node-staking {
-  .buttons {
+  .submit-button {
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }
