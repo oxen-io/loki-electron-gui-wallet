@@ -6,7 +6,8 @@
           v-model.trim="service_node.key"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.hexCharacters', { count: 64 })"
-          hide-underline
+          borderless
+          dense
           @blur="$v.service_node.key.$touch"
         />
       </LokiField>
@@ -19,7 +20,8 @@
           min="0"
           :max="unlocked_balance / 1e9"
           placeholder="0"
-          hide-underline
+          borderless
+          dense
           @blur="$v.service_node.amount.$touch"
         />
         <q-btn
@@ -30,8 +32,7 @@
           {{ $t("buttons.all") }}
         </q-btn>
       </LokiField>
-
-      <q-field class="buttons q-pt-sm">
+      <div class="submit-button">
         <q-btn :disable="!is_able_to_send" color="primary" :label="$t('buttons.stake')" @click="stake()" />
         <q-btn
           :disable="!is_able_to_send"
@@ -39,7 +40,7 @@
           :label="$t('buttons.sweepAll')"
           @click="sweepAllWarning()"
         />
-      </q-field>
+      </div>
     </div>
 
     <ServiceNodeUnlock />
@@ -162,18 +163,21 @@ export default {
           title: this.$t("dialog.sweepAllWarning.title"),
           message: this.$t("dialog.sweepAllWarning.message"),
           ok: {
-            label: this.$t("dialog.sweepAllWarning.ok")
+            label: this.$t("dialog.sweepAllWarning.ok"),
+            color: "primary"
           },
           cancel: {
             flat: true,
             label: this.$t("dialog.buttons.cancel"),
             color: this.theme === "dark" ? "white" : "dark"
-          }
+          },
+          dark: this.theme === "dark"
         })
-        .then(() => {
+        .onOk(() => {
           this.sweepAll();
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     sweepAll: function() {
       const { unlocked_balance } = this.info;
@@ -274,7 +278,7 @@ export default {
 
 <style lang="scss">
 .service-node-staking {
-  .buttons {
+  .submit-button {
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }

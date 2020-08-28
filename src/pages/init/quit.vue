@@ -2,7 +2,7 @@
   <q-page>
     <div class="init-screen-page text-center">
       <div class="absolute-center">
-        <img src="statics/loki.svg" width="400" class="q-mb-md" />
+        <img src="loki.svg" width="400" class="q-mb-md" />
 
         <div class="q-mt-xl q-mb-lg">
           <q-spinner color="primary" :size="30" />

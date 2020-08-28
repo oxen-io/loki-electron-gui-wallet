@@ -1,97 +1,112 @@
 <template>
-  <q-modal v-model="isVisible" maximized class="address-book-details">
-    <q-modal-layout v-if="mode == 'edit' || mode == 'new'">
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="close()" />
-        <q-toolbar-title v-if="mode == 'new'">
-          {{ $t("strings.addAddressBookEntry") }}
-        </q-toolbar-title>
-        <q-toolbar-title v-else-if="mode == 'edit'">
-          {{ $t("strings.editAddressBookEntry") }}
-        </q-toolbar-title>
+  <q-dialog v-model="isVisible" maximized class="address-book-details">
+    <q-layout v-if="mode == 'edit' || mode == 'new'">
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="close()" />
+          <q-toolbar-title v-if="mode == 'new'">
+            {{ $t("strings.addAddressBookEntry") }}
+          </q-toolbar-title>
+          <q-toolbar-title v-else-if="mode == 'edit'">
+            {{ $t("strings.editAddressBookEntry") }}
+          </q-toolbar-title>
 
-        <q-btn v-if="mode == 'edit'" flat no-ripple :label="$t('buttons.cancel')" @click="cancelEdit()" />
-        <q-btn class="q-ml-sm" color="primary" :label="$t('buttons.save')" @click="save()" />
-      </q-toolbar>
-      <div class="address-book-modal q-mx-md">
-        <LokiField :label="$t('fieldLabels.address')" :error="$v.newEntry.address.$error">
-          <q-input
-            v-model.trim="newEntry.address"
-            :placeholder="address_placeholder"
-            :dark="theme == 'dark'"
-            hide-underline
-            @blur="$v.newEntry.address.$touch"
-          />
-          <q-checkbox
-            v-model="newEntry.starred"
-            checked-icon="star"
-            unchecked-icon="star_border"
-            class="star-entry"
-            dark
-          />
-        </LokiField>
-        <LokiField :label="$t('fieldLabels.name')">
-          <q-input v-model.trim="newEntry.name" :dark="theme == 'dark'" hide-underline />
-        </LokiField>
-        <LokiField :label="$t('fieldLabels.paymentId')" :error="$v.newEntry.payment_id.$error" optional>
-          <q-input
-            v-model.trim="newEntry.payment_id"
-            :placeholder="
-              $t('placeholders.hexCharacters', {
-                count: '16 or 64'
-              })
-            "
-            :dark="theme == 'dark'"
-            hide-underline
-            @blur="$v.newEntry.payment_id.$touch"
-          />
-        </LokiField>
-        <LokiField :label="$t('fieldLabels.notes')" optional>
-          <q-input
-            v-model="newEntry.description"
-            :placeholder="$t('placeholders.additionalNotes')"
-            type="textarea"
-            :dark="theme == 'dark'"
-            hide-underline
-          />
-        </LokiField>
+          <q-btn v-if="mode == 'edit'" flat no-ripple :label="$t('buttons.cancel')" @click="cancelEdit()" />
+          <q-btn class="q-ml-sm" color="primary" :label="$t('buttons.save')" @click="save()" />
+        </q-toolbar>
+      </q-header>
+      <q-page-container>
+        <div class="address-book-modal q-mx-md">
+          <LokiField :label="$t('fieldLabels.address')" :error="$v.newEntry.address.$error">
+            <q-input
+              v-model.trim="newEntry.address"
+              :placeholder="address_placeholder"
+              :dark="theme == 'dark'"
+              borderless
+              dense
+              @blur="$v.newEntry.address.$touch"
+            />
+            <q-btn
+              v-model="newEntry.starred"
+              flat
+              round
+              :icon="newEntry.starred ? 'star' : 'star_border'"
+              @click="updateStarred"
+            />
+          </LokiField>
+          <LokiField :label="$t('fieldLabels.name')">
+            <q-input v-model.trim="newEntry.name" :dark="theme == 'dark'" borderless dense />
+          </LokiField>
+          <LokiField :label="$t('fieldLabels.paymentId')" :error="$v.newEntry.payment_id.$error" optional>
+            <q-input
+              v-model.trim="newEntry.payment_id"
+              :placeholder="
+                $t('placeholders.hexCharacters', {
+                  count: '16 or 64'
+                })
+              "
+              :dark="theme == 'dark'"
+              borderless
+              dense
+              @blur="$v.newEntry.payment_id.$touch"
+            />
+          </LokiField>
+          <LokiField :label="$t('fieldLabels.notes')" optional>
+            <q-input
+              v-model="newEntry.description"
+              :placeholder="$t('placeholders.additionalNotes')"
+              type="textarea"
+              class="full-width text-area-loki"
+              :dark="theme == 'dark'"
+              borderless
+              dense
+            />
+          </LokiField>
 
-        <q-field v-if="mode == 'edit'">
-          <q-btn class="float-right" color="red" :label="$t('buttons.delete')" @click="deleteEntry()" />
-        </q-field>
-      </div>
-    </q-modal-layout>
-
-    <q-modal-layout v-else>
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="close()" />
-        <q-toolbar-title>
-          {{ $t("strings.addressBookDetails") }}
-        </q-toolbar-title>
-        <q-btn class="q-mr-sm" flat no-ripple :disable="!is_ready" :label="$t('buttons.edit')" @click="edit()" />
-        <q-btn color="primary" :disabled="view_only" :label="$t('buttons.sendCoins')" @click="sendToAddress" />
-      </q-toolbar>
-      <div class="layout-padding">
-        <template v-if="entry != null">
-          <AddressHeader
-            :address="entry.address"
-            :title="entry.name"
-            :payment_id="entry.payment_id"
-            :extra="entry.description ? $t('strings.notes') + ': ' + entry.description : ''"
+          <q-btn
+            v-if="mode == 'edit'"
+            class="submit-button"
+            color="red"
+            :label="$t('buttons.delete')"
+            @click="deleteEntry()"
           />
+        </div>
+      </q-page-container>
+    </q-layout>
 
-          <div class="q-mt-lg">
-            <div class="non-selectable">
-              <q-icon name="history" size="24px" />
-              <span class="vertical-middle q-ml-xs">{{ $t("strings.recentTransactionsWithAddress") }}</span>
+    <q-layout v-else>
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="close()" />
+          <q-toolbar-title>
+            {{ $t("strings.addressBookDetails") }}
+          </q-toolbar-title>
+          <q-btn class="q-mr-sm" flat no-ripple :disable="!is_ready" :label="$t('buttons.edit')" @click="edit()" />
+          <q-btn color="primary" :disabled="view_only" :label="$t('buttons.sendCoins')" @click="sendToAddress" />
+        </q-toolbar>
+      </q-header>
+      <q-page-container>
+        <div class="layout-padding">
+          <template v-if="entry != null">
+            <AddressHeader
+              :address="entry.address"
+              :title="entry.name"
+              :payment_id="entry.payment_id"
+              :extra="entry.description ? $t('strings.notes') + ': ' + entry.description : ''"
+            />
+
+            <div class="q-mt-lg">
+              <div class="non-selectable">
+                <q-icon name="history" size="24px" />
+                <span class="vertical-middle q-ml-xs">{{ $t("strings.recentTransactionsWithAddress") }}</span>
+              </div>
+              <TxList :key="entry.address" type="all_in" :limit="5" :to-outgoing-address="entry.address" />
             </div>
-
-            <TxList :key="entry.address" type="all_in" :limit="5" :to-outgoing-address="entry.address" />
-          </div>
-        </template>
-      </div>
-    </q-modal-layout>
-  </q-modal>
+          </template>
+        </div>
+      </q-page-container>
+    </q-layout>
+  </q-dialog>
 </template>
 
 <script>
@@ -206,6 +221,10 @@ export default {
         description: "",
         starred: false
       };
+    },
+    updateStarred() {
+      this.newEntry.starred = !this.newEntry.starred;
+      return;
     },
     close() {
       this.isVisible = false;

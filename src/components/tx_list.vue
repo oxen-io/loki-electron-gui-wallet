@@ -7,7 +7,7 @@
     </template>
 
     <template v-else>
-      <q-infinite-scroll ref="scroller" :handler="loadMore">
+      <q-infinite-scroll ref="scroller" @load="loadMore">
         <q-list link no-border :dark="theme == 'dark'" class="loki-list tx-list">
           <q-item
             v-for="tx in tx_list_paged"
@@ -16,37 +16,43 @@
             :class="'tx-' + tx.type"
             @click.native="details(tx)"
           >
-            <q-item-side class="type">
+            <q-item-section class="type">
               <div>{{ tx.type | typeToString }}</div>
-            </q-item-side>
-            <q-item-main class="main">
-              <q-item-tile class="amount" label>
+            </q-item-section>
+            <q-item-label class="main">
+              <q-item-label class="amount">
                 <FormatLoki :amount="tx.amount" />
-              </q-item-tile>
-              <q-item-tile sublabel>{{ tx.txid }}</q-item-tile>
-            </q-item-main>
-            <q-item-side class="meta">
-              <q-item-tile label>
+              </q-item-label>
+              <q-item-label caption>{{ tx.txid }}</q-item-label>
+            </q-item-label>
+            <q-item-section class="meta">
+              <q-item-label>
                 <timeago :datetime="tx.timestamp * 1000" :auto-update="60" :locale="$i18n.locale" />
-              </q-item-tile>
-              <q-item-tile sublabel>{{ formatHeight(tx) }}</q-item-tile>
-            </q-item-side>
+              </q-item-label>
+              <q-item-label caption>{{ formatHeight(tx) }}</q-item-label>
+            </q-item-section>
 
-            <q-context-menu>
-              <q-list link separator style="min-width: 150px; max-height: 300px;">
-                <q-item v-close-overlay @click.native="details(tx)">
-                  <q-item-main :label="$t('menuItems.showDetails')" />
+            <q-menu context-menu>
+              <q-list separator style="min-width: 150px; max-height: 300px;">
+                <q-item v-close-popup clickable @click.native="details(tx)">
+                  <q-item-section>
+                    {{ $t("menuItems.showDetails") }}
+                  </q-item-section>
                 </q-item>
 
-                <q-item v-close-overlay @click.native="copyTxid(tx.txid, $event)">
-                  <q-item-main :label="$t('menuItems.copyTransactionId')" />
+                <q-item v-close-popup clickable @click.native="copyTxid(tx.txid, $event)">
+                  <q-item-section>
+                    {{ $t("menuItems.copyTransactionId") }}
+                  </q-item-section>
                 </q-item>
 
-                <q-item v-close-overlay @click.native="openExplorer(tx.txid)">
-                  <q-item-main :label="$t('menuItems.viewOnExplorer')" />
+                <q-item v-close-popup clickable @click.native="openExplorer(tx.txid)">
+                  <q-item-section>
+                    {{ $t("menuItems.viewOnExplorer") }}
+                  </q-item-section>
                 </q-item>
               </q-list>
-            </q-context-menu>
+            </q-menu>
           </q-item>
           <QSpinnerDots slot="message" :size="40"></QSpinnerDots>
         </q-list>
@@ -63,7 +69,7 @@ import { mapState } from "vuex";
 import { QSpinnerDots } from "quasar";
 import TxDetails from "components/tx_details";
 import FormatLoki from "components/format_loki";
-import { i18n } from "plugins/i18n";
+import { i18n } from "boot/i18n";
 
 export default {
   name: "TxList",
@@ -329,8 +335,9 @@ export default {
     }
 
     .type {
+      min-width: 100px;
+      max-width: 100px;
       div {
-        min-width: 100px;
         margin-right: 8px;
       }
     }

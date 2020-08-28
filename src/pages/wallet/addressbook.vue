@@ -12,36 +12,44 @@
           class="loki-list-item"
           @click.native="details(entry)"
         >
-          <q-item-main>
-            <q-item-tile class="ellipsis" label>{{ entry.address }}</q-item-tile>
-            <q-item-tile sublabel class="non-selectable">{{ entry.name }}</q-item-tile>
-          </q-item-main>
-          <q-item-side>
-            <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
-            <q-btn
-              color="secondary"
-              style="margin-left: 10px;"
-              :label="$t('buttons.send')"
-              :disabled="view_only"
-              @click="sendToAddress(entry, $event)"
-            />
-          </q-item-side>
+          <q-item-section>
+            <q-item-label class="ellipsis">{{ entry.address }}</q-item-label>
+            <q-item-label class="non-selectable" caption>{{ entry.name }}</q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-item-label>
+              <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
+              <q-btn
+                color="secondary"
+                style="margin-left: 10px;"
+                :label="$t('buttons.send')"
+                :disabled="view_only"
+                @click="sendToAddress(entry, $event)"
+              />
+            </q-item-label>
+          </q-item-section>
 
-          <q-context-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-overlay @click.native="details(entry)">
-                <q-item-main :label="$t('menuItems.showDetails')" />
+          <q-menu context-menu>
+            <q-list class="context-menu">
+              <q-item v-close-popup clickable @click.native="details(entry)">
+                <q-item-section>
+                  {{ $t("menuItems.showDetails") }}
+                </q-item-section>
               </q-item>
 
-              <q-item v-close-overlay @click.native="sendToAddress(entry, $event)">
-                <q-item-main :label="$t('menuItems.sendToThisAddress')" />
+              <q-item v-close-popup clickable @click.native="sendToAddress(entry, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.sendToThisAddress") }}
+                </q-item-section>
               </q-item>
 
-              <q-item v-close-overlay @click.native="copyAddress(entry, $event)">
-                <q-item-main :label="$t('menuItems.copyAddress')" />
+              <q-item v-close-popup clickable @click.native="copyAddress(entry, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.copyAddress") }}
+                </q-item-section>
               </q-item>
             </q-list>
-          </q-context-menu>
+          </q-menu>
         </q-item>
       </q-list>
     </template>
@@ -125,8 +133,9 @@ export default {
               label: this.$t("dialog.buttons.ok")
             }
           })
-          .catch(() => null)
-          .then(() => {
+          .onDismiss(() => null)
+          .onCancel(() => null)
+          .onOk(() => {
             this.$q.notify({
               type: "positive",
               timeout: 1000,
@@ -165,7 +174,7 @@ export default {
       font-weight: 400;
     }
 
-    .q-item-side {
+    .q-item-section {
       display: flex;
       justify-content: center;
       align-items: center;

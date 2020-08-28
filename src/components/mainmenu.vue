@@ -1,39 +1,32 @@
 <template>
   <div>
     <q-btn class="menu" icon="menu" size="md" flat>
-      <q-popover>
-        <q-list separator link>
-          <q-item v-if="!disableSwitchWallet" v-close-overlay @click.native="switchWallet">
-            <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.switchWallet") }}</q-item-tile>
-            </q-item-main>
+      <q-menu>
+        <q-list separator class="menu-list">
+          <q-item v-if="!disableSwitchWallet" v-close-popup clickable @click.native="switchWallet">
+            <q-item-label header>{{ $t("menuItems.switchWallet") }}</q-item-label>
           </q-item>
-          <q-item v-close-overlay @click.native="openSettings">
-            <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.settings") }}</q-item-tile>
-            </q-item-main>
+          <q-item v-close-popup clickable @click.native="openSettings">
+            <q-item-label header>{{ $t("menuItems.settings") }}</q-item-label>
           </q-item>
-          <q-item v-close-overlay @click.native="showAbout(true)">
-            <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.about") }}</q-item-tile>
-            </q-item-main>
+          <q-item v-close-popup clickable @click.native="showAbout(true)">
+            <q-item-label header>{{ $t("menuItems.about") }}</q-item-label>
           </q-item>
-          <q-item v-close-overlay @click.native="exit">
-            <q-item-main>
-              <q-item-tile label>{{ $t("menuItems.exit") }}</q-item-tile>
-            </q-item-main>
+          <q-item v-close-popup clickable @click.native="exit">
+            <q-item-label header>{{ $t("menuItems.exit") }}</q-item-label>
           </q-item>
         </q-list>
-      </q-popover>
+      </q-menu>
     </q-btn>
     <SettingsModal ref="settingsModal" />
-    <q-modal ref="aboutModal" minimized>
+    <!-- TODO: Move this to it's own component -->
+    <q-dialog ref="aboutModal" minimized>
       <div class="about-modal">
-        <img class="q-mb-md" src="statics/loki.svg" height="42" />
+        <img class="q-mb-md" src="loki.svg" height="42" />
 
         <p class="q-my-sm">Wallet Version: v{{ version }}</p>
         <p class="q-my-sm">Deaemon Version: v{{ daemonVersion }}</p>
-        <p class="q-my-sm">Copyright (c) 2018-2019, Loki Project</p>
+        <p class="q-my-sm">Copyright (c) 2018-2020, Loki Project</p>
         <p class="q-my-sm">Copyright (c) 2018, Ryo Currency Project</p>
         <p class="q-my-sm">All rights reserved.</p>
 
@@ -48,13 +41,12 @@
             -
             <a href="#" @click="openExternal('https://www.reddit.com/r/LokiProject/')">Reddit</a>
             -
-            <a href="#" @click="openExternal('https://github.com/loki-project/loki-electron-wallet')">Github</a>
+            <a href="#" @click="openExternal('https://github.com/loki-project/loki-electron-gui-wallet')">Github</a>
           </p>
         </div>
-
         <q-btn color="primary" label="Close" @click="showAbout(false)" />
       </div>
-    </q-modal>
+    </q-dialog>
   </div>
 </template>
 
@@ -113,6 +105,7 @@ export default {
       this.$gateway.confirmClose(this.$t("dialog.switchWallet.restartWalletMessage"), true);
 
       // Allow switching normally because rpc won't be blocked
+      // NB: If this is added back, must use the quasar v1 APIs
       /*
       this.$q
         .dialog({
@@ -149,6 +142,8 @@ export default {
 <style lang="scss">
 .about-modal {
   padding: 25px;
+  background-color: $dark;
+  color: white;
 
   .external-links {
     a {

@@ -14,14 +14,16 @@
   },
   "private": true,
   "scripts": {
-    "dev": "quasar dev -m electron -t mat",
-    "build": "quasar build -m electron -t mat",
-    "release": "quasar build -m electron -t mat --publish=always",
+    "dev": "quasar dev -m electron",
+    "build": "quasar build -m electron",
+    "release": "quasar build -m electron --publish=always",
     "lint": "eslint --fix .",
     "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
     "ready": "npm run lint && npm run format"
   },
   "dependencies": {
+    "@quasar/app": "^2.0.8",
+    "@quasar/extras": "^1.9.4",
     "axios": "^0.18.1",
     "electron-is-dev": "^1.0.1",
     "electron-updater": "^4.2.0",
@@ -32,6 +34,7 @@
     "portscanner": "^2.2.0",
     "promise-queue": "^2.2.5",
     "qrcode.vue": "^1.6.1",
+    "quasar": "^1.13.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "upath": "^1.2.0",
@@ -61,7 +64,6 @@
     "lint-staged": "^10.0.8",
     "node-sass": "^4.13.1",
     "prettier": "^1.19.1",
-    "quasar-cli": "^0.17.26",
     "sass-loader": "^7.1.0",
     "strip-ansi": "^3.0.1"
   },

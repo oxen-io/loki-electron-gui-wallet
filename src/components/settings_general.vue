@@ -30,7 +30,8 @@
             :placeholder="daemon_defaults.rpc_bind_ip"
             :dark="theme == 'dark'"
             disable
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-4" :label="$t('fieldLabels.localDaemonPort') + '(RPC)'">
@@ -43,7 +44,8 @@
             min="1024"
             max="65535"
             :dark="theme == 'dark'"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
       </div>
@@ -56,15 +58,16 @@
             v-model="config_daemon.remote_host"
             :placeholder="daemon_defaults.remote_host"
             :dark="theme == 'dark'"
-            hide-underline
+            borderless
+            dense
           />
           <!-- Remote node presets -->
           <q-btn-dropdown v-if="config.app.net_type === 'mainnet'" class="remote-dropdown" flat>
             <q-list link dark no-border>
-              <q-item v-for="option in remotes" :key="option.host" v-close-overlay @click.native="setPreset(option)">
-                <q-item-main>
-                  <q-item-tile label>{{ option.host }}:{{ option.port }}</q-item-tile>
-                </q-item-main>
+              <q-item v-for="option in remotes" :key="option.host" v-close-popup @click.native="setPreset(option)">
+                <q-item-label>
+                  <q-item-label header>{{ option.host }}:{{ option.port }}</q-item-label>
+                </q-item-label>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -79,7 +82,8 @@
             min="1024"
             max="65535"
             :dark="theme == 'dark'"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
       </div>
@@ -87,14 +91,14 @@
 
     <div class="col q-mt-md pt-sm">
       <LokiField :label="$t('fieldLabels.dataStoragePath')" disable-hover>
-        <q-input v-model="config.app.data_dir" disable :dark="theme == 'dark'" hide-underline />
+        <q-input v-model="config.app.data_dir" disable :dark="theme == 'dark'" borderless dense />
         <input id="dataPath" ref="fileInputData" type="file" webkitdirectory directory hidden @change="setDataPath" />
         <q-btn color="secondary" :text-color="theme == 'dark' ? 'white' : 'dark'" @click="selectPath('data')">{{
           $t("buttons.selectLocation")
         }}</q-btn>
       </LokiField>
       <LokiField :label="$t('fieldLabels.walletStoragePath')" disable-hover>
-        <q-input v-model="config.app.wallet_data_dir" disable :dark="theme == 'dark'" hide-underline />
+        <q-input v-model="config.app.wallet_data_dir" disable :dark="theme == 'dark'" borderless dense />
         <input
           id="walletPath"
           ref="fileInputWallet"
@@ -110,7 +114,7 @@
       </LokiField>
     </div>
 
-    <q-collapsible
+    <q-expansion-item
       :label="$t('strings.advancedOptions')"
       header-class="q-mt-sm non-selectable row reverse advanced-options-label"
     >
@@ -126,7 +130,8 @@
             :step="1"
             min="0"
             max="4"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-6" :label="$t('fieldLabels.walletLogLevel')">
@@ -139,12 +144,14 @@
             :step="1"
             min="0"
             max="4"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
       </div>
 
       <div class="row pl-sm q-mt-md">
+        <!-- TODO: Can be generalised to a "port" (or similar) field -->
         <LokiField class="col-3" :label="$t('fieldLabels.maxIncomingPeers')" :disable="is_remote">
           <q-input
             v-model="config_daemon.in_peers"
@@ -156,7 +163,8 @@
             :step="1"
             min="-1"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-3" :label="$t('fieldLabels.maxOutgoingPeers')" :disable="is_remote">
@@ -170,7 +178,8 @@
             :step="1"
             min="-1"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-3" :label="$t('fieldLabels.limitUploadRate')" :disable="is_remote">
@@ -185,7 +194,8 @@
             :step="1"
             min="-1"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-3" :label="$t('fieldLabels.limitDownloadRate')" :disable="is_remote">
@@ -200,7 +210,8 @@
             :step="1"
             min="-1"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
       </div>
@@ -217,7 +228,8 @@
             :step="1"
             min="1024"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-3" :label="$t('fieldLabels.daemonZMQPort')" :disable="is_remote">
@@ -232,7 +244,8 @@
             :step="1"
             min="1024"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-3" :label="$t('fieldLabels.internalWalletPort')">
@@ -246,7 +259,8 @@
             :step="1"
             min="1024"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
         <LokiField class="col-3" :label="$t('fieldLabels.walletRPCPort')" :disable="is_remote">
@@ -261,11 +275,16 @@
             :step="1"
             min="1024"
             max="65535"
-            hide-underline
+            borderless
+            dense
           />
         </LokiField>
       </div>
-      <q-field :helper="$t('fieldLabels.chooseNetwork')" :label="$t('fieldLabels.network')" orientation="vertical">
+      <LokiField
+        :helper="$t('fieldLabels.chooseNetwork')"
+        :label="$t('fieldLabels.network')"
+        class="network-group-field"
+      >
         <q-option-group
           v-model="config.app.net_type"
           type="radio"
@@ -275,8 +294,8 @@
             { label: 'Test Net', value: 'testnet' }
           ]"
         />
-      </q-field>
-    </q-collapsible>
+      </LokiField>
+    </q-expansion-item>
   </div>
 </template>
 
@@ -362,6 +381,11 @@ export default {
     .q-input-target {
       cursor: default !important;
     }
+  }
+
+  .network-group-field {
+    color: white;
+    display: inline-block;
   }
 
   .q-item,

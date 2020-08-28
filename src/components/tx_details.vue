@@ -1,15 +1,16 @@
 <template>
-  <q-modal v-model="isVisible" maximized>
-    <q-modal-layout>
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="isVisible = false" />
-        <q-toolbar-title>
-          {{ $t("titles.transactionDetails") }}
-        </q-toolbar-title>
-        <q-btn flat class="q-mr-sm" :label="$t('buttons.showTxDetails')" @click="showTxDetails" />
-        <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
-      </q-toolbar>
-
+  <q-dialog v-model="isVisible" maximized>
+    <q-layout container>
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="isVisible = false" />
+          <q-toolbar-title>
+            {{ $t("titles.transactionDetails") }}
+          </q-toolbar-title>
+          <q-btn flat class="q-mr-sm" :label="$t('buttons.showTxDetails')" @click="showTxDetails" />
+          <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
+        </q-toolbar>
+      </q-header>
       <div class="layout-padding">
         <div class="row items-center non-selectable">
           <div class="q-mr-sm">
@@ -118,86 +119,89 @@
 
         <div v-if="tx.type == 'in' || tx.type == 'pool'">
           <q-list no-border>
-            <q-list-header class="q-px-none">
+            <q-item header class="q-px-none">
               {{
                 $t("strings.transactions.sentTo", {
                   type: $t("strings.transactions.types.incoming")
                 })
               }}:
-            </q-list-header>
+            </q-item>
             <q-item class="q-px-none">
-              <q-item-main>
-                <q-item-tile label class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-tile>
-                <q-item-tile class="monospace ellipsis" sublabel>{{ in_tx_address_used.address }}</q-item-tile>
-              </q-item-main>
+              <q-item-label>
+                <q-item-label header class="non-selectable">{{ in_tx_address_used.address_index_text }}</q-item-label>
+                <q-item-label class="monospace ellipsis" caption>{{ in_tx_address_used.address }}</q-item-label>
+              </q-item-label>
 
-              <q-context-menu>
-                <q-list link separator style="min-width: 150px; max-height: 300px;">
-                  <q-item v-close-overlay @click.native="copyAddress(in_tx_address_used.address, $event)">
-                    <q-item-main :label="$t('menuItems.copyAddress')" />
+              <q-menu context-menu>
+                <q-list link separator class="context-menu">
+                  <q-item v-close-popup clickable @click.native="copyAddress(in_tx_address_used.address, $event)">
+                    <q-item-section>
+                      {{ $t("menuItems.copyAddress") }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
-              </q-context-menu>
+              </q-menu>
             </q-item>
           </q-list>
         </div>
 
         <div v-else-if="tx.type == 'out' || tx.type == 'pending'">
           <q-list no-border>
-            <q-list-header class="q-px-none">
+            <q-item header class="q-px-none">
               {{
                 $t("strings.transactions.sentTo", {
                   type: $t("strings.transactions.types.outgoing")
                 })
               }}:
-            </q-list-header>
+            </q-item>
             <template v-if="out_destinations">
               <q-item v-for="destination in out_destinations" :key="destination.address" class="q-px-none">
-                <q-item-main>
-                  <q-item-tile label>{{ destination.name }}</q-item-tile>
-                  <q-item-tile class="monospace ellipsis" sublabel>{{ destination.address }}</q-item-tile>
-                  <q-item-tile sublabel><FormatLoki :amount="destination.amount"/></q-item-tile>
-                </q-item-main>
-                <q-context-menu>
-                  <q-list link separator style="min-width: 150px; max-height: 300px;">
-                    <q-item v-close-overlay @click.native="copyAddress(destination.address, $event)">
-                      <q-item-main :label="$t('menuItems.copyAddress')" />
+                <q-item-label>
+                  <q-item-label header>{{ destination.name }}</q-item-label>
+                  <q-item-label class="monospace ellipsis" caption>{{ destination.address }}</q-item-label>
+                  <q-item-label caption><FormatLoki :amount="destination.amount"/></q-item-label>
+                </q-item-label>
+                <q-menu context-menu>
+                  <q-list separator class="context-menu">
+                    <q-item v-close-popup clickable @click.native="copyAddress(destination.address, $event)">
+                      <q-item-section>
+                        {{ $t("menuItems.copyAddress") }}
+                      </q-item-section>
                     </q-item>
                   </q-list>
-                </q-context-menu>
+                </q-menu>
               </q-item>
             </template>
             <template v-else>
               <q-item class="q-px-none">
-                <q-item-main>
-                  <q-item-tile label>{{ $t("strings.destinationUnknown") }}</q-item-tile>
-                </q-item-main>
+                <q-item-label>
+                  <q-item-label header>{{ $t("strings.destinationUnknown") }}</q-item-label>
+                </q-item-label>
               </q-item>
             </template>
           </q-list>
         </div>
 
-        <q-field class="q-mt-md">
-          <q-input
-            v-model="txNotes"
-            :float-label="$t('fieldLabels.transactionNotes')"
-            :dark="theme == 'dark'"
-            type="textarea"
-            rows="2"
-          />
-        </q-field>
+        <q-input
+          v-model="txNotes"
+          :label="$t('fieldLabels.transactionNotes')"
+          :dark="theme == 'dark'"
+          :text-color="theme == 'dark' ? 'white' : 'dark'"
+          type="textarea"
+          rows="2"
+          dense
+        />
 
-        <q-field class="q-mt-sm">
-          <q-btn
-            :disable="!is_ready"
-            :text-color="theme == 'dark' ? 'white' : 'dark'"
-            :label="$t('buttons.saveTxNotes')"
-            @click="saveTxNotes"
-          />
-        </q-field>
+        <q-btn
+          :disable="!is_ready"
+          :text-color="theme == 'dark' ? 'white' : 'dark'"
+          :label="$t('buttons.saveTxNotes')"
+          color="primary"
+          @click="saveTxNotes"
+        />
       </div>
-    </q-modal-layout>
-  </q-modal>
+    </q-layout>
+  </q-dialog>
 </template>
 
 <script>
@@ -297,10 +301,13 @@ export default {
           ok: {
             label: this.$t("dialog.transactionDetails.ok"),
             color: "primary"
-          }
+          },
+          dark: this.theme == "dark",
+          style: "min-width: 500px; overflow-wrap: break-word;"
         })
-        .then(() => {})
-        .catch(() => {});
+        .onOk(() => {})
+        .onCancel(() => {})
+        .onDismiss(() => {});
     },
     openExplorer() {
       this.$gateway.send("core", "open_explorer", {

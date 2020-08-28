@@ -3,10 +3,9 @@
     <q-stepper ref="stepper" class="no-shadow" :color="theme == 'dark' ? 'light' : 'dark'" dark @step="onStep">
       <q-step default :title="$t('titles.welcome')" class="first-step">
         <div class="welcome-container">
-          <img src="statics/loki.svg" height="100" class="q-mb-md" />
+          <img src="loki.svg" height="100" class="q-mb-md" />
           <div>Wallet Version: v{{ version }}</div>
           <div>Deamon Version: v{{ daemonVersion }}</div>
-
           <LanguageSelect class="q-mt-lg" @select="onLanguageSelected" />
         </div>
       </q-step>
@@ -16,7 +15,7 @@
       </q-step>
     </q-stepper>
 
-    <q-layout-footer v-if="!is_first_page" class="no-shadow q-pa-sm">
+    <q-footer v-if="!is_first_page" class="no-shadow q-pa-sm">
       <div class="row justify-end">
         <div>
           <q-btn flat :label="$t('buttons.back')" @click="clickPrev()" />
@@ -25,7 +24,7 @@
           <q-btn class="q-ml-sm" color="primary" :label="$t('buttons.next')" @click="clickNext()" />
         </div>
       </div>
-    </q-layout-footer>
+    </q-footer>
   </q-page>
 </template>
 

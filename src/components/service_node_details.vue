@@ -1,6 +1,6 @@
 <template>
-  <q-modal v-model="isVisible" class="serviceNodeDetails" maximized>
-    <q-modal-layout>
+  <q-dialog v-model="isVisible" class="serviceNodeDetails" maximized>
+    <q-layout container>
       <q-toolbar slot="header" color="dark" inverted>
         <q-btn flat round dense icon="reply" @click="isVisible = false" />
         <q-toolbar-title>
@@ -98,23 +98,27 @@
         <q-list no-border :dark="theme == 'dark'" class="loki-list">
           <q-list-header class="q-px-none">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-list-header>
           <q-item v-for="contributor in contributors" :key="contributor.address" class="loki-list-item">
-            <q-item-main>
-              <q-item-tile v-if="isMe(contributor)" class="name non-selectable">{{ $t("strings.me") }}</q-item-tile>
-              <q-item-tile v-else class="name non-selectable">{{ contributor.name }}</q-item-tile>
-              <q-item-tile class="address ellipsis non-selectable">{{ contributor.address }}</q-item-tile>
-              <q-item-tile class="non-selectable" sublabel>
+            <q-item-label>
+              <q-item-section v-if="isMe(contributor)" class="name non-selectable">{{
+                $t("strings.me")
+              }}</q-item-section>
+              <q-item-section v-else class="name non-selectable">{{ contributor.name }}</q-item-section>
+              <q-item-section class="address ellipsis non-selectable">{{ contributor.address }}</q-item-section>
+              <q-item-label class="non-selectable" caption>
                 <span v-if="isOperator(contributor)">{{ $t("strings.operator") }} • </span>
                 {{ $t("strings.contribution") }}:
                 <FormatLoki :amount="contributor.amount" raw-value />
-              </q-item-tile>
-            </q-item-main>
-            <q-context-menu>
-              <q-list link separator style="min-width: 150px; max-height: 300px;">
-                <q-item v-close-overlay @click.native="copyAddress(contributor.address, $event)">
-                  <q-item-main :label="$t('menuItems.copyAddress')" />
+              </q-item-label>
+            </q-item-label>
+            <q-menu context-menu>
+              <q-list separator class="context-menu">
+                <q-item v-close-popup @click.native="copyAddress(contributor.address, $event)">
+                  <q-item-section>
+                    {{ $t("menuItems.copyAddress") }}
+                  </q-item-section>
                 </q-item>
               </q-list>
-            </q-context-menu>
+            </q-menu>
           </q-item>
         </q-list>
       </div>
@@ -122,8 +126,8 @@
       <q-inner-loading :visible="unlock_status.sending" :dark="theme == 'dark'">
         <q-spinner color="primary" :size="30" />
       </q-inner-loading>
-    </q-modal-layout>
-  </q-modal>
+    </q-layout>
+  </q-dialog>
 </template>
 
 <script>

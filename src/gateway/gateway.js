@@ -2,7 +2,7 @@ import { ipcRenderer } from "electron";
 import { Notify, Dialog, Loading, LocalStorage } from "quasar";
 import { EventEmitter } from "events";
 import { SCEE } from "./SCEE-Node";
-import { i18n, changeLanguage } from "src/plugins/i18n";
+import { i18n, changeLanguage } from "src/boot/i18n";
 
 export class Gateway extends EventEmitter {
   constructor(app, router) {
@@ -13,10 +13,10 @@ export class Gateway extends EventEmitter {
     this.scee = new SCEE();
 
     // Set the initial language
-    let language = LocalStorage.has("language") ? LocalStorage.get.item("language") : "en-us";
+    let language = LocalStorage.has("language") ? LocalStorage.getItem("language") : "en-us";
     this.setLanguage(language);
 
-    let theme = LocalStorage.has("theme") ? LocalStorage.get.item("theme") : "dark";
+    let theme = LocalStorage.has("theme") ? LocalStorage.getItem("theme") : "dark";
     this.app.store.commit("gateway/set_app_data", {
       config: {
         appearance: {
@@ -84,21 +84,23 @@ export class Gateway extends EventEmitter {
       title: i18n.t(`dialog.${key}.title`),
       message: msg,
       ok: {
-        label: i18n.t(`dialog.${key}.ok`)
+        label: i18n.t(`dialog.${key}.ok`),
+        color: "positive"
       },
       cancel: {
         flat: true,
         label: i18n.t("dialog.buttons.cancel"),
         color: this.app.store.state.gateway.app.config.appearance.theme === "dark" ? "white" : "dark"
-      }
+      },
+      dark: this.app.store.state.gateway.app.config.appearance.theme === "dark"
     })
-      .then(() => {
+      .onOk(() => {
         this.closeDialog = false;
         Loading.hide();
         this.router.replace({ path: "/quit" });
         ipcRenderer.send("confirmClose", restart);
       })
-      .catch(() => {
+      .onCancel(() => {
         this.closeDialog = false;
       });
   }

@@ -6,14 +6,15 @@
           v-model="wallet.name"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.walletName')"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="create"
           @blur="$v.wallet.name.$touch"
         />
       </LokiField>
 
       <LokiField :label="$t('fieldLabels.seedLanguage')">
-        <q-select v-model="wallet.language" :options="languageOptions" :dark="theme == 'dark'" hide-underline />
+        <q-select v-model="wallet.language" :options="languageOptions" :dark="theme == 'dark'" borderless dense />
       </LokiField>
 
       <LokiField :label="$t('fieldLabels.password')" optional>
@@ -22,7 +23,8 @@
           type="password"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.walletPassword')"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="create"
         />
       </LokiField>
@@ -32,14 +34,13 @@
           v-model="wallet.password_confirm"
           type="password"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="create"
         />
       </LokiField>
 
-      <q-field>
-        <q-btn color="primary" :label="$t('buttons.createWallet')" @click="create" />
-      </q-field>
+      <q-btn class="submit-button" color="primary" :label="$t('buttons.createWallet')" @click="create" />
     </div>
   </q-page>
 </template>
@@ -137,6 +138,7 @@ export default {
       // Warn user if no password is set
       let passwordPromise = Promise.resolve();
       if (!this.wallet.password) {
+        // TODO: Password box de-duplicate across components
         passwordPromise = this.$q.dialog({
           title: this.$t("dialog.noPassword.title"),
           message: this.$t("dialog.noPassword.message"),
@@ -147,18 +149,21 @@ export default {
             flat: true,
             label: this.$t("dialog.buttons.cancel"),
             color: this.theme === "dark" ? "white" : "dark"
-          }
+          },
+          dark: this.theme == "dark",
+          color: "positive"
         });
       }
 
       passwordPromise
-        .then(() => {
+        .onOk(() => {
           this.$q.loading.show({
             delay: 0
           });
           this.$gateway.send("wallet", "create_wallet", this.wallet);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     cancel() {
       this.$router.replace({ path: "/wallet-select" });
@@ -169,10 +174,10 @@ export default {
 
 <style lang="scss">
 .create-wallet {
-  .fields {
-    > * {
-      margin-bottom: 16px;
-    }
-  }
+  // .fields {
+  //   > * {
+  //     margin-bottom: 16px;
+  //   }
+  // }
 }
 </style>

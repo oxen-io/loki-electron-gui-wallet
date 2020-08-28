@@ -6,7 +6,8 @@
           v-model="wallet.name"
           :placeholder="$t('placeholders.walletName')"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="import_wallet"
           @blur="$v.wallet.name.$touch"
         />
@@ -18,7 +19,8 @@
           :placeholder="$t('placeholders.selectAFile')"
           disable
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
         />
         <input id="walletPath" ref="fileInput" type="file" hidden @change="setWalletPath" />
         <q-btn
@@ -35,7 +37,8 @@
           :placeholder="$t('placeholders.walletPassword')"
           type="password"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="import_wallet"
         />
       </LokiField>
@@ -45,14 +48,12 @@
           v-model="wallet.password_confirm"
           type="password"
           :dark="theme == 'dark'"
-          hide-underline
+          borderless
+          dense
           @keyup.enter="import_wallet"
         />
       </LokiField>
-
-      <q-field>
-        <q-btn color="primary" :label="$tc('buttons.importWallet', 1)" @click="import_wallet" />
-      </q-field>
+      <q-btn class="submit-button" color="primary" :label="$tc('buttons.importWallet', 1)" @click="import_wallet" />
     </div>
   </q-page>
 </template>

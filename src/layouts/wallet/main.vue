@@ -1,13 +1,13 @@
 <template>
   <q-layout view="hHh Lpr lFf">
-    <q-layout-header class="shift-title">
+    <q-header class="shift-title">
       <MainMenu />
       <q-toolbar-title>
         <div class="flex items-center justify-center" style="margin-top:7px">
-          <img src="statics/loki.svg" height="32" />
+          <img src="loki.svg" height="32" />
         </div>
       </q-toolbar-title>
-    </q-layout-header>
+    </q-header>
 
     <q-page-container>
       <!-- <AddressHeader :address="info.address" :title="info.name" /> -->
@@ -96,6 +96,10 @@ export default {
   .single-icon {
     width: 38px;
     padding: 0;
+  }
+
+  a {
+    text-decoration: none;
   }
 
   .large-btn {

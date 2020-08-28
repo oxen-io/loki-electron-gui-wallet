@@ -20,23 +20,30 @@ export default {
 
       return this.hasPassword()
         .then(hasPassword => {
-          return this.$q.dialog({
+          const sharedOpts = {
             cancel: {
               flat: true,
               label: this.$t("dialog.buttons.cancel"),
               color: this.theme === "dark" ? "white" : "dark"
             },
-            ...other,
-            message: hasPassword ? this.$t("dialog.password.message") : noPasswordMessage,
-            prompt: hasPassword
-              ? {
-                  model: "",
-                  type: "password"
-                }
-              : null
-          });
+            ...other
+          };
+          const hasPasswordOpts = {
+            ...sharedOpts,
+            message: this.$t("dialog.password.message"),
+            prompt: {
+              model: "",
+              type: "password"
+            }
+          };
+          const noPasswordOpts = {
+            ...sharedOpts,
+            message: noPasswordMessage
+          };
+          let usedOpts = hasPassword ? hasPasswordOpts : noPasswordOpts;
+          return this.$q.dialog(usedOpts);
         })
-        .then(password => password || "");
+        .catch(() => {});
     }
   }
 };

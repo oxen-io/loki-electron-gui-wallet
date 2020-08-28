@@ -7,7 +7,7 @@
           {{ info.address }}
         </div>
         <div class="q-item-side">
-          <q-btn color="primary" style="width:25px;" size="sm" icon="file_copy" @click="copyAddress">
+          <q-btn color="primary" padding="xs" size="sm" icon="file_copy" @click="copyAddress">
             <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
               {{ $t("menuItems.copyAddress") }}
             </q-tooltip>
@@ -37,7 +37,7 @@
       </div>
     </template>
 
-    <q-collapsible label="Advanced" header-class="q-mt-sm non-selectable row reverse advanced-options-label">
+    <q-expansion-item label="Advanced" header-class="q-mt-sm non-selectable row reverse advanced-options-label">
       <template v-if="secret.view_key != secret.spend_key">
         <h6 class="q-mb-xs title">{{ $t("strings.viewKey") }}</h6>
         <div class="row">
@@ -45,13 +45,7 @@
             {{ secret.view_key }}
           </div>
           <div class="q-item-side">
-            <q-btn
-              color="primary"
-              style="width:25px;"
-              size="sm"
-              icon="file_copy"
-              @click="copyPrivateKey('view_key', $event)"
-            >
+            <q-btn color="primary" padding="xs" size="sm" icon="file_copy" @click="copyPrivateKey('view_key', $event)">
               <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
                 {{ $t("menuItems.copyViewKey") }}
               </q-tooltip>
@@ -67,13 +61,7 @@
             {{ secret.spend_key }}
           </div>
           <div class="q-item-side">
-            <q-btn
-              color="primary"
-              style="width:25px;"
-              size="sm"
-              icon="file_copy"
-              @click="copyPrivateKey('spend_key', $event)"
-            >
+            <q-btn color="primary" padding="xs" size="sm" icon="file_copy" @click="copyPrivateKey('spend_key', $event)">
               <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
                 {{ $t("menuItems.copySpendKey") }}
               </q-tooltip>
@@ -81,7 +69,7 @@
           </div>
         </div>
       </template>
-    </q-collapsible>
+    </q-expansion-item>
 
     <q-btn class="q-mt-lg" color="primary" :label="$t('buttons.openWallet')" @click="open" />
   </q-page>
@@ -94,6 +82,7 @@ export default {
   computed: mapState({
     info: state => state.gateway.wallet.info,
     secret: state => state.gateway.wallet.secret,
+    theme: state => state.gateway.app.config.appearance.theme,
     walletName() {
       return `Wallet: ${this.info.name}`;
     }
@@ -146,11 +135,15 @@ export default {
           }),
           message: this.$t("dialog.copyPrivateKeys.message"),
           ok: {
-            label: this.$t("dialog.buttons.ok")
-          }
+            label: this.$t("dialog.buttons.ok"),
+            color: "primary"
+          },
+          color: this.theme === "dark" ? "white" : "dark",
+          dark: this.theme === "dark"
         })
-        .catch(() => null)
-        .then(() => {
+        .onDismiss(() => null)
+        .onCancel(() => null)
+        .onOk(() => {
           this.$q.notify({
             type: "positive",
             timeout: 1000,
@@ -165,7 +158,8 @@ export default {
       this.$q.notify({
         type: "positive",
         timeout: 1000,
-        message: this.$t("notification.positive.addressCopied")
+        message: this.$t("notification.positive.addressCopied"),
+        dark: this.theme == "dark"
       });
     }
   }

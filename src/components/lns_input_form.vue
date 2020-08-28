@@ -7,8 +7,9 @@
           v-model.trim="record.name"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsName')"
-          hide-underline
           :disable="disableName"
+          borderless
+          dense
           @blur="$v.record.name.$touch"
         />
       </LokiField>
@@ -21,7 +22,8 @@
           v-model.trim="record.value"
           :dark="theme == 'dark'"
           :placeholder="value_placeholder"
-          hide-underline
+          borderless
+          dense
           @blur="$v.record.value.$touch"
         />
       </LokiField>
@@ -34,7 +36,8 @@
           v-model.trim="record.owner"
           :dark="theme == 'dark'"
           :placeholder="owner_placeholder"
-          hide-underline
+          borderless
+          dense
           @blur="$v.record.owner.$touch"
         />
       </LokiField>
@@ -47,13 +50,13 @@
           v-model.trim="record.backup_owner"
           :dark="theme == 'dark'"
           :placeholder="$t('placeholders.lnsBackupOwner')"
-          hide-underline
+          borderless
+          dense
           @blur="$v.record.backup_owner.$touch"
         />
       </LokiField>
     </div>
-
-    <q-field class="buttons q-pt-sm">
+    <div class="buttons">
       <q-btn
         :disable="!is_able_to_send || disableSubmitButton"
         color="primary"
@@ -61,7 +64,7 @@
         @click="submit()"
       />
       <q-btn v-if="showClearButton" color="secondary" :label="$t('buttons.clear')" @click="clear()" />
-    </q-field>
+    </div>
   </div>
 </template>
 
@@ -264,6 +267,8 @@ export default {
 <style lang="scss">
 .lns-input-form {
   .buttons {
+    margin-top: 6px;
+
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }

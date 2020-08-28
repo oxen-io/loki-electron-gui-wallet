@@ -6,14 +6,14 @@
       </div>
       <q-list class="service-node-list" no-border>
         <q-item v-for="node in service_nodes" :key="node.service_node_pubkey" @click.native="details(node)">
-          <q-item-main>
-            <q-item-tile class="ellipsis" label>{{ node.service_node_pubkey }}</q-item-tile>
-            <q-item-tile sublabel class="non-selectable"
+          <q-item-label>
+            <q-item-label class="ellipsis" header>{{ node.service_node_pubkey }}</q-item-label>
+            <q-item-label caption class="non-selectable"
               >{{ getRole(node) }} • {{ getFee(node) }} • {{ $t("strings.contribution") }}:
               <FormatLoki :amount="node.ourContributionAmount"
-            /></q-item-tile>
-          </q-item-main>
-          <q-item-side>
+            /></q-item-label>
+          </q-item-label>
+          <q-item-section>
             <q-btn
               v-if="node.requested_unlock_height === 0"
               color="primary"
@@ -22,24 +22,28 @@
               :disabled="!is_ready || unlock_status.sending"
               @click.native="unlockWarning(node.service_node_pubkey, $event)"
             />
-            <q-item-tile v-if="node.requested_unlock_height > 0" label>
+            <q-item-label v-if="node.requested_unlock_height > 0" header>
               {{
                 $t("strings.unlockingAtHeight", {
                   number: node.requested_unlock_height
                 })
               }}
-            </q-item-tile>
-          </q-item-side>
-          <q-context-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-overlay @click.native="copyKey(node.service_node_pubkey, $event)">
-                <q-item-main :label="$t('menuItems.copyServiceNodeKey')" />
+            </q-item-label>
+          </q-item-section>
+          <q-menu context-menu>
+            <q-list separator class="context-menu">
+              <q-item v-close-popup clickable @click.native="copyKey(node.service_node_pubkey, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.copyServiceNodeKey") }}
+                </q-item-section>
               </q-item>
-              <q-item v-close-overlay @click.native="openExplorer(node.service_node_pubkey)">
-                <q-item-main :label="$t('menuItems.viewOnExplorer')" />
+              <q-item v-close-popup clickable @click.native="openExplorer(node.service_node_pubkey)">
+                <q-item-section>
+                  {{ $t("menuItems.viewOnExplorer") }}
+                </q-item-section>
               </q-item>
             </q-list>
-          </q-context-menu>
+          </q-menu>
         </q-item>
       </q-list>
     </div>
@@ -126,10 +130,11 @@ export default {
                   color: this.theme == "dark" ? "white" : "dark"
                 }
               })
-              .then(() => {
+              .onOk(() => {
                 this.gatewayUnlock(this.password, this.key, true);
               })
-              .catch(() => {});
+              .onDismiss(() => null)
+              .onCancel(() => null);
             break;
           case -1:
             this.key = null;
@@ -168,10 +173,11 @@ export default {
             color: this.theme === "dark" ? "white" : "dark"
           }
         })
-        .then(() => {
+        .onOk(() => {
           this.unlock(key);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     unlock(key) {
       // We store this as it could change between the 2 step process

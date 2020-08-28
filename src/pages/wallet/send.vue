@@ -9,7 +9,7 @@
       <div class="q-pa-md">
         <div class="row gutter-md">
           <!-- Amount -->
-          <div class="col-6">
+          <div class="col-6 amount">
             <LokiField :label="$t('fieldLabels.amount')" :error="$v.newTx.amount.$error">
               <q-input
                 v-model="newTx.amount"
@@ -18,7 +18,8 @@
                 min="0"
                 :max="unlocked_balance / 1e9"
                 placeholder="0"
-                hide-underline
+                borderless
+                dense
                 @blur="$v.newTx.amount.$touch"
               />
               <q-btn
@@ -32,9 +33,9 @@
           </div>
 
           <!-- Priority -->
-          <div class="col-6">
+          <div class="col-6 priority">
             <LokiField :label="$t('fieldLabels.priority')">
-              <q-select v-model="newTx.priority" :dark="theme == 'dark'" :options="priorityOptions" hide-underline />
+              <q-select v-model="newTx.priority" :dark="theme == 'dark'" :options="priorityOptions" borderless dense />
             </LokiField>
           </div>
         </div>
@@ -46,7 +47,8 @@
               v-model.trim="newTx.address"
               :dark="theme == 'dark'"
               :placeholder="address_placeholder"
-              hide-underline
+              borderless
+              dense
               @blur="$v.newTx.address.$touch"
             />
             <q-btn color="secondary" :text-color="theme == 'dark' ? 'white' : 'dark'" to="addressbook">
@@ -66,7 +68,8 @@
                   count: '16 or 64'
                 })
               "
-              hide-underline
+              borderless
+              dense
               @blur="$v.newTx.payment_id.$touch"
             />
           </LokiField>
@@ -77,45 +80,47 @@
           <LokiField :label="$t('fieldLabels.notes')" optional>
             <q-input
               v-model="newTx.note"
+              class="full-width text-area-loki"
               type="textarea"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.transactionNotes')"
-              hide-underline
+              borderless
+              dense
             />
           </LokiField>
         </div>
 
-        <!-- Save to address book -->
-        <q-field>
-          <q-checkbox
-            v-model="newTx.address_book.save"
-            :label="$t('strings.saveToAddressBook')"
-            :dark="theme == 'dark'"
-          />
-        </q-field>
-
+        <q-checkbox
+          v-model="newTx.address_book.save"
+          :label="$t('strings.saveToAddressBook')"
+          :dark="theme == 'dark'"
+          color="dark"
+        />
         <div v-if="newTx.address_book.save">
           <LokiField :label="$t('fieldLabels.name')" optional>
             <q-input
               v-model="newTx.address_book.name"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.addressBookName')"
-              hide-underline
+              borderless
+              dense
             />
           </LokiField>
           <LokiField class="q-mt-sm" :label="$t('fieldLabels.notes')" optional>
             <q-input
               v-model="newTx.address_book.description"
               type="textarea"
+              class="full-width text-area-loki"
               rows="2"
               :dark="theme == 'dark'"
               :placeholder="$t('placeholders.additionalNotes')"
-              hide-underline
+              borderless
+              dense
             />
           </LokiField>
         </div>
-
-        <q-field class="q-pt-sm">
+        <!-- div required so button below checkbox -->
+        <div>
           <q-btn
             class="send-btn"
             :disable="!is_able_to_send"
@@ -123,7 +128,7 @@
             :label="$t('buttons.send')"
             @click="send()"
           />
-        </q-field>
+        </div>
       </div>
 
       <q-inner-loading :visible="tx_status.sending" :dark="theme == 'dark'">
@@ -336,7 +341,16 @@ export default {
 <style lang="scss">
 .send {
   .send-btn {
+    margin-top: 6px;
     width: 200px;
   }
+}
+
+.amount {
+  padding-right: 10px;
+}
+
+.priority {
+  padding-left: 10px;
 }
 </style>

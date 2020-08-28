@@ -1,54 +1,64 @@
 <template>
   <q-list class="loki-list-item" no-border @click.native="details(address)">
     <q-item>
-      <q-item-main>
-        <q-item-tile class="ellipsis" label>{{ address.address }}</q-item-tile>
-        <q-item-tile v-if="sublabel" sublabel class="non-selectable">{{ sublabel }}</q-item-tile>
-      </q-item-main>
-      <q-item-side>
-        <q-btn flat style="width:25px;" size="md" @click="showQR(address.address, $event)">
-          <img :src="qrImage" height="20" />
+      <q-item-section top class="flex">
+        <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
+        <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
+      </q-item-section>
+      <q-item-section side top>
+        <q-btn flat padding="xs" size="md" @click="showQR(address.address, $event)">
+          <!-- height of 24 makes it equal size as copy -->
+          <img :src="qrImage" height="24" />
           <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
             {{ $t("menuItems.showQRCode") }}
           </q-tooltip>
         </q-btn>
-        <q-btn flat style="width:25px;" size="md" icon="file_copy" @click="copyAddress(address.address, $event)">
+        <q-btn flat padding="xs" size="md" icon="file_copy" @click="copyAddress(address.address, $event)">
           <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
             {{ $t("menuItems.copyAddress") }}
           </q-tooltip>
         </q-btn>
-      </q-item-side>
+      </q-item-section>
     </q-item>
     <template v-if="shouldShowInfo">
-      <q-item-separator />
-      <q-item class="info">
-        <q-item-main class="flex justify-between">
-          <div class="column">
-            <span>{{ $t("strings.lokiBalance") }}</span>
-            <span class="value">{{ address.balance | currency }}</span>
+      <q-separator />
+      <q-item>
+        <q-item-section>
+          <div class="row info-section">
+            <span class="col-sm-4">
+              <span>{{ $t("strings.lokiBalance") }}</span>
+              <br />
+              <span class="value">{{ address.balance | currency }}</span>
+            </span>
+            <span class="col-sm-4">
+              <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
+              <br />
+              <span class="value">{{ address.unlocked_balance | currency }}</span>
+            </span>
+            <span class="col-sm-4">
+              <span>{{ $t("strings.unspentOutputs") }}</span>
+              <br />
+              <span class="value">{{ address.num_unspent_outputs | toString }}</span>
+            </span>
           </div>
-          <div class="column">
-            <span>{{ $t("strings.lokiUnlockedBalance") }}</span>
-            <span class="value">{{ address.unlocked_balance | currency }}</span>
-          </div>
-          <div class="column">
-            <span>{{ $t("strings.unspentOutputs") }}</span>
-            <span class="value">{{ address.num_unspent_outputs | toString }}</span>
-          </div>
-        </q-item-main>
+        </q-item-section>
       </q-item>
     </template>
-    <q-context-menu>
-      <q-list link separator style="min-width: 150px; max-height: 300px;">
-        <q-item v-close-overlay @click.native="details(address)">
-          <q-item-main :label="$t('menuItems.showDetails')" />
+    <q-menu context-menu>
+      <q-list separator class="context-menu">
+        <q-item v-close-popup clickable @click.native="details(address)">
+          <q-item-section>
+            {{ $t("menuItems.showDetails") }}
+          </q-item-section>
         </q-item>
 
-        <q-item v-close-overlay @click.native="copyAddress(address.address, $event)">
-          <q-item-main :label="$t('menuItems.copyAddress')" />
+        <q-item v-close-popup clickable @click.native="copyAddress(address.address, $event)">
+          <q-item-section>
+            {{ $t("menuItems.copyAddress") }}
+          </q-item-section>
         </q-item>
       </q-list>
-    </q-context-menu>
+    </q-menu>
   </q-list>
 </template>
 
@@ -103,10 +113,14 @@ export default {
   computed: {
     qrImage() {
       const image = this.whiteQRIcon ? "qr-code" : "qr-code-grey";
-      return `statics/${image}.svg`;
+      return `${image}.svg`;
     }
   }
 };
 </script>
 
-<style></style>
+<style>
+.info-section {
+  max-height: 3rem;
+}
+</style>

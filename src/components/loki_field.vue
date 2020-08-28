@@ -85,9 +85,18 @@ export default {
     }
 
     .q-input,
-    .q-select,
-    .q-datetime-input {
+    .q-select {
       flex: 1;
+      margin: 0;
+
+      * {
+        color: white;
+      }
+    }
+
+    .q-date {
+      min-width: 100%;
+      max-width: 100%;
     }
 
     .q-btn {

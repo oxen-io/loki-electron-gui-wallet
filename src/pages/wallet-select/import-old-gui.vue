@@ -3,15 +3,15 @@
     <div class="q-mx-md import-old-gui">
       <q-list link dark no-border class="wallet-list">
         <q-item v-for="state in directory_state" :key="state.directory" :class="{ selected: state.selected }">
-          <q-item-side>
-            <q-checkbox v-model="state.selected" />
-          </q-item-side>
-          <q-item-main @click.native="state.selected = !state.selected">
-            <q-item-tile label>{{ state.directory }}</q-item-tile>
-          </q-item-main>
-          <q-item-side>
+          <q-item-section>
+            <q-checkbox v-model="state.selected" dark color="dark" />
+          </q-item-section>
+          <q-item-label @click.native="state.selected = !state.selected">
+            <q-item-label header>{{ state.directory }}</q-item-label>
+          </q-item-label>
+          <q-item-section>
             <q-select v-model="state.type" hide-underline dark class="q-ma-none full-width" :options="selectOptions" />
-          </q-item-side>
+          </q-item-section>
         </q-item>
       </q-list>
 

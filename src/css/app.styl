@@ -1,5 +1,5 @@
 // app global css
-@import '~variables'
+@import 'quasar.variables'
 
 @font-face {
     font-family: 'RobotoMono-Light';
@@ -36,8 +36,8 @@
 h1,h2,h3,h4,h5,h6,
 img,
 .q-list-header,
-.q-layout-header,
-.q-popover .q-item-label,
+.q-header,
+.q-menu .q-item-label,
 .q-list-link .q-item,
 .q-checkbox .q-option-label,
 .infoBox .text,
@@ -69,7 +69,11 @@ footer,
     &.q-ma-none {
         margin: 0;
     }
+}
 
+.text-area-loki {
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
 .q-inner-loading {
@@ -80,12 +84,13 @@ footer,
     text-transform: none;
 }
 
-.layout-padding {
-    padding: 15px 16px !important;
+// At bottom of forms
+.submit-button {
+    margin-top: 6px;
 }
 
-.q-item-sublabel {
-    color: #cecece;
+.layout-padding {
+    padding: 15px 16px !important;
 }
 
 .advanced-options-label .q-item-side-right {
@@ -98,22 +103,21 @@ footer,
     color:white;
 }
 
-.q-layout-header {
+.q-header {
     background: #0A0A0A;
     box-shadow: none;
     border-bottom: 1px solid #333;
     height: 48px;
 
-    .q-toolbar-title {
-        font-size: 16px;
-        line-height: 48px;
-        font-weight: 300;
-    }
-
     &.shift-title {
-        .q-toolbar-title {
-            padding-left: 50px;
-            margin: 0 0 0 16px;
+        .q-toolbar {
+            text-align: center;
+            
+            .q-toolbar-title {
+                font-size: 16px;
+                line-height: 48px;
+                font-weight: 300;
+            }
         }
     }
 
@@ -224,7 +228,7 @@ footer,
     border-radius: 2px;
 }
 
-.q-layout-footer.status-footer {
+.q-footer.status-footer {
     background: #000000;
     color: rgba(255, 255, 255, 0.51);
     border-top: 1px solid #333;
@@ -349,22 +353,36 @@ footer,
     color: #cecece;
 }
 
-.q-popover {
+.q-menu {
     background: #222;
     color:#cecece;
 
-    .q-list-separator > .q-item-division + .q-item-division, .q-item-division + .q-item-separator {
+    .q-list-separator > .q-item-division + .q-item-division, .q-item-division + .q-separator {
         border-top: 1px solid #333;
     }
 }
 
-.header-popover.q-popover {
+.context-menu {
+    min-width: 150px;
+    max-height: 300px;
+    color: white;
+}
+
+.menu-list {
+  .q-item * {
+    color: white;
+  }
+}
+
+.header-popover {
     background: $primary;
     color: white;
-
-    .q-list-separator > .q-item-division + .q-item-division, .q-item-division + .q-item-separator {
-        border-top: 1px solid $loki-green-dark-solid;
-    }
+    max-width: 250px !important;
+    // padding-top: 4px;
+    
+    // .q-list-separator > .q-item-division + .q-item-division, .q-item-division + .q-separator {
+    //     border-top: 1px solid $loki-green-dark-solid;
+    // }
 }
 
 .modal.minimized {
@@ -379,14 +397,20 @@ footer,
 }
 
 .modal {
+    color: #cecece;
+    background-color: $dark;
 
+    .modal-header {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
     .modal-content,
     .modal-body {
         background: $loki-black-80;
-        color:#cecece;
     }
 
-    .q-layout-header {
+    .q-header {
 
         .q-toolbar {
             &>* {
@@ -467,11 +491,8 @@ footer,
     .q-list-header {
         color: #FFFFFF;
     }
-    .q-item-sublabel {
-        color: $loki-black-50;
-    }
 
-    .q-item-separator-component {
+    .q-separator-component {
         background-color: $secondary;
         opacity: 0.4;
     }
@@ -481,10 +502,6 @@ footer,
 
         .q-item, .q-item-side {
             color: white;
-        }
-
-        .q-item-sublabel {
-            color: rgba(255,255,255,0.9);
         }
     }
 
@@ -595,7 +612,7 @@ footer,
 }
 
 .welcome {
-    .q-layout-footer {
+    .q-footer {
         background: $secondary
     }
 }
@@ -603,10 +620,6 @@ footer,
 .address-book, .address-header {
     .q-item-label, .header {
         color: white;
-    }
-
-    .q-item-sublabel {
-        color: $loki-black-50;
     }
 }
 
