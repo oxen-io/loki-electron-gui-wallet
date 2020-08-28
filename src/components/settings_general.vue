@@ -376,14 +376,6 @@ export default {
     margin: 20px 0;
   }
 
-  // .q-radio {
-  //   color: white;
-
-  //   svg {
-  //     color: white;
-  //   }
-  // }
-
   .q-if-disabled {
     cursor: default !important;
     .q-input-target {
