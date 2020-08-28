@@ -1,21 +1,21 @@
 <template>
   <q-page class="welcome">
-    <q-stepper ref="stepper" class="no-shadow" :color="theme == 'dark' ? 'light' : 'dark'" dark @step="onStep">
-      <q-step default :title="$t('titles.welcome')" class="first-step">
+    <q-stepper ref="stepper" v-model="step" class="welcome-stepper" flat dark>
+      <q-step :name="1" :title="$t('titles.welcome')" :done="step > 1" class="first-step">
         <div class="welcome-container">
           <img src="loki.svg" height="100" class="q-mb-md" />
           <div>Wallet Version: v{{ version }}</div>
-          <div>Deamon Version: v{{ daemonVersion }}</div>
+          <div>Deamon Version: {{ daemonVersion }}</div>
           <LanguageSelect class="q-mt-lg" @select="onLanguageSelected" />
         </div>
       </q-step>
 
-      <q-step :title="$t('titles.configure')">
+      <q-step :name="2" :title="$t('titles.configure')">
         <SettingsGeneral ref="settingsGeneral" randomise_remote />
       </q-step>
     </q-stepper>
 
-    <q-footer v-if="!is_first_page" class="no-shadow q-pa-sm">
+    <q-footer v-if="!(step === 1)" class="no-shadow q-pa-sm">
       <div class="row justify-end">
         <div>
           <q-btn flat :label="$t('buttons.back')" @click="clickPrev()" />
@@ -41,7 +41,7 @@ export default {
   },
   data() {
     return {
-      is_first_page: true,
+      step: 1,
       version: ""
     };
   },
@@ -52,8 +52,11 @@ export default {
       return this.pending_config.daemons[this.pending_config.app.net_type];
     },
     daemon: state => state.gateway.daemon,
+
+    // to be fixed
     daemonVersion() {
-      return this.daemon.info.version || "N/A";
+      const dVersion = this.daemon.info.version;
+      return dVersion ? "v" + dVersion : "N/A";
     }
   }),
   mounted() {
@@ -67,11 +70,9 @@ export default {
     });
   },
   methods: {
-    onStep() {
-      this.is_first_page = this.$refs.stepper.steps[0].active;
-    },
     clickNext() {
-      if (this.$refs.stepper.steps[this.$refs.stepper.length - 1].active) {
+      // if the last step i s active, then we want to initialise the config
+      if (this.step === 2) {
         this.$gateway.send("core", "save_config_init", this.pending_config);
         this.$router.replace({ path: "/" });
       } else {
@@ -90,12 +91,20 @@ export default {
 
 <style lang="scss">
 .welcome {
+  height: 100vh;
+
+  .welcome-stepper {
+    height: 100%;
+    // the Loki lighter grey is behind it
+    background: transparent;
+  }
+
   .welcome-container {
+    padding-top: 14vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
   }
 
   .first-step .q-stepper-step-inner {
@@ -123,11 +132,6 @@ export default {
 }
 
 .q-stepper-header {
-  min-height: 50px;
-
-  .q-stepper-tab {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
+  min-height: 10vh;
 }
 </style>

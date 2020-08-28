@@ -27,6 +27,9 @@ export default {
       return this.$i18n.locale;
     },
     options() {
+      console.log("options lang");
+      console.log(languages);
+
       return languages.map(lang => ({
         label: lang.name,
         value: lang.code,

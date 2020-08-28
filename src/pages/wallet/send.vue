@@ -157,7 +157,7 @@ export default {
         amount: 0,
         address: "",
         payment_id: "",
-        priority: 5,
+        priority: { label: this.$t("strings.priorityOptions.blink"), value: 5 },
         address_book: {
           save: false,
           name: "",
