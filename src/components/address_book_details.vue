@@ -223,7 +223,6 @@ export default {
       };
     },
     updateStarred() {
-      console.log("update starred");
       this.newEntry.starred = !this.newEntry.starred;
       return;
     },

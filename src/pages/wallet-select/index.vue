@@ -58,7 +58,6 @@
             <q-item-label class="wallet-name" caption>{{ wallet.name }}</q-item-label>
             <q-item-label class="monospace ellipsis" caption>{{ wallet.address }}</q-item-label>
           </q-item-section>
-
           <q-menu context-menu>
             <q-list separator class="context-menu">
               <q-item v-close-popup clickable @click.native="openWallet(wallet)">

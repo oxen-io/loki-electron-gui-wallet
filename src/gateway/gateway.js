@@ -134,8 +134,6 @@ export class Gateway extends EventEmitter {
 
     switch (decrypted_data.event) {
       case "set_language": {
-        console.log("Decrypted data");
-        console.log(decrypted_data);
         const { lang } = decrypted_data.data;
         this.setLanguage(lang);
         break;
@@ -264,14 +262,11 @@ export class Gateway extends EventEmitter {
   }
 
   setLanguage(lang) {
-    console.log("Lang in setLanguage: " + lang);
     changeLanguage(lang)
       .then(() => {
-        console.log("set the lang in local storage: " + lang);
         LocalStorage.set("language", lang);
       })
-      .catch(err => {
-        console.log("catching error: ", err);
+      .catch(() => {
         Notify.create({
           type: "negative",
           timeout: 2000,

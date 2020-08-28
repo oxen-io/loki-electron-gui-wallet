@@ -1,8 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 // Configuration for your app
 
-module.exports = function(ctx) {
-  console.log(ctx);
+module.exports = function() {
   return {
     // app boot (/src/boot)
     boot: ["i18n", "axios", "vuelidate", "gateway", "timeago"],

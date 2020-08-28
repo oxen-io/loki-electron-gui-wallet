@@ -25,7 +25,6 @@ export default {
   },
   methods: {
     copyContent() {
-      console.log(this);
       clipboard.writeText(this.content);
       this.$q.notify({
         type: "positive",

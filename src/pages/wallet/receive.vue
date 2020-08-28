@@ -121,7 +121,6 @@ export default {
   }),
   methods: {
     details(address) {
-      console.log(address);
       this.$refs.addressDetails.address = address;
       this.$refs.addressDetails.isVisible = true;
     },
