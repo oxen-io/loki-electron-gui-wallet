@@ -8,9 +8,11 @@
     }"
   >
     <q-menu v-if="menu" context-menu>
-      <q-list link separator style="min-width: 150px; max-height: 300px;">
-        <q-item v-close-popup :disabled="img == defaultImg" @click.native="saveIdenticon()">
-          <q-item-label label="Save identicon to file" />
+      <q-list separator class="context-menu">
+        <q-item v-close-popup clickable :disabled="img == defaultImg" @click.native="saveIdenticon()">
+          <q-item-section>
+            Save identicon to file
+          </q-item-section>
         </q-item>
       </q-list>
     </q-menu>

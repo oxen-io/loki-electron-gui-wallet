@@ -31,12 +31,16 @@
             </q-item-label>
           </q-item-section>
           <q-menu context-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-popup @click.native="copyKey(node.service_node_pubkey, $event)">
-                <q-item-label :label="$t('menuItems.copyServiceNodeKey')" />
+            <q-list separator class="context-menu">
+              <q-item v-close-popup clickable @click.native="copyKey(node.service_node_pubkey, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.copyServiceNodeKey") }}
+                </q-item-section>
               </q-item>
-              <q-item v-close-popup @click.native="openExplorer(node.service_node_pubkey)">
-                <q-item-label :label="$t('menuItems.viewOnExplorer')" />
+              <q-item v-close-popup clickable @click.native="openExplorer(node.service_node_pubkey)">
+                <q-item-section>
+                  {{ $t("menuItems.viewOnExplorer") }}
+                </q-item-section>
               </q-item>
             </q-list>
           </q-menu>

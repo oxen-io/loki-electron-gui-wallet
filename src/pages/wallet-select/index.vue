@@ -60,13 +60,17 @@
           </q-item-section>
 
           <q-menu context-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-popup @click.native="openWallet(wallet)">
-                <q-item-label :label="$t('menuItems.openWallet')" />
+            <q-list separator class="context-menu">
+              <q-item v-close-popup clickable @click.native="openWallet(wallet)">
+                <q-item-section>
+                  {{ $t("menuItems.openWallet") }}
+                </q-item-section>
               </q-item>
 
-              <q-item v-close-popup @click.native="copyAddress(wallet.address, $event)">
-                <q-item-label :label="$t('menuItems.copyAddress')" />
+              <q-item v-close-popup clickable @click.native="copyAddress(wallet.address, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.copyAddress") }}
+                </q-item-section>
               </q-item>
             </q-list>
           </q-menu>

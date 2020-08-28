@@ -30,7 +30,7 @@
           </q-item-section>
 
           <q-menu context-menu>
-            <q-list class="address-options-menu">
+            <q-list class="context-menu">
               <q-item v-close-popup clickable @click.native="details(entry)">
                 <q-item-section>
                   {{ $t("menuItems.showDetails") }}
@@ -155,12 +155,6 @@ export default {
 </script>
 
 <style lang="scss">
-.address-options-menu {
-  min-width: 150px;
-  max-height: 300px;
-  color: white;
-}
-
 .address-book {
   .header {
     font-size: 14px;

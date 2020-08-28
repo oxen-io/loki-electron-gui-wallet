@@ -63,9 +63,13 @@
             />
           </LokiField>
 
-          <q-field v-if="mode == 'edit'">
-            <q-btn class="float-right" color="red" :label="$t('buttons.delete')" @click="deleteEntry()" />
-          </q-field>
+          <q-btn
+            v-if="mode == 'edit'"
+            class="submit-button"
+            color="red"
+            :label="$t('buttons.delete')"
+            @click="deleteEntry()"
+          />
         </div>
       </q-page-container>
     </q-layout>

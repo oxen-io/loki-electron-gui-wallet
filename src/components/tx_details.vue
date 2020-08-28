@@ -133,9 +133,11 @@
               </q-item-label>
 
               <q-menu context-menu>
-                <q-list link separator style="min-width: 150px; max-height: 300px;">
-                  <q-item v-close-popup @click.native="copyAddress(in_tx_address_used.address, $event)">
-                    <q-item-label :label="$t('menuItems.copyAddress')" />
+                <q-list link separator class="context-menu">
+                  <q-item v-close-popup clickable @click.native="copyAddress(in_tx_address_used.address, $event)">
+                    <q-item-section>
+                      {{ $t("menuItems.copyAddress") }}
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -160,9 +162,11 @@
                   <q-item-label caption><FormatLoki :amount="destination.amount"/></q-item-label>
                 </q-item-label>
                 <q-menu context-menu>
-                  <q-list link separator style="min-width: 150px; max-height: 300px;">
-                    <q-item v-close-popup @click.native="copyAddress(destination.address, $event)">
-                      <q-item-label :label="$t('menuItems.copyAddress')" />
+                  <q-list separator class="context-menu">
+                    <q-item v-close-popup clickable @click.native="copyAddress(destination.address, $event)">
+                      <q-item-section>
+                        {{ $t("menuItems.copyAddress") }}
+                      </q-item-section>
                     </q-item>
                   </q-list>
                 </q-menu>

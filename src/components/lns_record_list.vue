@@ -42,27 +42,44 @@
         </q-item-section>
 
         <q-menu context-menu>
-          <q-list link separator style="min-width: 150px; max-height: 300px;">
+          <q-list separator class="context-menu">
             <template v-if="!isLocked(record)">
-              <q-item v-close-popup @click.native="copy(record.name, $event, $t('notification.positive.nameCopied'))">
-                <q-item-label :label="$t('menuItems.copyName')" />
+              <q-item
+                v-close-popup
+                clickable
+                @click.native="copy(record.name, $event, $t('notification.positive.nameCopied'))"
+              >
+                <q-item-section>
+                  {{ $t("menuItems.copyName") }}
+                </q-item-section>
               </q-item>
 
-              <q-item v-close-popup @click.native="copyValue(record, $event)">
-                <q-item-label :label="record | copyValue" />
+              <q-item v-close-popup clickable @click.native="copyValue(record, $event)">
+                <q-item-section>
+                  {{ record | copyValue }}
+                </q-item-section>
               </q-item>
             </template>
 
-            <q-item v-close-popup @click.native="copy(record.owner, $event, $t('notification.positive.ownerCopied'))">
-              <q-item-label :label="$t('menuItems.copyOwner')" />
+            <q-item
+              v-close-popup
+              clickable
+              @click.native="copy(record.owner, $event, $t('notification.positive.ownerCopied'))"
+            >
+              <q-item-section>
+                {{ $t("menuItems.copyOwner") }}
+              </q-item-section>
             </q-item>
 
             <q-item
               v-if="record.backup_owner !== ''"
               v-close-popup
+              clickable
               @click.native="copy(record.backup_owner, $event, $t('notification.positive.backupOwnerCopied'))"
             >
-              <q-item-label :label="$t('menuItems.copyBackupOwner')" />
+              <q-item-section>
+                {{ $t("menuItems.copyBackupOwner") }}
+              </q-item-section>
             </q-item>
           </q-list>
         </q-menu>

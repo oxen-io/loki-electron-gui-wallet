@@ -163,13 +163,15 @@ export default {
           title: this.$t("dialog.sweepAllWarning.title"),
           message: this.$t("dialog.sweepAllWarning.message"),
           ok: {
-            label: this.$t("dialog.sweepAllWarning.ok")
+            label: this.$t("dialog.sweepAllWarning.ok"),
+            color: "primary"
           },
           cancel: {
             flat: true,
             label: this.$t("dialog.buttons.cancel"),
             color: this.theme === "dark" ? "white" : "dark"
-          }
+          },
+          dark: this.theme === "dark"
         })
         .onOk(() => {
           this.sweepAll();

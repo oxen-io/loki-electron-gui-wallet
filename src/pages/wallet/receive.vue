@@ -59,7 +59,7 @@
             <QrcodeVue ref="qr" :value="QR.address" size="240"> </QrcodeVue>
             <!-- This menu appears on right click of QR code -->
             <q-menu context-menu>
-              <q-list class="qr-options-menu">
+              <q-list class="context-menu">
                 <q-item v-close-popup clickable @click.native="copyQR()">
                   <q-item-section>
                     {{ $t("menuItems.copyQR") }}
