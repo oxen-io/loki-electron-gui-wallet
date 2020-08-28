@@ -8,10 +8,8 @@
 
 <script>
 const { clipboard } = require("electron");
-import { copyMixin } from "../../mixins/copyMixin.js";
 export default {
   name: "CopyIcon",
-  mixins: [copyMixin],
   props: {
     content: {
       type: String,
