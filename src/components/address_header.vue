@@ -1,22 +1,26 @@
 <template>
   <div>
     <q-item-section class="self-start">
-      <q-item-label header="" class="title non-selectable">{{ title }}</q-item-label>
-      <q-item-label class="break-all" header>{{ address }}</q-item-label>
+      <q-item-label class="title non-selectable">{{ title }}</q-item-label>
+      <q-item-label class="row">
+        <q-item-section class="break-all" style="font-size: 18px">
+          {{ address }}
+        </q-item-section>
+        <q-item-section v-if="showCopy" side>
+          <q-btn ref="copy" color="primary" padding="xs" size="sm" icon="file_copy" @click="copyAddress">
+            <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
+              {{ $t("menuItems.copyAddress") }}
+            </q-tooltip>
+          </q-btn>
+        </q-item-section>
+      </q-item-label>
       <q-item-label v-if="paymentId" header>{{ $t("fieldLabels.paymentId") }}: {{ paymentId }}</q-item-label>
       <q-item-label v-if="extra" header class="extra non-selectable">{{ extra }}</q-item-label>
     </q-item-section>
-    <q-item-section v-if="showCopy">
-      <q-btn ref="copy" color="primary" style="width:25px;" size="sm" icon="file_copy" @click="copyAddress">
-        <q-tooltip anchor="center left" self="center right" :offset="[5, 10]">
-          {{ $t("menuItems.copyAddress") }}
-        </q-tooltip>
-      </q-btn>
-    </q-item-section>
 
     <q-menu context-menu>
-      <q-list link separator style="min-width: 150px; max-height: 300px;">
-        <q-item v-close-popup @click.native="copyAddress($event)">
+      <q-list separator style="min-width: 150px; max-height: 300px;">
+        <q-item v-close-popup clickable @click.native="copyAddress($event)">
           <q-item-label :label="$t('menuItems.copyAddress')" />
         </q-item>
       </q-list>
@@ -97,8 +101,8 @@ export default {
 
 <style lang="scss">
 .title {
-  font-size: 16px;
-  margin-bottom: 2px;
+  font-size: 18px;
+  margin-bottom: 4px;
   color: white;
 }
 

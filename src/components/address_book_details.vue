@@ -33,7 +33,6 @@
               :icon="newEntry.starred ? 'star' : 'star_border'"
               @click="updateStarred"
             />
-            <!-- <q-btn flat icon="star" /> -->
           </LokiField>
           <LokiField :label="$t('fieldLabels.name')">
             <q-input v-model.trim="newEntry.name" :dark="theme == 'dark'" borderless dense />
@@ -97,7 +96,6 @@
                 <q-icon name="history" size="24px" />
                 <span class="vertical-middle q-ml-xs">{{ $t("strings.recentTransactionsWithAddress") }}</span>
               </div>
-
               <TxList :key="entry.address" type="all_in" :limit="5" :to-outgoing-address="entry.address" />
             </div>
           </template>

@@ -12,33 +12,41 @@
           class="loki-list-item"
           @click.native="details(entry)"
         >
-          <q-item-label>
-            <q-item-label class="ellipsis" header>{{ entry.address }}</q-item-label>
-            <q-item-label caption class="non-selectable">{{ entry.name }}</q-item-label>
-          </q-item-label>
           <q-item-section>
-            <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
-            <q-btn
-              color="secondary"
-              style="margin-left: 10px;"
-              :label="$t('buttons.send')"
-              :disabled="view_only"
-              @click="sendToAddress(entry, $event)"
-            />
+            <q-item-label class="ellipsis">{{ entry.address }}</q-item-label>
+            <q-item-label class="non-selectable" caption>{{ entry.name }}</q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-item-label>
+              <q-icon size="24px" :name="entry.starred ? 'star' : 'star_border'" />
+              <q-btn
+                color="secondary"
+                style="margin-left: 10px;"
+                :label="$t('buttons.send')"
+                :disabled="view_only"
+                @click="sendToAddress(entry, $event)"
+              />
+            </q-item-label>
           </q-item-section>
 
           <q-menu context-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-popup @click.native="details(entry)">
-                <q-item-label :label="$t('menuItems.showDetails')" />
+            <q-list class="address-options-menu">
+              <q-item v-close-popup clickable @click.native="details(entry)">
+                <q-item-section>
+                  {{ $t("menuItems.showDetails") }}
+                </q-item-section>
               </q-item>
 
-              <q-item v-close-popup @click.native="sendToAddress(entry, $event)">
-                <q-item-label :label="$t('menuItems.sendToThisAddress')" />
+              <q-item v-close-popup clickable @click.native="sendToAddress(entry, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.sendToThisAddress") }}
+                </q-item-section>
               </q-item>
 
-              <q-item v-close-popup @click.native="copyAddress(entry, $event)">
-                <q-item-label :label="$t('menuItems.copyAddress')" />
+              <q-item v-close-popup clickable @click.native="copyAddress(entry, $event)">
+                <q-item-section>
+                  {{ $t("menuItems.copyAddress") }}
+                </q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -147,6 +155,12 @@ export default {
 </script>
 
 <style lang="scss">
+.address-options-menu {
+  min-width: 150px;
+  max-height: 300px;
+  color: white;
+}
+
 .address-book {
   .header {
     font-size: 14px;

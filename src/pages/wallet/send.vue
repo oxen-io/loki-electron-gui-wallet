@@ -9,7 +9,7 @@
       <div class="q-pa-md">
         <div class="row gutter-md">
           <!-- Amount -->
-          <div class="col-6">
+          <div class="col-6 amount">
             <LokiField :label="$t('fieldLabels.amount')" :error="$v.newTx.amount.$error">
               <q-input
                 v-model="newTx.amount"
@@ -33,7 +33,7 @@
           </div>
 
           <!-- Priority -->
-          <div class="col-6">
+          <div class="col-6 priority">
             <LokiField :label="$t('fieldLabels.priority')">
               <q-select v-model="newTx.priority" :dark="theme == 'dark'" :options="priorityOptions" borderless dense />
             </LokiField>
@@ -344,5 +344,13 @@ export default {
     margin-top: 6px;
     width: 200px;
   }
+}
+
+.amount {
+  padding-right: 10px;
+}
+
+.priority {
+  padding-left: 10px;
 }
 </style>
