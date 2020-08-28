@@ -19,19 +19,25 @@
             <q-btn class="single-icon" size="md" icon="swap_horiz" />
           </router-link>
           <router-link to="/wallet/send">
-            <q-btn class="large-btn" :label="$t('buttons.send')" size="md" icon-right="arrow_right_alt" align="left" />
+            <q-btn
+              class="large-btn"
+              :label="$t('buttons.send')"
+              size="md"
+              icon-right="arrow_right_alt"
+              align="between"
+            />
           </router-link>
           <router-link to="/wallet/receive">
-            <q-btn class="large-btn" :label="$t('buttons.receive')" size="md" icon-right="save_alt" align="left" />
+            <q-btn class="large-btn" :label="$t('buttons.receive')" size="md" icon-right="save_alt" align="between" />
           </router-link>
           <router-link to="/wallet/servicenode">
-            <q-btn class="large-btn" :label="$t('buttons.serviceNode')" size="md" icon-right="router" align="left" />
+            <q-btn class="large-btn" :label="$t('buttons.serviceNode')" size="md" icon-right="router" align="between" />
           </router-link>
           <router-link to="/wallet/lns">
-            <q-btn class="large-btn" :label="$t('buttons.lns')" size="md" icon-right="text_fields" align="left" />
+            <q-btn class="large-btn" :label="$t('buttons.lns')" size="md" icon-right="text_fields" align="between" />
           </router-link>
           <router-link to="/wallet/advanced">
-            <q-btn class="large-btn" :label="$t('buttons.advanced')" size="md" icon-right="tune" align="left" />
+            <q-btn class="large-btn" :label="$t('buttons.advanced')" size="md" icon-right="tune" align="between" />
           </router-link>
           <router-link to="/wallet/addressbook" class="address">
             <q-btn class="single-icon" size="md" icon="person" />

@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="isVisible" maximized>
-    <q-layout container>
+    <q-layout>
       <q-header>
         <q-toolbar color="dark" inverted>
           <q-btn flat round dense icon="reply" @click="isVisible = false" />

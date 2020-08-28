@@ -109,7 +109,7 @@
     <!-- RESCAN MODAL -->
     <q-dialog v-model="modals.rescan.visible" minimized>
       <div class="modal">
-        <div class="modal-header">{{ $t("titles.rescanWallet") }}</div>
+        <div class="a-ma-lg modal-header">{{ $t("titles.rescanWallet") }}</div>
         <div class="q-ma-lg">
           <p>{{ $t("strings.rescanModalDescription") }}</p>
 

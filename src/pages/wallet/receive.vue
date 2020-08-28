@@ -178,11 +178,6 @@ export default {
   .loki-list-item {
     cursor: pointer;
 
-    .q-item {
-      padding-top: 4px;
-      padding-bottom: 4px;
-    }
-
     .q-item-section {
       display: flex;
       justify-content: center;

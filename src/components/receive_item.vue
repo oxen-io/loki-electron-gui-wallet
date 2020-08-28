@@ -1,23 +1,25 @@
 <template>
   <q-list class="loki-list-item" no-border @click.native="details(address)">
     <q-item>
-      <q-item-section top class="flex">
-        <q-item-label class="ellipsis" header>{{ address.address }}</q-item-label>
+      <q-item-section class="flex">
+        <q-item-label class="ellipsis">{{ address.address }}</q-item-label>
         <q-item-label v-if="sublabel" caption class="non-selectable">{{ sublabel }}</q-item-label>
       </q-item-section>
-      <q-item-section side top>
-        <q-btn flat padding="xs" size="md" @click="showQR(address.address, $event)">
-          <!-- height of 24 makes it equal size as copy -->
-          <img :src="qrImage" height="24" />
-          <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
-            {{ $t("menuItems.showQRCode") }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn flat padding="xs" size="md" icon="file_copy" @click="copyAddress(address.address, $event)">
-          <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
-            {{ $t("menuItems.copyAddress") }}
-          </q-tooltip>
-        </q-btn>
+      <q-item-section side>
+        <div class="row">
+          <q-btn style="margin-right: 4px;" flat padding="xs" size="md" @click="showQR(address.address, $event)">
+            <!-- height of 24 makes it equal size as copy -->
+            <img :src="qrImage" height="24" />
+            <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
+              {{ $t("menuItems.showQRCode") }}
+            </q-tooltip>
+          </q-btn>
+          <q-btn flat padding="xs" size="md" icon="file_copy" @click="copyAddress(address.address, $event)">
+            <q-tooltip anchor="bottom right" self="top right" :offset="[0, 5]">
+              {{ $t("menuItems.copyAddress") }}
+            </q-tooltip>
+          </q-btn>
+        </div>
       </q-item-section>
     </q-item>
     <template v-if="shouldShowInfo">
