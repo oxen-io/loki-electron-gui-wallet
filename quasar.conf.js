@@ -30,6 +30,15 @@ module.exports = function() {
                     exclude: /(node_modules|quasar)/
                 })
                 */
+      },
+      chainWebpack(chain) {
+        chain.module
+          .rule("images")
+          .use("url-loader")
+          .tap(options => {
+            options.name = "img/[path][name].[ext]";
+            return options;
+          });
       }
     },
     devServer: {
