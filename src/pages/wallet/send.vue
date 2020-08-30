@@ -152,22 +152,23 @@ export default {
   },
   mixins: [WalletPassword],
   data() {
+    let priorityOptions = [
+      { label: this.$t("strings.priorityOptions.blink"), value: 5 }, // Blink
+      { label: this.$t("strings.priorityOptions.slow"), value: 1 } // Slow
+    ];
     return {
       newTx: {
         amount: 0,
         address: "",
         payment_id: "",
-        priority: 5,
+        priority: priorityOptions[0],
         address_book: {
           save: false,
           name: "",
           description: ""
         }
       },
-      priorityOptions: [
-        { label: this.$t("strings.priorityOptions.blink"), value: 5 }, // Blink
-        { label: this.$t("strings.priorityOptions.slow"), value: 1 } // Slow
-      ]
+      priorityOptions: priorityOptions
     };
   },
   computed: mapState({

@@ -401,7 +401,9 @@ footer,
     background-color: $dark;
 
     .modal-header {
-        text-align: center;
+        margin-top: 6px;
+        margin-left: 24px;
+        text-align: left;
         font-size: 24px;
         font-weight: bold;
     }
@@ -419,6 +421,21 @@ footer,
         }
     }
 
+}
+
+.q-radio {
+    svg {
+        color: #cecece;
+    }
+}
+
+.qr-code-modal {
+  padding: "25px";
+  color: white;
+
+  .qr-code-card {
+    background-color: $dark;
+  }
 }
 
 .loki-green {
@@ -480,10 +497,6 @@ footer,
         .q-icon {
             color: white;
         }
-
-        .q-item-sublabel {
-            color: white
-        }
     }
 }
 
@@ -516,6 +529,11 @@ footer,
         background: #313131;
         -webkit-transition: background-color 0.2s ease-in;
         transition: background-color 0.2s ease-in;
+
+        font-size: 16px;
+        color: #cecece;
+        padding-top: 6px;
+        padding-bottom: 6px;
 
         margin: 0 16px;
         border-radius: 3px;

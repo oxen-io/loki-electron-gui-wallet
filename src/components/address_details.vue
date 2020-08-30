@@ -108,22 +108,25 @@
       </q-page-container>
     </q-layout>
     <template v-if="address != null">
-      <q-dialog v-model="isQRCodeVisible" minimized :content-css="{ padding: '25px' }">
-        <div class="text-center q-mb-sm q-pa-md" style="background: white;">
-          <QrcodeVue ref="qr" :value="address.address" size="240"> </QrcodeVue>
-          <q-menu content-menu>
-            <q-list link separator style="min-width: 150px; max-height: 300px;">
-              <q-item v-close-popup @click.native="copyQR()">
-                <q-item-label :label="$t('menuItems.copyQR')" />
-              </q-item>
-              <q-item v-close-popup @click.native="saveQR()">
-                <q-item-label :label="$t('menuItems.saveQR')" />
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div>
-
-        <q-btn color="primary" :label="$t('buttons.close')" @click="isQRCodeVisible = false" />
+      <q-dialog v-model="isQRCodeVisible" minimized :content-class="'qr-code-modal'">
+        <q-card class="qr-code-card">
+          <div class="text-center q-mb-sm q-pa-md" style="background: white;">
+            <QrcodeVue ref="qr" :value="address.address" size="240"> </QrcodeVue>
+            <q-menu content-menu>
+              <q-list link separator style="min-width: 150px; max-height: 300px;">
+                <q-item v-close-popup @click.native="copyQR()">
+                  <q-item-label :label="$t('menuItems.copyQR')" />
+                </q-item>
+                <q-item v-close-popup @click.native="saveQR()">
+                  <q-item-label :label="$t('menuItems.saveQR')" />
+                </q-item>
+              </q-list>
+            </q-menu>
+          </div>
+          <q-card-actions>
+            <q-btn color="primary" :label="$t('buttons.close')" @click="isQRCodeVisible = false" />
+          </q-card-actions>
+        </q-card>
       </q-dialog>
     </template>
   </q-dialog>

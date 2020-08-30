@@ -164,16 +164,6 @@ export default {
 </script>
 
 <style lang="scss">
-.qr-code-modal {
-  // background-color: $dark;
-  padding: "25px";
-  color: white;
-
-  .qr-code-card {
-    background-color: $dark;
-  }
-}
-
 .qr-options-menu {
   min-width: 150px;
   max-height: 300px;
@@ -187,11 +177,6 @@ export default {
 
   .loki-list-item {
     cursor: pointer;
-
-    .q-item {
-      padding-top: 4px;
-      padding-bottom: 4px;
-    }
 
     .q-item-section {
       display: flex;
