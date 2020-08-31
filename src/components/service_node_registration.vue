@@ -114,6 +114,7 @@ export default {
       });
       passwordDialog
         .onOk(password => {
+          // in case of no password
           password = password || "";
           this.$store.commit("gateway/set_snode_status", {
             registration: {
