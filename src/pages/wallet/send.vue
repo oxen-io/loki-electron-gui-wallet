@@ -131,8 +131,8 @@
         </div>
       </div>
 
-      <q-inner-loading :visible="tx_status.sending" :dark="theme == 'dark'">
-        <q-spinner color="primary" :size="30" />
+      <q-inner-loading :showing="tx_status.sending" :dark="theme == 'dark'">
+        <q-spinner color="primary" size="30" />
       </q-inner-loading>
     </template>
   </q-page>
@@ -264,7 +264,7 @@ export default {
       this.newTx.payment_id = info.payment_id;
     },
 
-    send: function() {
+    async send() {
       this.$v.newTx.$touch();
 
       if (this.newTx.amount < 0) {
@@ -315,14 +315,19 @@ export default {
         return;
       }
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.transfer.title"),
         noPasswordMessage: this.$t("dialog.transfer.message"),
         ok: {
-          label: this.$t("dialog.transfer.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.transfer.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          password = password || "";
           this.$store.commit("gateway/set_tx_status", {
             code: 1,
             message: "Sending transaction",
@@ -333,7 +338,8 @@ export default {
           });
           this.$gateway.send("wallet", "transfer", newTx);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     }
   }
 };

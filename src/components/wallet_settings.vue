@@ -382,6 +382,7 @@ export default {
       });
       passwordDialog
         .onOk(password => {
+          // if no password set
           password = password || "";
           this.$gateway.send("wallet", "get_private_keys", {
             password
@@ -441,21 +442,27 @@ export default {
     setKeyImageImportPath(file) {
       this.modals.key_image.import_path = file.target.files[0].path;
     },
-    doKeyImages() {
+    async doKeyImages() {
       this.hideModal("key_image");
 
       const type = this.$t(`dialog.keyImages.${this.modals.key_image.type.toLowerCase()}`);
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.keyImages.title", { type }),
         noPasswordMessage: this.$t("dialog.keyImages.message", {
           type: type.toLocaleLowerCase(this.locale)
         }),
         ok: {
-          label: type.toLocaleUpperCase(this.locale)
-        }
-      })
-        .then(password => {
+          label: type.toLocaleUpperCase(this.locale),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          // if no password set
+          password = password || "";
           if (this.modals.key_image.type == "Export")
             this.$gateway.send("wallet", "export_key_images", {
               password: password,
@@ -467,7 +474,8 @@ export default {
               path: this.modals.key_image.import_path
             });
         })
-        .catch(() => {});
+        .onCancel(() => {})
+        .onDismiss(() => {});
     },
     doChangePassword() {
       let old_password = this.modals.change_password.old_password;

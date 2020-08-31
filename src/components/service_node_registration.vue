@@ -32,8 +32,8 @@
       />
     </div>
 
-    <q-inner-loading :visible="registration_status.sending" :dark="theme == 'dark'">
-      <q-spinner color="primary" :size="30" />
+    <q-inner-loading :showing="registration_status.sending" :dark="theme == 'dark'">
+      <q-spinner color="primary" size="30" />
     </q-inner-loading>
   </div>
 </template>
@@ -90,7 +90,7 @@ export default {
     }
   },
   methods: {
-    register() {
+    async register() {
       this.$v.registration_string.$touch();
 
       if (this.$v.registration_string.$error) {
@@ -102,14 +102,19 @@ export default {
         return;
       }
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.registerServiceNode.title"),
         noPasswordMessage: this.$t("dialog.registerServiceNode.message"),
         ok: {
-          label: this.$t("dialog.registerServiceNode.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.registerServiceNode.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          password = password || "";
           this.$store.commit("gateway/set_snode_status", {
             registration: {
               code: 1,
@@ -122,7 +127,8 @@ export default {
             string: this.registration_string.trim()
           });
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     onPaste() {
       this.$nextTick(() => {

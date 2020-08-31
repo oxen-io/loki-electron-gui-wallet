@@ -1,131 +1,132 @@
 <template>
-  <q-dialog v-model="isVisible" class="serviceNodeDetails" maximized>
-    <q-layout container>
-      <q-toolbar slot="header" color="dark" inverted>
-        <q-btn flat round dense icon="reply" @click="isVisible = false" />
-        <q-toolbar-title>
-          {{ $t("titles.serviceNodeDetails") }}
-        </q-toolbar-title>
-        <q-btn
-          v-if="node.requested_unlock_height === 0"
-          class="q-mr-sm"
-          color="primary"
-          :disabled="!is_ready || unlock_status.sending"
-          :label="$t('buttons.unlock')"
-          @click="unlock(node.service_node_pubkey, $event)"
-        />
-        <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
-      </q-toolbar>
+  <q-dialog v-model="isVisible" class="serviceNodeDetails" maximized="">
+    <q-layout>
+      <q-header>
+        <q-toolbar color="dark" inverted>
+          <q-btn flat round dense icon="reply" @click="isVisible = false" />
+          <q-toolbar-title>
+            {{ $t("titles.serviceNodeDetails") }}
+          </q-toolbar-title>
+          <q-btn
+            v-if="node.requested_unlock_height === 0"
+            class="q-mr-sm"
+            color="primary"
+            :disabled="!is_ready || unlock_status.sending"
+            :label="$t('buttons.unlock')"
+            @click="unlock(node.service_node_pubkey, $event)"
+          />
+          <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
+        </q-toolbar>
+      </q-header>
+      <q-page-container>
+        <div class="layout-padding">
+          <h6 class="q-mt-xs q-mb-none text-weight-light">
+            {{ $t("strings.serviceNodeDetails.serviceNodeKey") }}
+          </h6>
+          <p class="break-all">{{ node.service_node_pubkey }}</p>
 
-      <div class="layout-padding">
-        <h6 class="q-mt-xs q-mb-none text-weight-light">
-          {{ $t("strings.serviceNodeDetails.serviceNodeKey") }}
-        </h6>
-        <p class="break-all">{{ node.service_node_pubkey }}</p>
-
-        <div class="info row justify-between">
-          <div class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.stakingRequirement") }}</span>
+          <div class="info row justify-between">
+            <div class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.stakingRequirement") }}</span>
+                </div>
+                <div class="value">
+                  <span><FormatLoki :amount="node.staking_requirement" raw-value/></span>
+                </div>
               </div>
-              <div class="value">
-                <span><FormatLoki :amount="node.staking_requirement" raw-value/></span>
+            </div>
+            <div class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.totalContributed") }}</span>
+                </div>
+                <div class="value">
+                  <span><FormatLoki :amount="node.total_contributed" raw-value/></span>
+                </div>
+              </div>
+            </div>
+            <div class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.registrationHeight") }}</span>
+                </div>
+                <div class="value">
+                  <span>{{ node.registration_height }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.operatorFee") }}</span>
+                </div>
+                <div class="value">
+                  <span>{{ operatorFee }}</span>
+                </div>
+              </div>
+            </div>
+            <div v-if="node.requested_unlock_height > 0" class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.unlockHeight") }}</span>
+                </div>
+                <div class="value">
+                  <span>{{ node.requested_unlock_height }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.lastUptimeProof") }}</span>
+                </div>
+                <div class="value">
+                  <span>{{ formatDate(node.last_uptime_proof * 1000) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="infoBox">
+              <div class="infoBoxContent">
+                <div class="text">
+                  <span>{{ $t("strings.serviceNodeDetails.lastRewardBlockHeight") }}</span>
+                </div>
+                <div class="value">
+                  <span>{{ node.last_reward_block_height }}</span>
+                </div>
               </div>
             </div>
           </div>
-          <div class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.totalContributed") }}</span>
-              </div>
-              <div class="value">
-                <span><FormatLoki :amount="node.total_contributed" raw-value/></span>
-              </div>
-            </div>
-          </div>
-          <div class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.registrationHeight") }}</span>
-              </div>
-              <div class="value">
-                <span>{{ node.registration_height }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.operatorFee") }}</span>
-              </div>
-              <div class="value">
-                <span>{{ operatorFee }}</span>
-              </div>
-            </div>
-          </div>
-          <div v-if="node.requested_unlock_height > 0" class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.unlockHeight") }}</span>
-              </div>
-              <div class="value">
-                <span>{{ node.requested_unlock_height }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.lastUptimeProof") }}</span>
-              </div>
-              <div class="value">
-                <span>{{ formatDate(node.last_uptime_proof * 1000) }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="infoBox">
-            <div class="infoBoxContent">
-              <div class="text">
-                <span>{{ $t("strings.serviceNodeDetails.lastRewardBlockHeight") }}</span>
-              </div>
-              <div class="value">
-                <span>{{ node.last_reward_block_height }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <q-list no-border :dark="theme == 'dark'" class="loki-list">
-          <q-list-header class="q-px-none">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-list-header>
-          <q-item v-for="contributor in contributors" :key="contributor.address" class="loki-list-item">
-            <q-item-label>
-              <q-item-section v-if="isMe(contributor)" class="name non-selectable">{{
-                $t("strings.me")
-              }}</q-item-section>
-              <q-item-section v-else class="name non-selectable">{{ contributor.name }}</q-item-section>
-              <q-item-section class="address ellipsis non-selectable">{{ contributor.address }}</q-item-section>
-              <q-item-label class="non-selectable" caption>
-                <span v-if="isOperator(contributor)">{{ $t("strings.operator") }} • </span>
-                {{ $t("strings.contribution") }}:
-                <FormatLoki :amount="contributor.amount" raw-value />
+          <q-list no-border :dark="theme == 'dark'" class="loki-list">
+            <q-item-label class="q-px-none">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-item-label>
+            <q-item v-for="contributor in contributors" :key="contributor.address" class="loki-list-item">
+              <q-item-label>
+                <q-item-label v-if="isMe(contributor)" class="name non-selectable">{{ $t("strings.me") }}</q-item-label>
+                <q-item-label v-else class="name non-selectable">{{ contributor.name }}</q-item-label>
+                <q-item-label class="address ellipsis non-selectable">{{ contributor.address }}</q-item-label>
+                <q-item-label class="non-selectable" caption>
+                  <span v-if="isOperator(contributor)">{{ $t("strings.operator") }} • </span>
+                  {{ $t("strings.contribution") }}:
+                  <FormatLoki :amount="contributor.amount" raw-value />
+                </q-item-label>
               </q-item-label>
-            </q-item-label>
-            <q-menu context-menu>
-              <q-list separator class="context-menu">
-                <q-item v-close-popup @click.native="copyAddress(contributor.address, $event)">
-                  <q-item-section>
-                    {{ $t("menuItems.copyAddress") }}
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-item>
-        </q-list>
-      </div>
+              <q-menu context-menu>
+                <q-list separator class="context-menu">
+                  <q-item v-close-popup @click.native="copyAddress(contributor.address, $event)">
+                    <q-item-section>
+                      {{ $t("menuItems.copyAddress") }}
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-item>
+          </q-list>
+        </div>
 
-      <q-inner-loading :visible="unlock_status.sending" :dark="theme == 'dark'">
-        <q-spinner color="primary" :size="30" />
-      </q-inner-loading>
+        <q-inner-loading :showing="unlock_status.sending" :dark="theme == 'dark'">
+          <q-spinner color="primary" size="30" />
+        </q-inner-loading>
+      </q-page-container>
     </q-layout>
   </q-dialog>
 </template>

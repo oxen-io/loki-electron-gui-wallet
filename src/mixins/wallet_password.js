@@ -15,9 +15,8 @@ export default {
       });
     },
 
-    showPasswordConfirmation(options) {
+    async showPasswordConfirmation(options) {
       const { noPasswordMessage, ...other } = options;
-
       return this.hasPassword()
         .then(hasPassword => {
           const sharedOpts = {

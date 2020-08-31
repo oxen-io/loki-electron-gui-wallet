@@ -13,8 +13,8 @@
         @onSubmit="onSubmit"
         @onClear="onClear"
       />
-      <q-inner-loading :visible="lns_status.sending" :dark="theme == 'dark'">
-        <q-spinner color="primary" :size="30" />
+      <q-inner-loading :showing="lns_status.sending" :dark="theme == 'dark'">
+        <q-spinner color="primary" size="30" />
       </q-inner-loading>
     </div>
   </div>
@@ -94,7 +94,7 @@ export default {
       this.$refs.form.reset();
       this.updating = false;
     },
-    update(record, oldRecord) {
+    async update(record, oldRecord) {
       // Make sure we have a diff between the 2 records
       const isOwnerDifferent = record.owner !== "" && record.owner !== oldRecord.owner;
       const isBackupOwnerDifferent = record.backup_owner !== "" && record.backup_owner !== oldRecord.backup_owner;
@@ -116,14 +116,20 @@ export default {
         backup_owner: isBackupOwnerDifferent ? record.backup_owner : ""
       };
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.lnsUpdate.title"),
         noPasswordMessage: this.$t("dialog.lnsUpdate.message"),
         ok: {
-          label: this.$t("dialog.lnsUpdate.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.lnsUpdate.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          // if no password set
+          password = password || "";
           this.$store.commit("gateway/set_lns_status", {
             code: 1,
             message: "Sending transaction",
@@ -134,17 +140,24 @@ export default {
           });
           this.$gateway.send("wallet", "update_lns_mapping", lns);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
-    purchase(record) {
-      this.showPasswordConfirmation({
+    async purchase(record) {
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.purchase.title"),
         noPasswordMessage: this.$t("dialog.purchase.message"),
         ok: {
-          label: this.$t("dialog.purchase.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.purchase.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          // if no password set
+          password = password || "";
           this.$store.commit("gateway/set_lns_status", {
             code: 1,
             message: "Sending transaction",
@@ -155,7 +168,8 @@ export default {
           });
           this.$gateway.send("wallet", "purchase_lns", lns);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     }
   }
 };
