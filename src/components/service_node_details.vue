@@ -98,7 +98,7 @@
             </div>
           </div>
           <q-list no-border :dark="theme == 'dark'" class="loki-list">
-            <q-item-label class="q-px-none">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-item-label>
+            <q-item-label class="contributors-title">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-item-label>
             <q-item v-for="contributor in contributors" :key="contributor.address" class="loki-list-item">
               <q-item-label>
                 <q-item-label v-if="isMe(contributor)" class="name non-selectable">{{ $t("strings.me") }}</q-item-label>
@@ -226,6 +226,10 @@ export default {
 </script>
 
 <style lang="scss">
+.contributors-title {
+  margin-bottom: 12px;
+}
+
 .serviceNodeDetails {
   .name {
     font-size: 0.92rem;

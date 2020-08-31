@@ -6,20 +6,21 @@
       </div>
       <q-list class="service-node-list" no-border>
         <q-item v-for="node in service_nodes" :key="node.service_node_pubkey" @click.native="details(node)">
-          <q-item-label>
-            <q-item-label class="ellipsis" header>{{ node.service_node_pubkey }}</q-item-label>
-            <q-item-label caption class="non-selectable"
+          <q-item-section>
+            <q-item-label class="ellipsis">{{ node.service_node_pubkey }}</q-item-label>
+            <q-item-label class="non-selectable"
               >{{ getRole(node) }} • {{ getFee(node) }} • {{ $t("strings.contribution") }}:
               <FormatLoki :amount="node.ourContributionAmount"
             /></q-item-label>
-          </q-item-label>
-          <q-item-section>
+          </q-item-section>
+          <q-item-section side>
             <q-btn
               v-if="node.requested_unlock_height === 0"
               color="primary"
               size="md"
               :label="$t('buttons.unlock')"
               :disabled="!is_ready || unlock_status.sending"
+              side
               @click.native="unlockWarning(node.service_node_pubkey, $event)"
             />
             <q-item-label v-if="node.requested_unlock_height > 0" header>
@@ -122,16 +123,21 @@ export default {
                 title: this.$t("dialog.unlockServiceNode.confirmTitle"),
                 message,
                 ok: {
-                  label: this.$t("dialog.unlockServiceNode.ok")
+                  label: this.$t("dialog.unlockServiceNode.ok"),
+                  color: "primary"
                 },
                 cancel: {
                   flat: true,
                   label: this.$t("dialog.buttons.cancel"),
                   color: this.theme == "dark" ? "white" : "dark"
-                }
+                },
+                style: "min-width: 500px; overflow-wrap: break-word;",
+                dark: this.theme == "dark",
+                color: this.theme == "dark" ? "white" : "dark"
               })
               .onOk(() => {
-                this.gatewayUnlock(this.password, this.key, true);
+                let password = this.password || "";
+                this.gatewayUnlock(password, this.key, true);
               })
               .onDismiss(() => null)
               .onCancel(() => null);
@@ -177,16 +183,17 @@ export default {
           color: this.theme == "dark" ? "white" : "dark"
         })
         .onOk(() => {
+          console.log("unlock warning");
           this.unlock(key);
         })
         .onDismiss(() => {})
         .onCancel(() => {});
     },
-    unlock(key) {
+    async unlock(key) {
       // We store this as it could change between the 2 step process
       this.key = key;
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.unlockServiceNode.title"),
         noPasswordMessage: this.$t("dialog.unlockServiceNode.message"),
         ok: {
@@ -195,14 +202,19 @@ export default {
         },
         dark: this.theme == "dark",
         color: this.theme == "dark" ? "white" : "dark"
-      })
-        .then(password => {
-          this.password = password;
+      });
+
+      passwordDialog
+        .onOk(password => {
+          console.log("unlocking");
+          this.password = password || "";
           this.gatewayUnlock(this.password, this.key, false);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
     gatewayUnlock(password, key, confirmed = false) {
+      password = password || "";
       this.$store.commit("gateway/set_snode_status", {
         unlock: {
           code: 2, // Code 1 is reserved for can_unlock
