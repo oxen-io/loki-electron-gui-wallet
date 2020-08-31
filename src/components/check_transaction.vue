@@ -41,7 +41,7 @@
             dense
           />
         </LokiField>
-        <div class="buttons">
+        <div class="submit-button">
           <q-btn color="primary" :label="$t('buttons.check')" @click="check" />
           <q-btn v-if="canClear" color="secondary" :label="$t('buttons.clear')" @click="clear" />
         </div>
@@ -196,12 +196,11 @@ export default {
   .description {
     white-space: pre-line;
   }
-  .buttons {
-    margin-top: 6px;
-
+  .submit-button {
     .q-btn:not(:first-child) {
       margin-left: 8px;
     }
+    margin-bottom: 12px;
   }
 }
 </style>

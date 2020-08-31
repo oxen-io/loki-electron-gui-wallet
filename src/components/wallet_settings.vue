@@ -562,6 +562,12 @@ export default {
 .menu-list { }
 
 <style lang="scss">
+.wallet-settings {
+  .q-btn {
+    color: white;
+  }
+}
+
 .password-modal {
   min-width: 400px;
 }
