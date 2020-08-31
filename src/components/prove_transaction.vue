@@ -40,7 +40,7 @@
           <q-btn v-if="status.state.signature" color="secondary" :label="$t('buttons.copySignature')" @click="copy" />
         </div>
       </div>
-      <div v-if="status.state.signature">
+      <div v-if="status.state.signature" class="signature-wrapper">
         <div class="txid q-mb-sm">
           <div class="title">{{ $t("strings.transactionID") }}</div>
           <div>{{ status.state.txid }}</div>
@@ -159,6 +159,10 @@ export default {
 </script>
 
 <style lang="scss">
+.signature-wrapper {
+  margin-top: 12px;
+}
+
 .prove-transaction {
   .description {
     white-space: pre-line;

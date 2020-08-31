@@ -89,12 +89,12 @@
             </template>
 
             <div class="q-mt-sm">
-              <div class="non-selectable">
+              <div class="non-selectable recent-transactions-wrapper">
                 <q-icon name="history" size="24px" />
                 <span class="vertical-middle q-ml-xs">{{ $t("strings.recentIncomingTransactionsToAddress") }}</span>
               </div>
 
-              <div style="margin: 0 -16px;">
+              <div style="margin: 12px -16px;">
                 <TxList
                   :key="address.address"
                   type="all_in"
