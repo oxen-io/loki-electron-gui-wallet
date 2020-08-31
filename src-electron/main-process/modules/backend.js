@@ -220,7 +220,7 @@ export class Backend {
             return map;
           }, {});
 
-        // Validate deamon data
+        // Validate daemon data
         this.config_data = {
           ...this.config_data,
           ...validated

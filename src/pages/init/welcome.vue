@@ -5,7 +5,7 @@
         <div class="welcome-container">
           <img src="loki.svg" height="100" class="q-mb-md" />
           <div>Wallet Version: v{{ version }}</div>
-          <div>Deamon Version: {{ daemonVersion }}</div>
+          <div>Daemon Version: {{ daemonVersion }}</div>
           <LanguageSelect class="q-mt-lg" @select="onLanguageSelected" />
         </div>
       </q-step>
