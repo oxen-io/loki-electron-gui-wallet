@@ -50,8 +50,8 @@
 
     <ServiceNodeDetails ref="serviceNodeDetails" :unlock="unlockWarning" />
 
-    <q-inner-loading :visible="unlock_status.sending" :dark="theme == 'dark'">
-      <q-spinner color="primary" :size="30" />
+    <q-inner-loading :showing="unlock_status.sending" :dark="theme == 'dark'">
+      <q-spinner color="primary" size="30" />
     </q-inner-loading>
   </div>
 </template>
@@ -165,13 +165,16 @@ export default {
           title: this.$t("dialog.unlockServiceNodeWarning.title"),
           message: this.$t("dialog.unlockServiceNodeWarning.message"),
           ok: {
-            label: this.$t("dialog.unlockServiceNodeWarning.ok")
+            label: this.$t("dialog.unlockServiceNodeWarning.ok"),
+            color: "primary"
           },
           cancel: {
             flat: true,
             label: this.$t("dialog.buttons.cancel"),
             color: this.theme === "dark" ? "white" : "dark"
-          }
+          },
+          dark: this.theme == "dark",
+          color: this.theme == "dark" ? "white" : "dark"
         })
         .onOk(() => {
           this.unlock(key);
@@ -187,8 +190,11 @@ export default {
         title: this.$t("dialog.unlockServiceNode.title"),
         noPasswordMessage: this.$t("dialog.unlockServiceNode.message"),
         ok: {
-          label: this.$t("dialog.unlockServiceNode.ok")
-        }
+          label: this.$t("dialog.unlockServiceNode.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
       })
         .then(password => {
           this.password = password;

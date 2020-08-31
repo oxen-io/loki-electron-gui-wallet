@@ -45,8 +45,8 @@
 
     <ServiceNodeUnlock />
 
-    <q-inner-loading :visible="stake_status.sending || tx_status.sending" :dark="theme == 'dark'">
-      <q-spinner color="primary" :size="30" />
+    <q-inner-loading :showing="stake_status.sending || tx_status.sending" :dark="theme == 'dark'">
+      <q-spinner color="primary" size="30" />
     </q-inner-loading>
   </div>
 </template>
@@ -157,7 +157,7 @@ export default {
     }
   },
   methods: {
-    sweepAllWarning: function() {
+    sweepAllWarning() {
       this.$q
         .dialog({
           title: this.$t("dialog.sweepAllWarning.title"),
@@ -179,7 +179,7 @@ export default {
         .onDismiss(() => {})
         .onCancel(() => {});
     },
-    sweepAll: function() {
+    async sweepAll() {
       const { unlocked_balance } = this.info;
 
       const tx = {
@@ -188,14 +188,19 @@ export default {
         priority: 0
       };
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.sweepAll.title"),
         noPasswordMessage: this.$t("dialog.sweepAll.message"),
         ok: {
-          label: this.$t("dialog.sweepAll.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.sweepAll.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          password = password || "";
           this.$store.commit("gateway/set_tx_status", {
             code: 1,
             message: "Sweeping all",
@@ -204,9 +209,10 @@ export default {
           const newTx = objectAssignDeep.noMutate(tx, { password });
           this.$gateway.send("wallet", "transfer", newTx);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     },
-    stake: function() {
+    async stake() {
       this.$v.service_node.$touch();
 
       if (this.$v.service_node.key.$error) {
@@ -248,14 +254,19 @@ export default {
         return;
       }
 
-      this.showPasswordConfirmation({
+      let passwordDialog = await this.showPasswordConfirmation({
         title: this.$t("dialog.stake.title"),
         noPasswordMessage: this.$t("dialog.stake.message"),
         ok: {
-          label: this.$t("dialog.stake.ok")
-        }
-      })
-        .then(password => {
+          label: this.$t("dialog.stake.ok"),
+          color: "primary"
+        },
+        dark: this.theme == "dark",
+        color: this.theme == "dark" ? "white" : "dark"
+      });
+      passwordDialog
+        .onOk(password => {
+          password = password || "";
           this.$store.commit("gateway/set_snode_status", {
             stake: {
               code: 1,
@@ -270,7 +281,8 @@ export default {
 
           this.$gateway.send("wallet", "stake", service_node);
         })
-        .catch(() => {});
+        .onDismiss(() => {})
+        .onCancel(() => {});
     }
   }
 };
