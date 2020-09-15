@@ -1270,12 +1270,11 @@ export class WalletRPC {
 
       amount = (parseFloat(amount) * 1e9).toFixed(0);
 
-      let sweep_all = amount == this.wallet_state.unlocked_balance;
-
+      const sweep_all = amount == this.wallet_state.unlocked_balance;
       const rpc_endpoint = sweep_all ? "sweep_all" : "transfer_split";
       const rpcSpecificParams = sweep_all
         ? {
-            address: address,
+            address,
             account_index: 0
           }
         : {
@@ -1314,10 +1313,14 @@ export class WalletRPC {
             i18n: "strings.awaitingConfirmation",
             sending: false,
             txData: {
+              // for a sweep all
+              address: data.params.address,
+              isSweepAll: rpc_endpoint === "sweep_all",
               amountList: data.result.amount_list,
               metadataList: data.result.tx_metadata_list,
               feeList: data.result.fee_list,
               priority: data.params.priority,
+              // for a "send" tx
               destinations: data.params.destinations
             }
           });

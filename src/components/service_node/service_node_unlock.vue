@@ -57,8 +57,9 @@ export default {
     },
     // just SNs the user has contributed to
     service_nodes(state) {
-      const nodes = state.gateway.daemon.service_nodes.nodes;
-      const getOurContribution = node => node.contributors.find(c => c.address === this.our_address);
+      let nodes = state.gateway.daemon.service_nodes.nodes;
+      // don't count reserved nodes in my stakes (where they are a contributor of amount 0)
+      const getOurContribution = node => node.contributors.find(c => c.address === this.our_address && c.amount > 0);
       return nodes.filter(getOurContribution).map(n => {
         const ourContribution = getOurContribution(n);
         return {

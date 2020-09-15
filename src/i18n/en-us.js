@@ -494,6 +494,7 @@ export default {
       operatorFee: "Operator Fee",
       registrationHeight: "Registration height",
       unlockHeight: "Unlock height",
+      reserved: "Reserved",
       serviceNodeKey: "Service Node Key",
       snKey: "SN Key",
       stakingRequirement: "Staking requirement",

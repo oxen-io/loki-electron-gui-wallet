@@ -40,16 +40,32 @@ export default {
   computed: mapState({
     awaiting_service_nodes(state) {
       const nodes = state.gateway.daemon.service_nodes.nodes;
+      // a reserved node is one on which someone is a "contributor" of amount = 0
+      const getOurContribution = node => node.contributors.find(c => c.address === this.our_address && c.amount > 0);
       const isAwaitingContribution = node => !node.active && !node.funded && node.requested_unlock_height === 0;
-      const compareFee = (n1, n2) => (this.getFeeDecimal(n1) > this.getFeeDecimal(n2) ? 1 : -1);
-      const awaitingContributionNodes = nodes.filter(isAwaitingContribution).map(n => {
+      const isAwaitingContributionNonReserved = node => isAwaitingContribution(node) && !getOurContribution(node);
+      const isAwaitingContributionReserved = node => isAwaitingContribution(node) && getOurContribution(node);
+
+      // we want the reserved nodes sorted by fee at the top
+      const awaitingContributionNodesReserved = nodes.filter(isAwaitingContributionReserved).map(n => {
         return {
           ...n,
           awaitingContribution: true
         };
       });
-      awaitingContributionNodes.sort(compareFee);
-      return awaitingContributionNodes;
+      const awaitingContributionNodesNonReserved = nodes.filter(isAwaitingContributionNonReserved).map(n => {
+        return {
+          ...n,
+          awaitingContribution: true
+        };
+      });
+
+      const compareFee = (n1, n2) => (this.getFeeDecimal(n1) > this.getFeeDecimal(n2) ? 1 : -1);
+      awaitingContributionNodesReserved.sort(compareFee);
+      awaitingContributionNodesNonReserved.sort(compareFee);
+
+      const nodesForContribution = [...awaitingContributionNodesReserved, ...awaitingContributionNodesNonReserved];
+      return nodesForContribution;
     },
     theme: state => state.gateway.app.config.appearance.theme,
     fetching: state => state.gateway.daemon.service_nodes.fetching

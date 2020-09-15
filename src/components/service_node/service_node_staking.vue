@@ -33,7 +33,7 @@
         <q-btn
           color="secondary"
           :text-color="theme == 'dark' ? 'white' : 'dark'"
-          @click="service_node.amount = unlocked_balance / 1e9"
+          @click="service_node.amount = openForContribution()"
           >{{ $t("buttons.all") }}</q-btn
         >
       </LokiField>
@@ -61,7 +61,11 @@ import { required, decimal } from "vuelidate/lib/validators";
 import { service_node_key, greater_than_zero } from "src/validators/common";
 import LokiField from "components/loki_field";
 import WalletPassword from "src/mixins/wallet_password";
+import ConfirmDialogMixin from "src/mixins/confirm_dialog_mixin";
 import ServiceNodeContribute from "./service_node_contribute";
+
+// the case for doing nothing on a tx_status update
+const DO_NOTHING = 10;
 
 export default {
   name: "ServiceNodeStaking",
@@ -69,7 +73,7 @@ export default {
     LokiField,
     ServiceNodeContribute
   },
-  mixins: [WalletPassword],
+  mixins: [WalletPassword, ConfirmDialogMixin],
   data() {
     return {
       service_node: {
@@ -135,28 +139,6 @@ export default {
         }
       },
       deep: true
-    },
-    tx_status: {
-      handler(val, old) {
-        if (val.code == old.code) return;
-        switch (this.tx_status.code) {
-          case 0:
-            this.$q.notify({
-              type: "positive",
-              timeout: 1000,
-              message: this.tx_status.message
-            });
-            break;
-          case -1:
-            this.$q.notify({
-              type: "negative",
-              timeout: 3000,
-              message: this.tx_status.message
-            });
-            break;
-        }
-      },
-      deep: true
     }
   },
   methods: {
@@ -169,6 +151,9 @@ export default {
     fillStakingFields(key, minContribution) {
       this.service_node.key = key;
       this.service_node.amount = minContribution;
+    },
+    buildDialogFieldsSweep(txData) {
+      this.buildDialogFields(txData);
     },
     sweepAllWarning() {
       this.$q
@@ -215,7 +200,7 @@ export default {
         .onOk(password => {
           password = password || "";
           this.$store.commit("gateway/set_tx_status", {
-            code: 1,
+            code: DO_NOTHING,
             message: "Sweeping all",
             sending: true
           });
@@ -272,7 +257,7 @@ export default {
         noPasswordMessage: this.$t("dialog.stake.message"),
         ok: {
           label: this.$t("dialog.stake.ok"),
-          color: this.theme == "dark" ? "white" : "dark"
+          color: "primary"
         },
         dark: this.theme == "dark",
         color: this.theme == "dark" ? "white" : "dark"
