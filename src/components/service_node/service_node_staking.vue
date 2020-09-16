@@ -22,10 +22,6 @@
           @blur="$v.service_node.key.$touch"
         />
       </LokiField>
-      <p>
-        {{ service_node.minStakeAmount }} and the max is
-        {{ service_node.maxStakeAmount }}
-      </p>
       <LokiField
         :label="$t('fieldLabels.amount')"
         class="q-mt-md"
@@ -252,8 +248,7 @@ export default {
       const nodeOfKey = this.awaiting_service_nodes.find(
         n => n.service_node_pubkey === key
       );
-      let node = nodeOfKey ? nodeOfKey : false;
-      if (!node) {
+      if (!nodeOfKey) {
         this.$q.notify({
           type: "negative",
           timeout: 1000,
@@ -261,7 +256,7 @@ export default {
         });
         return;
       } else {
-        return node;
+        return nodeOfKey;
       }
     },
     sweepAllWarning() {
