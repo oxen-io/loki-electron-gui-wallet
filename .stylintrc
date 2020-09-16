@@ -32,5 +32,4 @@
     "valid": true,
     "zeroUnits": "never",
     "zIndexNormalize": false,
-    "printWidth": 120
 }

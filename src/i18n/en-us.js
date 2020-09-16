@@ -22,6 +22,8 @@ export default {
     import: "IMPORT",
     importWallet: "IMPORT WALLET | IMPORT WALLETS",
     lns: "LOKI NAME SERVICE",
+    max: "MAX",
+    min: "MIN",
     next: "NEXT",
     openWallet: "OPEN WALLET",
     purchase: "PURCHASE",
@@ -62,12 +64,14 @@ export default {
     },
     copyAddress: {
       title: "Copy address",
-      message: "There is a payment id associated with this address.\nBe sure to copy the payment id separately."
+      message:
+        "There is a payment id associated with this address.\nBe sure to copy the payment id separately."
     },
     copyPrivateKeys: {
       // Copy {seedWords/viewKey/spendKey}
       title: "Copy {type}",
-      message: "Be careful who you send your private keys to as they control your funds.",
+      message:
+        "Be careful who you send your private keys to as they control your funds.",
       seedWords: "Seed Words",
       viewKey: "View Key",
       spendKey: "Spend Key"
@@ -115,7 +119,8 @@ export default {
     },
     rescan: {
       title: "Rescan wallet",
-      message: "Warning: Some information about previous transactions\nsuch as the recipient's address will be lost.",
+      message:
+        "Warning: Some information about previous transactions\nsuch as the recipient's address will be lost.",
       ok: "RESCAN"
     },
     restart: {
@@ -312,7 +317,8 @@ export default {
     },
     errors: {
       banningPeer: "Error banning peer",
-      cannotAccessRemoteNode: "Could not access remote node, please try another remote node",
+      cannotAccessRemoteNode:
+        "Could not access remote node, please try another remote node",
       changingPassword: "Error changing password",
       copyWalletFail: "Failed to copy wallet",
       copyingPrivateKeys: "Error copying private keys",
@@ -335,8 +341,10 @@ export default {
       invalidAmount: "Amount not valid",
       invalidBackupOwner: "Backup owner address not valid",
       invalidNameLength: "Name must be between 1 and 64 characters long",
-      invalidNameFormat: "Name may only contain alphanumerics, hyphens and underscore",
-      invalidNameHypenNotAllowed: "Name may only begin or end with alphanumerics or an underscore",
+      invalidNameFormat:
+        "Name may only contain alphanumerics, hyphens and underscore",
+      invalidNameHypenNotAllowed:
+        "Name may only begin or end with alphanumerics or an underscore",
       invalidOldPassword: "Invalid old password",
       invalidOwner: "Owner address not valid",
       invalidPassword: "Invalid password",
@@ -346,7 +354,8 @@ export default {
       invalidRestoreDate: "Invalid restore date",
       invalidRestoreHeight: "Invalid restore height",
       invalidSeedLength: "Invalid seed word length",
-      invalidServiceNodeCommand: "Please enter the service node registration command",
+      invalidServiceNodeCommand:
+        "Please enter the service node registration command",
       invalidServiceNodeKey: "Service node key not valid",
       invalidSessionId: "Session ID not valid",
       invalidWalletPath: "Invalid wallet path",
@@ -384,7 +393,8 @@ export default {
     mnemonicSeed: "25 (or 24) word mnemonic seed",
     pasteTransactionId: "Paste transaction ID",
     pasteTransactionProof: "Paste transaction proof",
-    proveOptionalMessage: "Optional message against which the signature is signed",
+    proveOptionalMessage:
+      "Optional message against which the signature is signed",
     recipientWalletAddress: "Recipient's wallet address",
     selectAFile: "Please select a file",
     sessionId: "The Session ID to link to Loki Name Service",
@@ -442,7 +452,8 @@ export default {
       },
       remote: {
         title: "Remote Daemon Only",
-        description: "Less security, wallet will connect to a remote node to make all transactions."
+        description:
+          "Less security, wallet will connect to a remote node to make all transactions."
       }
     },
     destinationUnknown: "Destination Unknown",
@@ -472,9 +483,11 @@ export default {
     proveTransactionDescription:
       "Generate a proof of your incoming/outgoing payment by supplying the transaction ID, the recipient address and an optional message.\nFor the case of outgoing payments, you can get a 'Spend Proof' that proves the authorship of a transaction. In this case, you don't need to specify the recipient address.",
     readingWalletList: "Reading wallet list",
-    recentIncomingTransactionsToAddress: "Recent incoming transactions to this address",
+    recentIncomingTransactionsToAddress:
+      "Recent incoming transactions to this address",
     recentTransactionsWithAddress: "Recent transactions with this address",
-    rescanModalDescription: "Select full rescan or rescan of spent outputs only.",
+    rescanModalDescription:
+      "Select full rescan or rescan of spent outputs only.",
     saveSeedWarning: "Please copy and save these in a secure location!",
     saveToAddressBook: "Save to address book",
     seedWords: "Seed words",
@@ -483,14 +496,18 @@ export default {
       "Staking contributes to the safety of the Loki network. For your contribution, you earn LOKI. Once staked, you will have to wait either 15 or 30 days to have your Loki unlocked, depending on if a stake was unlocked by a contributor or the node was deregistered. To learn more about staking, please visit the",
     serviceNodeRegistrationDescription:
       'Enter the {registerCommand} command produced by the daemon that is registering to become a Service Node using the "{prepareCommand}" command',
-    serviceNodeStartStakingDescription: "To start staking, please visit the Staking tab",
-    noServiceNodesCurrentlyAvailable: "There are currently no service nodes available for contribution",
+    serviceNodeStartStakingDescription:
+      "To start staking, please visit the Staking tab",
+    noServiceNodesCurrentlyAvailable:
+      "There are currently no service nodes available for contribution",
     serviceNodeDetails: {
       contributors: "Contributors",
       lastRewardBlockHeight: "Last reward block height",
       lastUptimeProof: "Last uptime proof",
       maxContribution: "Max contribution",
+
       minContribution: "Min contribution",
+      min: "MIN",
       operatorFee: "Operator Fee",
       registrationHeight: "Registration height",
       unlockHeight: "Unlock height",
@@ -536,7 +553,8 @@ export default {
     userNotUsedAddress: "You have not used this address",
     userUsedAddress: "You have used this address",
     viewKey: "View key",
-    viewOnlyMode: "View only mode. Please load full wallet in order to send coins.",
+    viewOnlyMode:
+      "View only mode. Please load full wallet in order to send coins.",
     website: "website"
   },
   titles: {

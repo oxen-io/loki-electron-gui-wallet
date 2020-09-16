@@ -10,7 +10,10 @@
         <div class="row gutter-md">
           <!-- Amount -->
           <div class="col-6 amount">
-            <LokiField :label="$t('fieldLabels.amount')" :error="$v.newTx.amount.$error">
+            <LokiField
+              :label="$t('fieldLabels.amount')"
+              :error="$v.newTx.amount.$error"
+            >
               <q-input
                 v-model="newTx.amount"
                 :dark="theme == 'dark'"
@@ -50,7 +53,10 @@
 
         <!-- Address -->
         <div class="col q-mt-sm">
-          <LokiField :label="$t('fieldLabels.address')" :error="$v.newTx.address.$error">
+          <LokiField
+            :label="$t('fieldLabels.address')"
+            :error="$v.newTx.address.$error"
+          >
             <q-input
               v-model.trim="newTx.address"
               :dark="theme == 'dark'"
@@ -59,7 +65,11 @@
               dense
               @blur="$v.newTx.address.$touch"
             />
-            <q-btn color="secondary" :text-color="theme == 'dark' ? 'white' : 'dark'" to="addressbook">
+            <q-btn
+              color="secondary"
+              :text-color="theme == 'dark' ? 'white' : 'dark'"
+              to="addressbook"
+            >
               {{ $t("buttons.contacts") }}
             </q-btn>
           </LokiField>
@@ -67,7 +77,11 @@
 
         <!-- Payment ID -->
         <div class="col q-mt-sm">
-          <LokiField :label="$t('fieldLabels.paymentId')" :error="$v.newTx.payment_id.$error" optional>
+          <LokiField
+            :label="$t('fieldLabels.paymentId')"
+            :error="$v.newTx.payment_id.$error"
+            optional
+          >
             <!-- TODO: count to be '16 or 64 after RPC fixed -->
             <q-input
               v-model.trim="newTx.payment_id"
@@ -217,7 +231,7 @@ export default {
       const prefix = (wallet && wallet.address && wallet.address[0]) || "L";
       return `${prefix}..`;
     },
-    confirmTransaction: state => (state.gateway.tx_status.code === 1 ? true : false)
+    confirmTransaction: state => state.gateway.tx_status.code === 1
   }),
   validations: {
     newTx: {
@@ -292,7 +306,10 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.path == "/wallet/send" && this.$route.query.hasOwnProperty("address")) {
+    if (
+      this.$route.path == "/wallet/send" &&
+      this.$route.query.hasOwnProperty("address")
+    ) {
       this.autoFill(this.$route.query);
     }
   },

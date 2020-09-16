@@ -8,7 +8,8 @@
       >
         <q-item-section>
           <q-item-label class="ellipsis"
-            >{{ $t("strings.serviceNodeDetails.snKey") }}: {{ node.service_node_pubkey }}</q-item-label
+            >{{ $t("strings.serviceNodeDetails.snKey") }}:
+            {{ node.service_node_pubkey }}</q-item-label
           >
           <q-item-label class="non-selectable">
             <span v-if="node.ourContributionAmount > 0">
@@ -20,17 +21,25 @@
             </span>
             <!-- you only have a contribution amount of 0 if you are a "contributor"
             by way of the node having reserved a spot for you on the node -->
-            <span v-if="node.ourContributionAmount === 0 && node.awaitingContribution">
+            <span
+              v-if="
+                node.ourContributionAmount === 0 && node.awaitingContribution
+              "
+            >
               {{ $t("strings.serviceNodeDetails.reserved") }} •
             </span>
             <span v-if="node.awaitingContribution">
-              {{ $t("strings.serviceNodeDetails.minContribution") }}: {{ getMinContribution(node) }} LOKI •
-              {{ $t("strings.serviceNodeDetails.maxContribution") }}: {{ openForContributionLoki(node) }} LOKI
+              {{ $t("strings.serviceNodeDetails.minContribution") }}:
+              {{ getMinContribution(node) }} LOKI •
+              {{ $t("strings.serviceNodeDetails.maxContribution") }}:
+              {{ openForContributionLoki(node) }} LOKI
             </span>
           </q-item-label>
         </q-item-section>
         <q-item-section side>
-          <span style="font-size: 16px; color: #cecece">{{ getFee(node) }}</span>
+          <span style="font-size: 16px; color: #cecece">{{
+            getFee(node)
+          }}</span>
         </q-item-section>
         <q-item-section side>
           <q-btn
@@ -64,9 +73,8 @@
 import { clipboard } from "electron";
 import ContextMenu from "components/menus/contextmenu";
 import FormatLoki from "components/format_loki";
+import ServiceNodeMixin from "src/mixins/service_node_mixin";
 import { mapState } from "vuex";
-
-const MAX_NUMBER_OF_CONTRIBUTORS = 4;
 
 export default {
   name: "ServiceNodeList",
@@ -74,6 +82,7 @@ export default {
     ContextMenu,
     FormatLoki
   },
+  mixins: [ServiceNodeMixin],
   props: {
     serviceNodes: {
       type: Array,
@@ -109,13 +118,11 @@ export default {
   }),
   methods: {
     nodeWithMinContribution(node) {
-      const nodeWithMinContribution = { ...node, minContribution: this.getMinContribution(node) };
+      const nodeWithMinContribution = {
+        ...node,
+        minContribution: this.getMinContribution(node)
+      };
       return nodeWithMinContribution;
-    },
-    openForContribution(node) {
-      const openContributionRemaining =
-        node.staking_requirement > node.total_reserved ? node.staking_requirement - node.total_reserved : 0;
-      return openContributionRemaining;
     },
     openForContributionLoki(node) {
       return (this.openForContribution(node) / 1e9).toFixed(4);
@@ -137,21 +144,12 @@ export default {
     getNumContributors(node) {
       return node.contributors.length;
     },
-    getMinContribution(node) {
-      // This is calculated in the same way it is calculated on the LokiBlocks site
-      const openContributionRemaining = this.openForContribution(node);
-      const minContributionAtomicUnits =
-        !node.funded && node.contributors.length < MAX_NUMBER_OF_CONTRIBUTORS
-          ? openContributionRemaining / (MAX_NUMBER_OF_CONTRIBUTORS - node.contributors.length)
-          : 0;
-      const minContributionLoki = minContributionAtomicUnits / 1e9;
-      // ceiling to 4 decimal places
-      return minContributionLoki.toFixed(4);
-    },
     getFee(node) {
       const operatorPortion = node.portions_for_operator;
       const percentageFee = (operatorPortion / 18446744073709551612) * 100;
-      return `${percentageFee.toFixed(2)}% ${this.$t("strings.transactions.fee")}`;
+      return `${percentageFee.toFixed(2)}% ${this.$t(
+        "strings.transactions.fee"
+      )}`;
     },
     copyKey(key) {
       clipboard.writeText(key);

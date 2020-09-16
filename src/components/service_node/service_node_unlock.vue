@@ -5,7 +5,9 @@
         <span v-if="service_nodes.length">
           {{ $t("titles.currentlyStakedNodes") }}
         </span>
-        <span v-else>{{ $t("strings.serviceNodeStartStakingDescription") }}</span>
+        <span v-else>{{
+          $t("strings.serviceNodeStartStakingDescription")
+        }}</span>
       </div>
       <div v-if="service_nodes">
         <ServiceNodeList
@@ -15,10 +17,17 @@
           :action="unlockWarning"
         />
       </div>
-      <q-inner-loading :showing="unlock_status.sending || fetching" :dark="theme == 'dark'">
+      <q-inner-loading
+        :showing="unlock_status.sending || fetching"
+        :dark="theme == 'dark'"
+      >
         <q-spinner color="primary" size="30" />
       </q-inner-loading>
-      <ServiceNodeDetails ref="serviceNodeDetailsUnlock" :action="unlockWarning" action-i18n="buttons.unlock" />
+      <ServiceNodeDetails
+        ref="serviceNodeDetailsUnlock"
+        :action="unlockWarning"
+        action-i18n="buttons.unlock"
+      />
     </div>
   </div>
 </template>
@@ -59,7 +68,10 @@ export default {
     service_nodes(state) {
       let nodes = state.gateway.daemon.service_nodes.nodes;
       // don't count reserved nodes in my stakes (where they are a contributor of amount 0)
-      const getOurContribution = node => node.contributors.find(c => c.address === this.our_address && c.amount > 0);
+      const getOurContribution = node =>
+        node.contributors.find(
+          c => c.address === this.our_address && c.amount > 0
+        );
       return nodes.filter(getOurContribution).map(n => {
         const ourContribution = getOurContribution(n);
         return {
@@ -220,7 +232,10 @@ export default {
       });
     },
     getRole(node) {
-      const key = node.operator_address === this.our_address ? "strings.operator" : "strings.contributor";
+      const key =
+        node.operator_address === this.our_address
+          ? "strings.operator"
+          : "strings.contributor";
       return this.$t(key);
     },
     getFee(node) {

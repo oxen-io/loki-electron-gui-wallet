@@ -15,7 +15,12 @@
             :label="$t(actionI18n)"
             @click="action(node, $event)"
           />
-          <q-btn v-if="can_open" color="primary" :label="$t('buttons.viewOnExplorer')" @click="openExplorer" />
+          <q-btn
+            v-if="can_open"
+            color="primary"
+            :label="$t('buttons.viewOnExplorer')"
+            @click="openExplorer"
+          />
         </q-toolbar>
       </q-header>
       <q-page-container>
@@ -29,27 +34,37 @@
             <div class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.stakingRequirement") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.stakingRequirement")
+                  }}</span>
                 </div>
                 <div class="value">
-                  <span><FormatLoki :amount="node.staking_requirement" raw-value/></span>
+                  <span
+                    ><FormatLoki :amount="node.staking_requirement" raw-value
+                  /></span>
                 </div>
               </div>
             </div>
             <div class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.totalContributed") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.totalContributed")
+                  }}</span>
                 </div>
                 <div class="value">
-                  <span><FormatLoki :amount="node.total_contributed" raw-value/></span>
+                  <span
+                    ><FormatLoki :amount="node.total_contributed" raw-value
+                  /></span>
                 </div>
               </div>
             </div>
             <div class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.registrationHeight") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.registrationHeight")
+                  }}</span>
                 </div>
                 <div class="value">
                   <span>{{ node.registration_height }}</span>
@@ -59,7 +74,9 @@
             <div class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.operatorFee") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.operatorFee")
+                  }}</span>
                 </div>
                 <div class="value">
                   <span>{{ operatorFee }}</span>
@@ -69,7 +86,9 @@
             <div v-if="node.requested_unlock_height > 0" class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.unlockHeight") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.unlockHeight")
+                  }}</span>
                 </div>
                 <div class="value">
                   <span>{{ node.requested_unlock_height }}</span>
@@ -79,7 +98,9 @@
             <div class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.lastUptimeProof") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.lastUptimeProof")
+                  }}</span>
                 </div>
                 <div class="value">
                   <span>{{ formatDate(node.last_uptime_proof * 1000) }}</span>
@@ -89,7 +110,9 @@
             <div class="infoBox">
               <div class="infoBoxContent">
                 <div class="text">
-                  <span>{{ $t("strings.serviceNodeDetails.lastRewardBlockHeight") }}</span>
+                  <span>{{
+                    $t("strings.serviceNodeDetails.lastRewardBlockHeight")
+                  }}</span>
                 </div>
                 <div class="value">
                   <span>{{ node.last_reward_block_height }}</span>
@@ -98,7 +121,11 @@
             </div>
           </div>
           <q-list no-border :dark="theme == 'dark'" class="loki-list">
-            <q-item-label class="contributors-title">{{ $t("strings.serviceNodeDetails.contributors") }}:</q-item-label>
+            <q-item-label class="contributors-title"
+              >{{
+                $t("strings.serviceNodeDetails.contributors")
+              }}:</q-item-label
+            >
             <q-item
               v-for="contributor in contributors"
               :key="contributor.address"
@@ -107,20 +134,36 @@
               @click="openUserWalletInfo(contributor.address)"
             >
               <q-item-label>
-                <q-item-label v-if="isMe(contributor)" class="name non-selectable">{{ $t("strings.me") }}</q-item-label>
-                <q-item-label v-else class="name non-selectable">{{ contributor.name }}</q-item-label>
-                <q-item-label class="address ellipsis non-selectable">{{ contributor.address }}</q-item-label>
+                <q-item-label
+                  v-if="isMe(contributor)"
+                  class="name non-selectable"
+                  >{{ $t("strings.me") }}</q-item-label
+                >
+                <q-item-label v-else class="name non-selectable">{{
+                  contributor.name
+                }}</q-item-label>
+                <q-item-label class="address ellipsis non-selectable">{{
+                  contributor.address
+                }}</q-item-label>
                 <q-item-label class="non-selectable" caption>
-                  <span v-if="isOperator(contributor)">{{ $t("strings.operator") }} • </span>
+                  <span v-if="isOperator(contributor)"
+                    >{{ $t("strings.operator") }} •
+                  </span>
                   {{ $t("strings.contribution") }}:
                   <FormatLoki :amount="contributor.amount" raw-value />
                 </q-item-label>
               </q-item-label>
-              <ContextMenu :menu-items="menuItems" @copyAddress="copyAddress(contributor.address)" />
+              <ContextMenu
+                :menu-items="menuItems"
+                @copyAddress="copyAddress(contributor.address)"
+              />
             </q-item>
           </q-list>
         </div>
-        <q-inner-loading :showing="unlock_status.sending" :dark="theme == 'dark'">
+        <q-inner-loading
+          :showing="unlock_status.sending"
+          :dark="theme == 'dark'"
+        >
           <q-spinner color="primary" size="30" />
         </q-inner-loading>
       </q-page-container>
@@ -151,7 +194,9 @@ export default {
     }
   },
   data() {
-    const menuItems = [{ action: "copyAddress", i18n: "menuItems.copyAddress" }];
+    const menuItems = [
+      { action: "copyAddress", i18n: "menuItems.copyAddress" }
+    ];
 
     return {
       isVisible: false,
@@ -180,7 +225,9 @@ export default {
 
       for (const contributor of this.node.contributors) {
         let values = { ...contributor };
-        const address = address_book.find(a => a.address === contributor.address);
+        const address = address_book.find(
+          a => a.address === contributor.address
+        );
         if (address) {
           const { name, description } = address;
           const separator = description === "" ? "" : " - ";

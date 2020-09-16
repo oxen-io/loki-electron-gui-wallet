@@ -6,13 +6,18 @@
           <div class="header">{{ $t("titles.availableForContribution") }}</div>
         </div>
         <div class="col-md-4">
-          <q-btn class="float-right vertical-top" icon="refresh" flat @click="updateServiceNodeList" />
+          <q-btn
+            class="float-right vertical-top"
+            icon="refresh"
+            flat
+            @click="updateServiceNodeList"
+          />
         </div>
       </div>
-      <div v-if="awaiting_service_nodes.length > 0">
+      <div v-if="awaitingServiceNodes.length > 0">
         <ServiceNodeList
-          v-if="awaiting_service_nodes"
-          :service-nodes="awaiting_service_nodes"
+          v-if="awaitingServiceNodes"
+          :service-nodes="awaitingServiceNodes"
           button-i18n="buttons.stake"
           :details="details"
           :action="contributeToNode"
@@ -20,7 +25,11 @@
       </div>
       <div v-else>{{ $t("strings.noServiceNodesCurrentlyAvailable") }}</div>
     </div>
-    <ServiceNodeDetails ref="serviceNodeDetailsContribute" :action="contributeToNode" action-i18n="buttons.stake" />
+    <ServiceNodeDetails
+      ref="serviceNodeDetailsContribute"
+      :action="contributeToNode"
+      action-i18n="buttons.stake"
+    />
     <q-inner-loading :showing="fetching" :dark="theme == 'dark'">
       <q-spinner color="primary" size="30" />
     </q-inner-loading>
@@ -37,44 +46,17 @@ export default {
     ServiceNodeList,
     ServiceNodeDetails
   },
+  props: {
+    awaitingServiceNodes: {
+      type: Array,
+      required: true
+    }
+  },
   computed: mapState({
-    awaiting_service_nodes(state) {
-      const nodes = state.gateway.daemon.service_nodes.nodes;
-      // a reserved node is one on which someone is a "contributor" of amount = 0
-      const getOurContribution = node => node.contributors.find(c => c.address === this.our_address && c.amount > 0);
-      const isAwaitingContribution = node => !node.active && !node.funded && node.requested_unlock_height === 0;
-      const isAwaitingContributionNonReserved = node => isAwaitingContribution(node) && !getOurContribution(node);
-      const isAwaitingContributionReserved = node => isAwaitingContribution(node) && getOurContribution(node);
-
-      // we want the reserved nodes sorted by fee at the top
-      const awaitingContributionNodesReserved = nodes.filter(isAwaitingContributionReserved).map(n => {
-        return {
-          ...n,
-          awaitingContribution: true
-        };
-      });
-      const awaitingContributionNodesNonReserved = nodes.filter(isAwaitingContributionNonReserved).map(n => {
-        return {
-          ...n,
-          awaitingContribution: true
-        };
-      });
-
-      const compareFee = (n1, n2) => (this.getFeeDecimal(n1) > this.getFeeDecimal(n2) ? 1 : -1);
-      awaitingContributionNodesReserved.sort(compareFee);
-      awaitingContributionNodesNonReserved.sort(compareFee);
-
-      const nodesForContribution = [...awaitingContributionNodesReserved, ...awaitingContributionNodesNonReserved];
-      return nodesForContribution;
-    },
     theme: state => state.gateway.app.config.appearance.theme,
     fetching: state => state.gateway.daemon.service_nodes.fetching
   }),
   methods: {
-    getFeeDecimal(node) {
-      const operatorPortion = node.portions_for_operator;
-      return (operatorPortion / 18446744073709551612) * 100;
-    },
     scrollToTop() {
       window.scrollTo(0, 0);
     },

@@ -3,11 +3,16 @@
     <div class="q-px-md q-pt-md">
       <p style="color: #cecece">
         {{ $t("strings.serviceNodeContributionDescription") }}
-        <span style="cursor: pointer; text-decoration: underline;" @click="lokiWebsite"
+        <span
+          style="cursor: pointer; text-decoration: underline;"
+          @click="lokiWebsite"
           >Loki {{ $t("strings.website") }}.</span
         >
       </p>
-      <LokiField :label="$t('fieldLabels.serviceNodeKey')" :error="$v.service_node.key.$error">
+      <LokiField
+        :label="$t('fieldLabels.serviceNodeKey')"
+        :error="$v.service_node.key.$error"
+      >
         <q-input
           v-model.trim="service_node.key"
           :dark="theme == 'dark'"
@@ -17,8 +22,15 @@
           @blur="$v.service_node.key.$touch"
         />
       </LokiField>
-
-      <LokiField :label="$t('fieldLabels.amount')" class="q-mt-md" :error="$v.service_node.amount.$error">
+      <p>
+        {{ service_node.minStakeAmount }} and the max is
+        {{ service_node.maxStakeAmount }}
+      </p>
+      <LokiField
+        :label="$t('fieldLabels.amount')"
+        class="q-mt-md"
+        :error="$v.service_node.amount.$error"
+      >
         <q-input
           v-model.trim="service_node.amount"
           :dark="theme == 'dark'"
@@ -33,12 +45,25 @@
         <q-btn
           color="secondary"
           :text-color="theme == 'dark' ? 'white' : 'dark'"
-          @click="service_node.amount = openForContribution()"
-          >{{ $t("buttons.all") }}</q-btn
-        >
+          :label="$t('buttons.min')"
+          :disable="!areButtonsEnabled()"
+          @click="service_node.amount = minStake(service_node.key)"
+        />
+        <q-btn
+          color="secondary"
+          :text-color="theme == 'dark' ? 'white' : 'dark'"
+          :label="$t('buttons.max')"
+          :disable="!areButtonsEnabled()"
+          @click="service_node.amount = maxStake(service_node.key)"
+        />
       </LokiField>
       <div class="submit-button">
-        <q-btn :disable="!is_able_to_send" color="primary" :label="$t('buttons.stake')" @click="stake()" />
+        <q-btn
+          :disable="!is_able_to_send"
+          color="primary"
+          :label="$t('buttons.stake')"
+          @click="stake()"
+        />
         <q-btn
           :disable="!is_able_to_send"
           color="secondary"
@@ -47,8 +72,15 @@
         />
       </div>
     </div>
-    <ServiceNodeContribute class="contribute" @contribute="fillStakingFields" />
-    <q-inner-loading :showing="stake_status.sending || tx_status.sending" :dark="theme == 'dark'">
+    <ServiceNodeContribute
+      :awaiting-service-nodes="awaiting_service_nodes"
+      class="contribute"
+      @contribute="fillStakingFields"
+    />
+    <q-inner-loading
+      :showing="stake_status.sending || tx_status.sending"
+      :dark="theme == 'dark'"
+    >
       <q-spinner color="primary" size="30" />
     </q-inner-loading>
   </div>
@@ -63,6 +95,7 @@ import LokiField from "components/loki_field";
 import WalletPassword from "src/mixins/wallet_password";
 import ConfirmDialogMixin from "src/mixins/confirm_dialog_mixin";
 import ServiceNodeContribute from "./service_node_contribute";
+import ServiceNodeMixin from "src/mixins/service_node_mixin";
 
 // the case for doing nothing on a tx_status update
 const DO_NOTHING = 10;
@@ -73,12 +106,16 @@ export default {
     LokiField,
     ServiceNodeContribute
   },
-  mixins: [WalletPassword, ConfirmDialogMixin],
+  mixins: [WalletPassword, ConfirmDialogMixin, ServiceNodeMixin],
   data() {
     return {
       service_node: {
         key: "",
-        amount: 0
+        amount: 0,
+        // the min and max are for that particular SN,
+        // start at min/max for the wallet
+        minStakeAmount: 0,
+        maxStakeAmount: this.unlocked_balance / 1e9
       }
     };
   },
@@ -99,6 +136,49 @@ export default {
       const wallet = state.gateway.wallet.info;
       const prefix = (wallet && wallet.address && wallet.address[0]) || "L";
       return `${prefix}..`;
+    },
+    awaiting_service_nodes(state) {
+      const nodes = state.gateway.daemon.service_nodes.nodes;
+      // a reserved node is one on which someone is a "contributor" of amount = 0
+      const getOurContribution = node =>
+        node.contributors.find(
+          c => c.address === this.our_address && c.amount > 0
+        );
+      const isAwaitingContribution = node =>
+        !node.active && !node.funded && node.requested_unlock_height === 0;
+      const isAwaitingContributionNonReserved = node =>
+        isAwaitingContribution(node) && !getOurContribution(node);
+      const isAwaitingContributionReserved = node =>
+        isAwaitingContribution(node) && getOurContribution(node);
+
+      // we want the reserved nodes sorted by fee at the top
+      const awaitingContributionNodesReserved = nodes
+        .filter(isAwaitingContributionReserved)
+        .map(n => {
+          return {
+            ...n,
+            awaitingContribution: true
+          };
+        });
+      const awaitingContributionNodesNonReserved = nodes
+        .filter(isAwaitingContributionNonReserved)
+        .map(n => {
+          return {
+            ...n,
+            awaitingContribution: true
+          };
+        });
+
+      const compareFee = (n1, n2) =>
+        this.getFeeDecimal(n1) > this.getFeeDecimal(n2) ? 1 : -1;
+      awaitingContributionNodesReserved.sort(compareFee);
+      awaitingContributionNodesNonReserved.sort(compareFee);
+
+      const nodesForContribution = [
+        ...awaitingContributionNodesReserved,
+        ...awaitingContributionNodesNonReserved
+      ];
+      return nodesForContribution;
     }
   }),
   validations: {
@@ -152,8 +232,37 @@ export default {
       this.service_node.key = key;
       this.service_node.amount = minContribution;
     },
+    minStake() {
+      const node = this.getNodeWithPubKey();
+      return this.getMinContribution(node);
+    },
+    maxStake() {
+      const node = this.getNodeWithPubKey();
+      return this.openForContributionLoki(node);
+    },
+    getFeeDecimal(node) {
+      const operatorPortion = node.portions_for_operator;
+      return (operatorPortion / 18446744073709551612) * 100;
+    },
     buildDialogFieldsSweep(txData) {
       this.buildDialogFields(txData);
+    },
+    getNodeWithPubKey() {
+      const key = this.service_node.key;
+      const nodeOfKey = this.awaiting_service_nodes.find(
+        n => n.service_node_pubkey === key
+      );
+      let node = nodeOfKey ? nodeOfKey : false;
+      if (!node) {
+        this.$q.notify({
+          type: "negative",
+          timeout: 1000,
+          message: this.$t("notification.errors.invalidServiceNodeKey")
+        });
+        return;
+      } else {
+        return node;
+      }
     },
     sweepAllWarning() {
       this.$q
@@ -176,6 +285,13 @@ export default {
         })
         .onDismiss(() => {})
         .onCancel(() => {});
+    },
+    areButtonsEnabled() {
+      // if we can find the service node key in the list of service nodes
+      const key = this.service_node.key;
+      return !!this.awaiting_service_nodes.find(
+        n => n.service_node_pubkey === key
+      );
     },
     async sweepAll() {
       const { unlocked_balance } = this.info;
@@ -205,7 +321,11 @@ export default {
             sending: true
           });
           const newTx = objectAssignDeep.noMutate(tx, { password });
-          this.$gateway.send("wallet", "transfer", newTx);
+          const txWithSweepAll = {
+            ...newTx,
+            isSweepAll: true
+          };
+          this.$gateway.send("wallet", "transfer", txWithSweepAll);
         })
         .onDismiss(() => {})
         .onCancel(() => {});
