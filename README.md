@@ -23,10 +23,10 @@ Please submit any changes as pull requests to the development branch, all change
 #### Commands
 
 ```
-nvm use 11.9.0
-npm install -g quasar-cli
+nvm use 14.11.0
+npm install -g @quasar/cli
 git clone https://github.com/loki-project/loki-electron-gui-wallet
-cd loki-electron-wallet
+cd loki-electron-gui-wallet
 cp path_to_lokid_binaries/lokid bin/
 cp path_to_lokid_binaries/loki-wallet-rpc bin/
 npm install
