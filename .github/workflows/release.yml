@@ -1,10 +1,9 @@
-name: Loki Electron Wallet Build
+name: Loki Electron Wallet Release
 
 on:
   push:
     branches:
       - master
-      - development
 
 jobs:
   build:
@@ -52,15 +51,15 @@ jobs:
         run: ls ./bin
         shell: bash
 
-      - name: Build window and linux binaries
+      - name: Publish window and linux binaries
         if: runner.os != 'macOS'
-        run: npm run build
+        run: npm run release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build mac binaries
+      - name: Publish mac binaries
         if: runner.os == 'macOS'
-        run: npm run build
+        run: npm run release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CERTIFICATE }}
@@ -68,14 +67,3 @@ jobs:
           SIGNING_APPLE_ID: ${{ secrets.SIGNING_APPLE_ID }}
           SIGNING_APP_PASSWORD: ${{ secrets.SIGNING_APP_PASSWORD }}
           SIGNING_TEAM_ID: ${{ secrets.SIGNING_TEAM_ID }}
-
-      - name: Remove un-needed artifacts
-        run: rm -r -- ./*/
-        shell: bash
-        working-directory: ./dist/electron/Packaged
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: ${{ runner.OS }}
-          path: dist/electron/Packaged

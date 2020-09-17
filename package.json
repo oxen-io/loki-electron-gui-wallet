@@ -15,7 +15,7 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev -m electron",
-    "build": "quasar build -m electron",
+    "build": "quasar build -m electron --publish=never",
     "release": "quasar build -m electron --publish=always",
     "lint": "eslint --fix .",
     "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
