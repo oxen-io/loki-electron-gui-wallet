@@ -28,6 +28,7 @@ bin/*
 
 .env
 
-/downloads
+downloads/*
+!downloads/*.sh
 
 dev-app-update.yml

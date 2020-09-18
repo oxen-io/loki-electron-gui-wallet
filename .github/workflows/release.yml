@@ -19,15 +19,18 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v1
         with:
-          node-version: "11.9.0"
+          node-version: "14.11.0"
 
       - name: Install dependencies
         run: npm install
 
       - name: Download lokid binaries
-        run: node ./build/download-binaries.js
+        run: ./download-asset.sh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OS: ${{ runner.os }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        working-directory: ./downloads
 
       - name: Extract zip binaries
         if: runner.os != 'Linux'
