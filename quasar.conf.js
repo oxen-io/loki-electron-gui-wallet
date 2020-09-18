@@ -159,7 +159,7 @@ module.exports = function() {
         appId: "com.loki-project.electron-wallet",
         productName: "Loki Electron Wallet",
         copyright:
-          "Copyright © 2018-2019 Loki Project, 2018 Ryo Currency Project",
+          "Copyright © 2018-2020 Loki Project, 2018 Ryo Currency Project",
         afterSign: "build/notarize.js",
         artifactName: "loki-electron-wallet-${version}-${os}.${ext}",
         publish: "github",
