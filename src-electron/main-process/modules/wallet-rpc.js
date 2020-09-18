@@ -206,25 +206,29 @@ export class WalletRPC {
 
               // To let caller know when the wallet is ready
               let intrvl = setInterval(() => {
-                this.sendRPC("get_languages").then(data => {
-                  if (!data.hasOwnProperty("error")) {
-                    clearInterval(intrvl);
-                    resolve();
-                  } else {
-                    if (
-                      this.walletRPCProcess &&
-                      data.error.cause &&
-                      data.error.cause.code === "ECONNREFUSED"
-                    ) {
-                      // Ignore
-                    } else {
+                this.sendRPC("get_languages")
+                  .then(data => {
+                    if (!data.hasOwnProperty("error")) {
                       clearInterval(intrvl);
-                      if (this.walletRPCProcess) this.walletRPCProcess.kill();
-                      this.walletRPCProcess = null;
-                      reject(new Error("Could not connect to wallet RPC"));
+                      resolve();
+                    } else {
+                      if (
+                        this.walletRPCProcess &&
+                        data.error.cause &&
+                        data.error.cause.code === "ECONNREFUSED"
+                      ) {
+                        // Ignore
+                      } else {
+                        clearInterval(intrvl);
+                        if (this.walletRPCProcess) this.walletRPCProcess.kill();
+                        this.walletRPCProcess = null;
+                        reject(new Error("Could not connect to wallet RPC"));
+                      }
                     }
-                  }
-                });
+                  })
+                  .catch(() => {
+                    console.log("Failed to get languages.");
+                  });
               }, 1000);
             } else {
               reject(new Error(`Wallet RPC port ${this.port} is in use`));

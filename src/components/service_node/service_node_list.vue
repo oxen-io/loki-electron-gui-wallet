@@ -124,9 +124,6 @@ export default {
       };
       return nodeWithMinContribution;
     },
-    openForContributionLoki(node) {
-      return (this.openForContribution(node) / 1e9).toFixed(4);
-    },
     is_ready() {
       return this.$store.getters["gateway/isReady"];
     },
