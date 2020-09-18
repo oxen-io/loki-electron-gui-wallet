@@ -66,175 +66,183 @@ export class WalletRPC {
         daemon_address = `${daemon.remote_host}:${daemon.remote_port}`;
       }
 
-      crypto.randomBytes(64 + 64 + 32, (err, buffer) => {
-        if (err) throw err;
+      crypto
+        .randomBytes(64 + 64 + 32, (err, buffer) => {
+          if (err) throw err;
 
-        let auth = buffer.toString("hex");
+          let auth = buffer.toString("hex");
 
-        this.auth = [
-          auth.substr(0, 64), // rpc username
-          auth.substr(64, 64), // rpc password
-          auth.substr(128, 32) // password salt
-        ];
+          this.auth = [
+            auth.substr(0, 64), // rpc username
+            auth.substr(64, 64), // rpc password
+            auth.substr(128, 32) // password salt
+          ];
 
-        const args = [
-          "--rpc-login",
-          this.auth[0] + ":" + this.auth[1],
-          "--rpc-bind-port",
-          options.wallet.rpc_bind_port,
-          "--daemon-address",
-          daemon_address,
-          // "--log-level", options.wallet.log_level,
-          "--log-level",
-          "*:WARNING,net*:FATAL,net.http:DEBUG,global:INFO,verify:FATAL,stacktrace:INFO"
-        ];
+          const args = [
+            "--rpc-login",
+            this.auth[0] + ":" + this.auth[1],
+            "--rpc-bind-port",
+            options.wallet.rpc_bind_port,
+            "--daemon-address",
+            daemon_address,
+            // "--log-level", options.wallet.log_level,
+            "--log-level",
+            "*:WARNING,net*:FATAL,net.http:DEBUG,global:INFO,verify:FATAL,stacktrace:INFO"
+          ];
 
-        const { net_type, wallet_data_dir, data_dir } = options.app;
-        this.net_type = net_type;
-        this.data_dir = data_dir;
-        this.wallet_data_dir = wallet_data_dir;
+          const { net_type, wallet_data_dir, data_dir } = options.app;
+          this.net_type = net_type;
+          this.data_dir = data_dir;
+          this.wallet_data_dir = wallet_data_dir;
 
-        this.dirs = {
-          mainnet: this.wallet_data_dir,
-          stagenet: path.join(this.wallet_data_dir, "stagenet"),
-          testnet: path.join(this.wallet_data_dir, "testnet")
-        };
+          this.dirs = {
+            mainnet: this.wallet_data_dir,
+            stagenet: path.join(this.wallet_data_dir, "stagenet"),
+            testnet: path.join(this.wallet_data_dir, "testnet")
+          };
 
-        this.wallet_dir = path.join(this.dirs[net_type], "wallets");
-        args.push("--wallet-dir", this.wallet_dir);
+          this.wallet_dir = path.join(this.dirs[net_type], "wallets");
+          args.push("--wallet-dir", this.wallet_dir);
 
-        const log_file = path.join(
-          this.dirs[net_type],
-          "logs",
-          "wallet-rpc.log"
-        );
-        args.push("--log-file", log_file);
-
-        if (net_type === "testnet") {
-          args.push("--testnet");
-        } else if (net_type === "stagenet") {
-          args.push("--stagenet");
-        }
-
-        if (fs.existsSync(log_file)) {
-          fs.truncateSync(log_file, 0);
-        }
-
-        if (!fs.existsSync(this.wallet_dir)) {
-          fs.mkdirpSync(this.wallet_dir);
-        }
-
-        // save this info for later RPC calls
-        this.protocol = "http://";
-        this.hostname = "127.0.0.1";
-        this.port = options.wallet.rpc_bind_port;
-
-        const rpcExecutable =
-          process.platform === "win32"
-            ? "loki-wallet-rpc.exe"
-            : "loki-wallet-rpc";
-        // eslint-disable-next-line no-undef
-        const rpcPath = path.join(__ryo_bin, rpcExecutable);
-
-        // Check if the rpc exists
-        if (!fs.existsSync(rpcPath)) {
-          reject(
-            new Error(
-              "Failed to find Loki Wallet RPC. Please make sure you anti-virus has not removed it."
-            )
+          const log_file = path.join(
+            this.dirs[net_type],
+            "logs",
+            "wallet-rpc.log"
           );
-          return;
-        }
+          args.push("--log-file", log_file);
 
-        portscanner
-          .checkPortStatus(this.port, this.hostname)
-          .catch(() => "closed")
-          .then(status => {
-            if (status === "closed") {
-              const options =
-                process.platform === "win32" ? {} : { detached: true };
-              this.walletRPCProcess = child_process.spawn(
-                rpcPath,
-                args,
-                options
-              );
+          if (net_type === "testnet") {
+            args.push("--testnet");
+          } else if (net_type === "stagenet") {
+            args.push("--stagenet");
+          }
 
-              this.walletRPCProcess.stdout.on("data", data => {
-                process.stdout.write(`Wallet: ${data}`);
+          if (fs.existsSync(log_file)) {
+            fs.truncateSync(log_file, 0);
+          }
 
-                let lines = data.toString().split("\n");
-                let match,
-                  height = null;
-                let isRPCSyncing = false;
-                for (const line of lines) {
-                  for (const regex of this.height_regexes) {
-                    match = line.match(regex.string);
-                    if (match) {
-                      height = regex.height(match);
-                      isRPCSyncing = true;
-                      break;
-                    }
-                  }
-                }
+          if (!fs.existsSync(this.wallet_dir)) {
+            fs.mkdirpSync(this.wallet_dir);
+          }
 
-                // Keep track on wether a wallet is syncing or not
-                this.sendGateway("set_wallet_data", {
-                  isRPCSyncing
-                });
-                this.isRPCSyncing = isRPCSyncing;
+          // save this info for later RPC calls
+          this.protocol = "http://";
+          this.hostname = "127.0.0.1";
+          this.port = options.wallet.rpc_bind_port;
 
-                if (height && Date.now() - this.last_height_send_time > 1000) {
-                  this.last_height_send_time = Date.now();
-                  this.sendGateway("set_wallet_data", {
-                    info: {
-                      height
-                    }
-                  });
-                }
-              });
-              this.walletRPCProcess.on("error", err =>
-                process.stderr.write(`Wallet: ${err}`)
-              );
-              this.walletRPCProcess.on("close", code => {
-                process.stderr.write(`Wallet: exited with code ${code} \n`);
-                this.walletRPCProcess = null;
-                this.agent.destroy();
-                if (code === null) {
-                  reject(new Error("Failed to start wallet RPC"));
-                }
-              });
+          const rpcExecutable =
+            process.platform === "win32"
+              ? "loki-wallet-rpc.exe"
+              : "loki-wallet-rpc";
+          // eslint-disable-next-line no-undef
+          const rpcPath = path.join(__ryo_bin, rpcExecutable);
 
-              // To let caller know when the wallet is ready
-              let intrvl = setInterval(() => {
-                this.sendRPC("get_languages")
-                  .then(data => {
-                    if (!data.hasOwnProperty("error")) {
-                      clearInterval(intrvl);
-                      resolve();
-                    } else {
-                      if (
-                        this.walletRPCProcess &&
-                        data.error.cause &&
-                        data.error.cause.code === "ECONNREFUSED"
-                      ) {
-                        // Ignore
-                      } else {
-                        clearInterval(intrvl);
-                        if (this.walletRPCProcess) this.walletRPCProcess.kill();
-                        this.walletRPCProcess = null;
-                        reject(new Error("Could not connect to wallet RPC"));
+          // Check if the rpc exists
+          if (!fs.existsSync(rpcPath)) {
+            reject(
+              new Error(
+                "Failed to find Loki Wallet RPC. Please make sure you anti-virus has not removed it."
+              )
+            );
+            return;
+          }
+
+          portscanner
+            .checkPortStatus(this.port, this.hostname)
+            .catch(() => "closed")
+            .then(status => {
+              if (status === "closed") {
+                const options =
+                  process.platform === "win32" ? {} : { detached: true };
+                this.walletRPCProcess = child_process.spawn(
+                  rpcPath,
+                  args,
+                  options
+                );
+
+                this.walletRPCProcess.stdout.on("data", data => {
+                  process.stdout.write(`Wallet: ${data}`);
+
+                  let lines = data.toString().split("\n");
+                  let match,
+                    height = null;
+                  let isRPCSyncing = false;
+                  for (const line of lines) {
+                    for (const regex of this.height_regexes) {
+                      match = line.match(regex.string);
+                      if (match) {
+                        height = regex.height(match);
+                        isRPCSyncing = true;
+                        break;
                       }
                     }
-                  })
-                  .catch(() => {
-                    console.log("Failed to get languages.");
+                  }
+
+                  // Keep track on wether a wallet is syncing or not
+                  this.sendGateway("set_wallet_data", {
+                    isRPCSyncing
                   });
-              }, 1000);
-            } else {
-              reject(new Error(`Wallet RPC port ${this.port} is in use`));
-            }
-          });
-      });
+                  this.isRPCSyncing = isRPCSyncing;
+
+                  if (
+                    height &&
+                    Date.now() - this.last_height_send_time > 1000
+                  ) {
+                    this.last_height_send_time = Date.now();
+                    this.sendGateway("set_wallet_data", {
+                      info: {
+                        height
+                      }
+                    });
+                  }
+                });
+                this.walletRPCProcess.on("error", err =>
+                  process.stderr.write(`Wallet: ${err}`)
+                );
+                this.walletRPCProcess.on("close", code => {
+                  process.stderr.write(`Wallet: exited with code ${code} \n`);
+                  this.walletRPCProcess = null;
+                  this.agent.destroy();
+                  if (code === null) {
+                    reject(new Error("Failed to start wallet RPC"));
+                  }
+                });
+
+                // To let caller know when the wallet is ready
+                let intrvl = setInterval(() => {
+                  this.sendRPC("get_languages")
+                    .then(data => {
+                      if (!data.hasOwnProperty("error")) {
+                        clearInterval(intrvl);
+                        resolve();
+                      } else {
+                        if (
+                          this.walletRPCProcess &&
+                          data.error.cause &&
+                          data.error.cause.code === "ECONNREFUSED"
+                        ) {
+                          // Ignore
+                        } else {
+                          clearInterval(intrvl);
+                          if (this.walletRPCProcess)
+                            this.walletRPCProcess.kill();
+                          this.walletRPCProcess = null;
+                          reject(new Error("Could not connect to wallet RPC"));
+                        }
+                      }
+                    })
+                    .catch(err => {
+                      console.log(`Failed to get languages with error: ${err}`);
+                    });
+                }, 1000);
+              } else {
+                reject(new Error(`Wallet RPC port ${this.port} is in use`));
+              }
+            });
+        })
+        .catch(err => {
+          console.log(`portscanner failed with error: ${err}`);
+        });
     });
   }
 
@@ -474,26 +482,30 @@ export class WalletRPC {
   validateAddress(address) {
     this.sendRPC("validate_address", {
       address
-    }).then(data => {
-      if (data.hasOwnProperty("error")) {
+    })
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          this.sendGateway("set_valid_address", {
+            address,
+            valid: false
+          });
+          return;
+        }
+
+        const { valid, nettype } = data.result;
+
+        const netMatches = this.net_type === nettype;
+        const isValid = valid && netMatches;
+
         this.sendGateway("set_valid_address", {
           address,
-          valid: false
+          valid: isValid,
+          nettype
         });
-        return;
-      }
-
-      const { valid, nettype } = data.result;
-
-      const netMatches = this.net_type === nettype;
-      const isValid = valid && netMatches;
-
-      this.sendGateway("set_valid_address", {
-        address,
-        valid: isValid,
-        nettype
+      })
+      .catch(err => {
+        console.log(`Failed to validate address with error: ${err}`);
       });
-    });
   }
 
   createWallet(filename, password, language) {
@@ -503,21 +515,25 @@ export class WalletRPC {
       filename,
       password,
       language
-    }).then(data => {
-      if (data.hasOwnProperty("error")) {
-        this.sendGateway("set_wallet_error", { status: data.error });
-        return;
-      }
+    })
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          this.sendGateway("set_wallet_error", { status: data.error });
+          return;
+        }
 
-      // store hash of the password so we can check against it later when requesting private keys, or for sending txs
-      this.wallet_state.password_hash = crypto
-        .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
-        .toString("hex");
-      this.wallet_state.name = filename;
-      this.wallet_state.open = true;
+        // store hash of the password so we can check against it later when requesting private keys, or for sending txs
+        this.wallet_state.password_hash = crypto
+          .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
+          .toString("hex");
+        this.wallet_state.name = filename;
+        this.wallet_state.open = true;
 
-      this.finalizeNewWallet(filename);
-    });
+        this.finalizeNewWallet(filename);
+      })
+      .catch(err => {
+        console.log(`Failed to create wallet with error: ${err}`);
+      });
   }
 
   restoreWallet(
@@ -534,18 +550,23 @@ export class WalletRPC {
       timestamp = timestamp - (timestamp % 86400000) - 86400000;
 
       this.sendGateway("reset_wallet_error");
-      this.backend.daemon.timestampToHeight(timestamp).then(height => {
-        if (height === false) {
-          this.sendGateway("set_wallet_error", {
-            status: {
-              code: -1,
-              i18n: "notification.errors.invalidRestoreDate"
-            }
-          });
-        } else {
-          this.restoreWallet(filename, password, seed, "height", height);
-        }
-      });
+      this.backend.daemon
+        .timestampToHeight(timestamp)
+        .then(height => {
+          if (height === false) {
+            this.sendGateway("set_wallet_error", {
+              status: {
+                code: -1,
+                i18n: "notification.errors.invalidRestoreDate"
+              }
+            });
+          } else {
+            this.restoreWallet(filename, password, seed, "height", height);
+          }
+        })
+        .catch(err => {
+          console.log(`Failed to reset wallet height with error: ${err}`);
+        });
       return;
     }
 
@@ -562,21 +583,27 @@ export class WalletRPC {
       password,
       seed,
       restore_height
-    }).then(data => {
-      if (data.hasOwnProperty("error")) {
-        this.sendGateway("set_wallet_error", { status: data.error });
-        return;
-      }
+    })
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          this.sendGateway("set_wallet_error", { status: data.error });
+          return;
+        }
 
-      // store hash of the password so we can check against it later when requesting private keys, or for sending txs
-      this.wallet_state.password_hash = crypto
-        .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
-        .toString("hex");
-      this.wallet_state.name = filename;
-      this.wallet_state.open = true;
+        // store hash of the password so we can check against it later when requesting private keys, or for sending txs
+        this.wallet_state.password_hash = crypto
+          .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
+          .toString("hex");
+        this.wallet_state.name = filename;
+        this.wallet_state.open = true;
 
-      this.finalizeNewWallet(filename);
-    });
+        this.finalizeNewWallet(filename);
+      })
+      .catch(err => {
+        console.log(
+          `Failed to restore deterministic wallet with error: ${err}`
+        );
+      });
   }
 
   restoreViewWallet(
@@ -593,25 +620,30 @@ export class WalletRPC {
       let timestamp = refresh_start_timestamp_or_height;
       timestamp = timestamp - (timestamp % 86400000) - 86400000;
 
-      this.backend.daemon.timestampToHeight(timestamp).then(height => {
-        if (height === false) {
-          this.sendGateway("set_wallet_error", {
-            status: {
-              code: -1,
-              i18n: "notification.errors.invalidRestoreDate"
-            }
-          });
-        } else {
-          this.restoreViewWallet(
-            filename,
-            password,
-            address,
-            viewkey,
-            "height",
-            height
-          );
-        }
-      });
+      this.backend.daemon
+        .timestampToHeight(timestamp)
+        .then(height => {
+          if (height === false) {
+            this.sendGateway("set_wallet_error", {
+              status: {
+                code: -1,
+                i18n: "notification.errors.invalidRestoreDate"
+              }
+            });
+          } else {
+            this.restoreViewWallet(
+              filename,
+              password,
+              address,
+              viewkey,
+              "height",
+              height
+            );
+          }
+        })
+        .catch(err => {
+          console.log(`Failed to create wallet with error: ${err}`);
+        });
       return;
     }
 
@@ -627,21 +659,25 @@ export class WalletRPC {
       address,
       viewkey,
       refresh_start_height
-    }).then(data => {
-      if (data.hasOwnProperty("error")) {
-        this.sendGateway("set_wallet_error", { status: data.error });
-        return;
-      }
+    })
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          this.sendGateway("set_wallet_error", { status: data.error });
+          return;
+        }
 
-      // store hash of the password so we can check against it later when requesting private keys, or for sending txs
-      this.wallet_state.password_hash = crypto
-        .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
-        .toString("hex");
-      this.wallet_state.name = filename;
-      this.wallet_state.open = true;
+        // store hash of the password so we can check against it later when requesting private keys, or for sending txs
+        this.wallet_state.password_hash = crypto
+          .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
+          .toString("hex");
+        this.wallet_state.name = filename;
+        this.wallet_state.open = true;
 
-      this.finalizeNewWallet(filename);
-    });
+        this.finalizeNewWallet(filename);
+      })
+      .catch(err => {
+        console.log(`Failed to create wallet with error: ${err}`);
+      });
   }
 
   importWallet(wallet_name, password, import_path) {
@@ -738,61 +774,74 @@ export class WalletRPC {
       this.sendRPC("query_key", { key_type: "mnemonic" }),
       this.sendRPC("query_key", { key_type: "spend_key" }),
       this.sendRPC("query_key", { key_type: "view_key" })
-    ]).then(data => {
-      let wallet = {
-        info: {
-          name: filename,
-          address: "",
-          balance: 0,
-          unlocked_balance: 0,
-          height: 0,
-          view_only: false
-        },
-        secret: {
-          mnemonic: "",
-          spend_key: "",
-          view_key: ""
-        }
-      };
-      for (let n of data) {
-        if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
-          continue;
-        }
-        if (n.method == "get_address") {
-          wallet.info.address = n.result.address;
-        } else if (n.method == "getheight") {
-          wallet.info.height = n.result.height;
-        } else if (n.method == "getbalance") {
-          wallet.info.balance = n.result.balance;
-          wallet.info.unlocked_balance = n.result.unlocked_balance;
-        } else if (n.method == "query_key") {
-          wallet.secret[n.params.key_type] = n.result.key;
-          if (n.params.key_type == "spend_key") {
-            if (/^0*$/.test(n.result.key)) {
-              wallet.info.view_only = true;
+    ])
+      .then(data => {
+        let wallet = {
+          info: {
+            name: filename,
+            address: "",
+            balance: 0,
+            unlocked_balance: 0,
+            height: 0,
+            view_only: false
+          },
+          secret: {
+            mnemonic: "",
+            spend_key: "",
+            view_key: ""
+          }
+        };
+        for (let n of data) {
+          if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
+            continue;
+          }
+          if (n.method == "get_address") {
+            wallet.info.address = n.result.address;
+          } else if (n.method == "getheight") {
+            wallet.info.height = n.result.height;
+          } else if (n.method == "getbalance") {
+            wallet.info.balance = n.result.balance;
+            wallet.info.unlocked_balance = n.result.unlocked_balance;
+          } else if (n.method == "query_key") {
+            wallet.secret[n.params.key_type] = n.result.key;
+            if (n.params.key_type == "spend_key") {
+              if (/^0*$/.test(n.result.key)) {
+                wallet.info.view_only = true;
+              }
             }
           }
         }
-      }
 
-      this.saveWallet().then(() => {
-        let address_txt_path = path.join(
-          this.wallet_dir,
-          filename + ".address.txt"
-        );
-        if (!fs.existsSync(address_txt_path)) {
-          fs.writeFile(address_txt_path, wallet.info.address, "utf8", () => {
-            this.listWallets();
+        this.saveWallet()
+          .then(() => {
+            let address_txt_path = path.join(
+              this.wallet_dir,
+              filename + ".address.txt"
+            );
+            if (!fs.existsSync(address_txt_path)) {
+              fs.writeFile(
+                address_txt_path,
+                wallet.info.address,
+                "utf8",
+                () => {
+                  this.listWallets();
+                }
+              );
+            } else {
+              this.listWallets();
+            }
+          })
+          .catch(err => {
+            console.log(`Failed to save wallet with error: ${err}`);
           });
-        } else {
-          this.listWallets();
-        }
+
+        this.sendGateway("set_wallet_data", wallet);
+
+        this.startHeartbeat();
+      })
+      .catch(err => {
+        console.log(`Failed to finalize new wallet with error: ${err}`);
       });
-
-      this.sendGateway("set_wallet_data", wallet);
-
-      this.startHeartbeat();
-    });
   }
 
   openWallet(filename, password) {
@@ -800,52 +849,75 @@ export class WalletRPC {
     this.sendRPC("open_wallet", {
       filename,
       password
-    }).then(data => {
-      if (data.hasOwnProperty("error")) {
-        this.sendGateway("set_wallet_error", { status: data.error });
-        return;
-      }
-
-      let address_txt_path = path.join(
-        this.wallet_dir,
-        filename + ".address.txt"
-      );
-      if (!fs.existsSync(address_txt_path)) {
-        this.sendRPC("get_address", { account_index: 0 }).then(data => {
-          if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
-            return;
-          }
-          fs.writeFile(address_txt_path, data.result.address, "utf8", () => {
-            this.listWallets();
-          });
-        });
-      }
-
-      // store hash of the password so we can check against it later when requesting private keys, or for sending txs
-      this.wallet_state.password_hash = crypto
-        .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
-        .toString("hex");
-      this.wallet_state.name = filename;
-      this.wallet_state.open = true;
-
-      this.startHeartbeat();
-
-      this.purchasedNames = {};
-
-      // Check if we have a view only wallet by querying the spend key
-      this.sendRPC("query_key", { key_type: "spend_key" }).then(data => {
-        if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
+    })
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          this.sendGateway("set_wallet_error", { status: data.error });
           return;
         }
-        if (/^0*$/.test(data.result.key)) {
-          this.sendGateway("set_wallet_data", {
-            info: {
-              view_only: true
-            }
-          });
+
+        let address_txt_path = path.join(
+          this.wallet_dir,
+          filename + ".address.txt"
+        );
+        if (!fs.existsSync(address_txt_path)) {
+          this.sendRPC("get_address", { account_index: 0 })
+            .then(data => {
+              if (
+                data.hasOwnProperty("error") ||
+                !data.hasOwnProperty("result")
+              ) {
+                return;
+              }
+              fs.writeFile(
+                address_txt_path,
+                data.result.address,
+                "utf8",
+                () => {
+                  this.listWallets();
+                }
+              );
+            })
+            .catch(err => {
+              console.log(`Failed to get address with error: ${err}`);
+            });
         }
+
+        // store hash of the password so we can check against it later when requesting private keys, or for sending txs
+        this.wallet_state.password_hash = crypto
+          .pbkdf2Sync(password, this.auth[2], 1000, 64, "sha512")
+          .toString("hex");
+        this.wallet_state.name = filename;
+        this.wallet_state.open = true;
+
+        this.startHeartbeat();
+
+        this.purchasedNames = {};
+
+        // Check if we have a view only wallet by querying the spend key
+        this.sendRPC("query_key", { key_type: "spend_key" })
+          .then(data => {
+            if (
+              data.hasOwnProperty("error") ||
+              !data.hasOwnProperty("result")
+            ) {
+              return;
+            }
+            if (/^0*$/.test(data.result.key)) {
+              this.sendGateway("set_wallet_data", {
+                info: {
+                  view_only: true
+                }
+              });
+            }
+          })
+          .catch(err => {
+            console.log(`Failed to query spend key with error: ${err}`);
+          });
+      })
+      .catch(err => {
+        console.log(`Failed to open wallet with error: ${err}`);
       });
-    });
   }
 
   startHeartbeat() {
@@ -867,97 +939,101 @@ export class WalletRPC {
       this.sendRPC("get_address", { account_index: 0 }, 5000),
       this.sendRPC("getheight", {}, 5000),
       this.sendRPC("getbalance", { account_index: 0 }, 5000)
-    ]).then(data => {
-      let didError = false;
-      let wallet = {
-        status: {
-          code: 0,
-          message: "OK"
-        },
-        info: {
-          name: this.wallet_state.name
-        },
-        transactions: {
-          tx_list: []
-        },
-        address_list: {
-          primary: [],
-          used: [],
-          unused: [],
-          address_book: [],
-          address_book_starred: []
-        }
-      };
-
-      for (let n of data) {
-        if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
-          // Maybe we also need to look into the other error codes it could give us
-          // Error -13: No wallet file - This occurs when you call open wallet while another wallet is still syncing
-          if (extended && n.error && n.error.code === -13) {
-            didError = true;
+    ])
+      .then(data => {
+        let didError = false;
+        let wallet = {
+          status: {
+            code: 0,
+            message: "OK"
+          },
+          info: {
+            name: this.wallet_state.name
+          },
+          transactions: {
+            tx_list: []
+          },
+          address_list: {
+            primary: [],
+            used: [],
+            unused: [],
+            address_book: [],
+            address_book_starred: []
           }
-          continue;
-        }
+        };
 
-        if (n.method == "getheight") {
-          wallet.info.height = n.result.height;
-          this.sendGateway("set_wallet_data", {
-            info: {
-              height: n.result.height
+        for (let n of data) {
+          if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
+            // Maybe we also need to look into the other error codes it could give us
+            // Error -13: No wallet file - This occurs when you call open wallet while another wallet is still syncing
+            if (extended && n.error && n.error.code === -13) {
+              didError = true;
             }
-          });
-        } else if (n.method == "get_address") {
-          wallet.info.address = n.result.address;
-          this.sendGateway("set_wallet_data", {
-            info: {
-              address: n.result.address
-            }
-          });
-        } else if (n.method == "getbalance") {
-          if (
-            this.wallet_state.balance == n.result.balance &&
-            this.wallet_state.unlocked_balance == n.result.unlocked_balance
-          ) {
-            // continue
+            continue;
           }
 
-          this.wallet_state.balance = wallet.info.balance = n.result.balance;
-          this.wallet_state.unlocked_balance = wallet.info.unlocked_balance =
-            n.result.unlocked_balance;
-          this.sendGateway("set_wallet_data", {
-            info: wallet.info
-          });
-
-          // if balance has recently changed, get updated list of transactions and used addresses
-          let actions = [this.getTransactions(), this.getAddressList()];
-          actions.push(this.getAddressBook());
-          Promise.all(actions).then(data => {
-            for (let n of data) {
-              Object.keys(n).map(key => {
-                wallet[key] = Object.assign(wallet[key], n[key]);
-              });
-            }
-            this.sendGateway("set_wallet_data", wallet);
-          });
-        }
-      }
-
-      // Set the wallet state on initial heartbeat
-      if (extended) {
-        if (!didError) {
-          this.sendGateway("set_wallet_data", wallet);
-        } else {
-          this.closeWallet().then(() => {
-            this.sendGateway("set_wallet_error", {
-              status: {
-                code: -1,
-                i18n: "notification.errors.failedWalletOpen"
+          if (n.method == "getheight") {
+            wallet.info.height = n.result.height;
+            this.sendGateway("set_wallet_data", {
+              info: {
+                height: n.result.height
               }
             });
-          });
+          } else if (n.method == "get_address") {
+            wallet.info.address = n.result.address;
+            this.sendGateway("set_wallet_data", {
+              info: {
+                address: n.result.address
+              }
+            });
+          } else if (n.method == "getbalance") {
+            if (
+              this.wallet_state.balance == n.result.balance &&
+              this.wallet_state.unlocked_balance == n.result.unlocked_balance
+            ) {
+              // continue
+            }
+
+            this.wallet_state.balance = wallet.info.balance = n.result.balance;
+            this.wallet_state.unlocked_balance = wallet.info.unlocked_balance =
+              n.result.unlocked_balance;
+            this.sendGateway("set_wallet_data", {
+              info: wallet.info
+            });
+
+            // if balance has recently changed, get updated list of transactions and used addresses
+            let actions = [this.getTransactions(), this.getAddressList()];
+            actions.push(this.getAddressBook());
+            Promise.all(actions).then(data => {
+              for (let n of data) {
+                Object.keys(n).map(key => {
+                  wallet[key] = Object.assign(wallet[key], n[key]);
+                });
+              }
+              this.sendGateway("set_wallet_data", wallet);
+            });
+          }
         }
-      }
-    });
+
+        // Set the wallet state on initial heartbeat
+        if (extended) {
+          if (!didError) {
+            this.sendGateway("set_wallet_data", wallet);
+          } else {
+            this.closeWallet().then(() => {
+              this.sendGateway("set_wallet_error", {
+                status: {
+                  code: -1,
+                  i18n: "notification.errors.failedWalletOpen"
+                }
+              });
+            });
+          }
+        }
+      })
+      .catch(err => {
+        console.log(`Heartbeat failed with error: ${err}`);
+      });
   }
 
   async updateLocalLNSRecords() {
@@ -1172,32 +1248,36 @@ export class WalletRPC {
           amount,
           destination,
           service_node_key
-        }).then(data => {
-          if (data.hasOwnProperty("error")) {
-            let error =
-              data.error.message.charAt(0).toUpperCase() +
-              data.error.message.slice(1);
+        })
+          .then(data => {
+            if (data.hasOwnProperty("error")) {
+              let error =
+                data.error.message.charAt(0).toUpperCase() +
+                data.error.message.slice(1);
+              this.sendGateway("set_snode_status", {
+                stake: {
+                  code: -1,
+                  message: error,
+                  sending: false
+                }
+              });
+              return;
+            }
+
+            // Update the new snode list
+            this.backend.daemon.updateServiceNodes();
+
             this.sendGateway("set_snode_status", {
               stake: {
-                code: -1,
-                message: error,
+                code: 0,
+                i18n: "notification.positive.stakeSuccess",
                 sending: false
               }
             });
-            return;
-          }
-
-          // Update the new snode list
-          this.backend.daemon.updateServiceNodes();
-
-          this.sendGateway("set_snode_status", {
-            stake: {
-              code: 0,
-              i18n: "notification.positive.stakeSuccess",
-              sending: false
-            }
+          })
+          .catch(err => {
+            console.log(`Failed to stake with error: ${err}`);
           });
-        });
       }
     );
   }
@@ -1234,32 +1314,36 @@ export class WalletRPC {
 
         this.sendRPC("register_service_node", {
           register_service_node_str
-        }).then(data => {
-          if (data.hasOwnProperty("error")) {
-            const error =
-              data.error.message.charAt(0).toUpperCase() +
-              data.error.message.slice(1);
+        })
+          .then(data => {
+            if (data.hasOwnProperty("error")) {
+              const error =
+                data.error.message.charAt(0).toUpperCase() +
+                data.error.message.slice(1);
+              this.sendGateway("set_snode_status", {
+                registration: {
+                  code: -1,
+                  message: error,
+                  sending: false
+                }
+              });
+              return;
+            }
+
+            // Update the new snode list
+            this.backend.daemon.updateServiceNodes();
+
             this.sendGateway("set_snode_status", {
               registration: {
-                code: -1,
-                message: error,
+                code: 0,
+                i18n: "notification.positive.registerServiceNodeSuccess",
                 sending: false
               }
             });
-            return;
-          }
-
-          // Update the new snode list
-          this.backend.daemon.updateServiceNodes();
-
-          this.sendGateway("set_snode_status", {
-            registration: {
-              code: 0,
-              i18n: "notification.positive.registerServiceNodeSuccess",
-              sending: false
-            }
+          })
+          .catch(err => {
+            console.log(`Failed to register service node with error: ${err}`);
           });
-        });
       }
     );
   }
@@ -1301,53 +1385,65 @@ export class WalletRPC {
         const sendRPC = path => {
           return this.sendRPC(path, {
             service_node_key
-          }).then(data => {
-            if (data.hasOwnProperty("error")) {
-              const error =
-                data.error.message.charAt(0).toUpperCase() +
-                data.error.message.slice(1);
-              sendError(error, false);
-              return null;
-            }
+          })
+            .then(data => {
+              if (data.hasOwnProperty("error")) {
+                const error =
+                  data.error.message.charAt(0).toUpperCase() +
+                  data.error.message.slice(1);
+                sendError(error, false);
+                return null;
+              }
 
-            if (!data.hasOwnProperty("result")) {
-              sendError("notification.errors.failedServiceNodeUnlock");
-              return null;
-            }
+              if (!data.hasOwnProperty("result")) {
+                sendError("notification.errors.failedServiceNodeUnlock");
+                return null;
+              }
 
-            return data.result;
-          });
+              return data.result;
+            })
+            .catch(err => {
+              console.log(`Failed to unlock stake with error: ${err}`);
+            });
         };
 
         if (confirmed) {
-          sendRPC("request_stake_unlock").then(data => {
-            if (!data) return;
+          sendRPC("request_stake_unlock")
+            .then(data => {
+              if (!data) return;
 
-            const unlock = {
-              code: data.unlocked ? 0 : -1,
-              message: data.msg,
-              sending: false
-            };
+              const unlock = {
+                code: data.unlocked ? 0 : -1,
+                message: data.msg,
+                sending: false
+              };
 
-            // Update the new snode list
-            if (data.unlocked) {
-              this.backend.daemon.updateServiceNodes();
-            }
+              // Update the new snode list
+              if (data.unlocked) {
+                this.backend.daemon.updateServiceNodes();
+              }
 
-            this.sendGateway("set_snode_status", { unlock });
-          });
+              this.sendGateway("set_snode_status", { unlock });
+            })
+            .catch(err => {
+              console.log(`Failed to request a stake unlock: ${err}`);
+            });
         } else {
-          sendRPC("can_request_stake_unlock").then(data => {
-            if (!data) return;
+          sendRPC("can_request_stake_unlock")
+            .then(data => {
+              if (!data) return;
 
-            const unlock = {
-              code: data.can_unlock ? 1 : -1,
-              message: data.msg,
-              sending: false
-            };
+              const unlock = {
+                code: data.can_unlock ? 1 : -1,
+                message: data.msg,
+                sending: false
+              };
 
-            this.sendGateway("set_snode_status", { unlock });
-          });
+              this.sendGateway("set_snode_status", { unlock });
+            })
+            .catch(err => {
+              console.log(`Failed can request stake unlock with error: ${err}`);
+            });
         }
       }
     );
@@ -1542,30 +1638,34 @@ export class WalletRPC {
           value
         };
 
-        this.sendRPC("lns_buy_mapping", params).then(data => {
-          if (data.hasOwnProperty("error")) {
-            let error =
-              data.error.message.charAt(0).toUpperCase() +
-              data.error.message.slice(1);
+        this.sendRPC("lns_buy_mapping", params)
+          .then(data => {
+            if (data.hasOwnProperty("error")) {
+              let error =
+                data.error.message.charAt(0).toUpperCase() +
+                data.error.message.slice(1);
+              this.sendGateway("set_lns_status", {
+                code: -1,
+                message: error,
+                sending: false
+              });
+              return;
+            }
+
+            this.purchasedNames[name.trim()] = type;
+
+            // Fetch new records and then get the decrypted record for the one we just inserted
+            setTimeout(() => this.updateLocalLNSRecords(), 5000);
+
             this.sendGateway("set_lns_status", {
-              code: -1,
-              message: error,
+              code: 0,
+              i18n: "notification.positive.namePurchased",
               sending: false
             });
-            return;
-          }
-
-          this.purchasedNames[name.trim()] = type;
-
-          // Fetch new records and then get the decrypted record for the one we just inserted
-          setTimeout(() => this.updateLocalLNSRecords(), 5000);
-
-          this.sendGateway("set_lns_status", {
-            code: 0,
-            i18n: "notification.positive.namePurchased",
-            sending: false
+          })
+          .catch(err => {
+            console.log(`Failed to buy LNS mapping with error: ${err}`);
           });
-        });
       }
     );
   }
@@ -1607,51 +1707,55 @@ export class WalletRPC {
           value
         };
 
-        this.sendRPC("lns_update_mapping", params).then(data => {
-          if (data.hasOwnProperty("error")) {
-            let error =
-              data.error.message.charAt(0).toUpperCase() +
-              data.error.message.slice(1);
-            this.sendGateway("set_lns_status", {
-              code: -1,
-              message: error,
-              sending: false
-            });
-            return;
-          }
-
-          this.purchasedNames[name.trim()] = type;
-
-          // Fetch new records and then get the decrypted record for the one we just inserted
-          setTimeout(() => this.updateLocalLNSRecords(), 5000);
-
-          // Optimistically update our record
-          const { lnsRecords } = this.wallet_state;
-          const newRecords = lnsRecords.map(record => {
-            if (
-              record.type === type &&
-              record.name &&
-              record.name.toLowerCase() === _name
-            ) {
-              return {
-                ...record,
-                owner: _owner,
-                backup_owner,
-                value
-              };
+        this.sendRPC("lns_update_mapping", params)
+          .then(data => {
+            if (data.hasOwnProperty("error")) {
+              let error =
+                data.error.message.charAt(0).toUpperCase() +
+                data.error.message.slice(1);
+              this.sendGateway("set_lns_status", {
+                code: -1,
+                message: error,
+                sending: false
+              });
+              return;
             }
 
-            return record;
-          });
-          this.wallet_state.lnsRecords = newRecords;
-          this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
+            this.purchasedNames[name.trim()] = type;
 
-          this.sendGateway("set_lns_status", {
-            code: 0,
-            i18n: "notification.positive.lnsRecordUpdated",
-            sending: false
+            // Fetch new records and then get the decrypted record for the one we just inserted
+            setTimeout(() => this.updateLocalLNSRecords(), 5000);
+
+            // Optimistically update our record
+            const { lnsRecords } = this.wallet_state;
+            const newRecords = lnsRecords.map(record => {
+              if (
+                record.type === type &&
+                record.name &&
+                record.name.toLowerCase() === _name
+              ) {
+                return {
+                  ...record,
+                  owner: _owner,
+                  backup_owner,
+                  value
+                };
+              }
+
+              return record;
+            });
+            this.wallet_state.lnsRecords = newRecords;
+            this.sendGateway("set_wallet_data", { lnsRecords: newRecords });
+
+            this.sendGateway("set_lns_status", {
+              code: 0,
+              i18n: "notification.positive.lnsRecordUpdated",
+              sending: false
+            });
+          })
+          .catch(err => {
+            console.log(`Failed to update LNS mapping with error: ${err}`);
           });
-        });
       }
     );
   }
@@ -1673,28 +1777,32 @@ export class WalletRPC {
       state: {}
     });
 
-    this.sendRPC(rpc_endpoint, params).then(data => {
-      if (data.hasOwnProperty("error")) {
-        let error =
-          data.error.message.charAt(0).toUpperCase() +
-          data.error.message.slice(1);
-        this.sendGateway("set_prove_transaction_status", {
-          code: -1,
-          message: error,
-          state: {}
-        });
-        return;
-      }
-
-      this.sendGateway("set_prove_transaction_status", {
-        code: 0,
-        message: "",
-        state: {
-          txid,
-          ...(data.result || {})
+    this.sendRPC(rpc_endpoint, params)
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          let error =
+            data.error.message.charAt(0).toUpperCase() +
+            data.error.message.slice(1);
+          this.sendGateway("set_prove_transaction_status", {
+            code: -1,
+            message: error,
+            state: {}
+          });
+          return;
         }
+
+        this.sendGateway("set_prove_transaction_status", {
+          code: 0,
+          message: "",
+          state: {
+            txid,
+            ...(data.result || {})
+          }
+        });
+      })
+      .catch(err => {
+        console.log(`Failed to get tx or spend proof with error: ${err}`);
       });
-    });
   }
 
   checkTransactionProof(signature, txid, address, message) {
@@ -1715,28 +1823,32 @@ export class WalletRPC {
       state: {}
     });
 
-    this.sendRPC(rpc_endpoint, params).then(data => {
-      if (data.hasOwnProperty("error")) {
-        let error =
-          data.error.message.charAt(0).toUpperCase() +
-          data.error.message.slice(1);
-        this.sendGateway("set_check_transaction_status", {
-          code: -1,
-          message: error,
-          state: {}
-        });
-        return;
-      }
-
-      this.sendGateway("set_check_transaction_status", {
-        code: 0,
-        message: "",
-        state: {
-          txid,
-          ...(data.result || {})
+    this.sendRPC(rpc_endpoint, params)
+      .then(data => {
+        if (data.hasOwnProperty("error")) {
+          let error =
+            data.error.message.charAt(0).toUpperCase() +
+            data.error.message.slice(1);
+          this.sendGateway("set_check_transaction_status", {
+            code: -1,
+            message: error,
+            state: {}
+          });
+          return;
         }
+
+        this.sendGateway("set_check_transaction_status", {
+          code: 0,
+          message: "",
+          state: {
+            txid,
+            ...(data.result || {})
+          }
+        });
+      })
+      .catch(err => {
+        console.log(`Failed to check tx or spend proof with error: ${err}`);
       });
-    });
   }
 
   rescanBlockchain() {
@@ -1779,23 +1891,27 @@ export class WalletRPC {
           this.sendRPC("query_key", { key_type: "mnemonic" }),
           this.sendRPC("query_key", { key_type: "spend_key" }),
           this.sendRPC("query_key", { key_type: "view_key" })
-        ]).then(data => {
-          let wallet = {
-            secret: {
-              mnemonic: "",
-              spend_key: "",
-              view_key: ""
+        ])
+          .then(data => {
+            let wallet = {
+              secret: {
+                mnemonic: "",
+                spend_key: "",
+                view_key: ""
+              }
+            };
+            for (let n of data) {
+              if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
+                continue;
+              }
+              wallet.secret[n.params.key_type] = n.result.key;
             }
-          };
-          for (let n of data) {
-            if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
-              continue;
-            }
-            wallet.secret[n.params.key_type] = n.result.key;
-          }
 
-          this.sendGateway("set_wallet_data", wallet);
-        });
+            this.sendGateway("set_wallet_data", wallet);
+          })
+          .catch(err => {
+            console.log(`Failed to get private keys with error: ${err}`);
+          });
       }
     );
   }
@@ -1805,79 +1921,89 @@ export class WalletRPC {
       Promise.all([
         this.sendRPC("get_address", { account_index: 0 }),
         this.sendRPC("getbalance", { account_index: 0 })
-      ]).then(data => {
-        for (let n of data) {
-          if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
-            resolve({});
-            return;
-          }
-        }
-
-        let num_unused_addresses = 10;
-
-        let wallet = {
-          info: {
-            address: data[0].result.address,
-            balance: data[1].result.balance,
-            unlocked_balance: data[1].result.unlocked_balance
-            // num_unspent_outputs: data[1].result.num_unspent_outputs
-          },
-          address_list: {
-            primary: [],
-            used: [],
-            unused: []
-          }
-        };
-
-        for (let address of data[0].result.addresses) {
-          address.balance = null;
-          address.unlocked_balance = null;
-          address.num_unspent_outputs = null;
-
-          if (data[1].result.hasOwnProperty("per_subaddress")) {
-            for (let address_balance of data[1].result.per_subaddress) {
-              if (address_balance.address_index == address.address_index) {
-                address.balance = address_balance.balance;
-                address.unlocked_balance = address_balance.unlocked_balance;
-                address.num_unspent_outputs =
-                  address_balance.num_unspent_outputs;
-                break;
-              }
+      ])
+        .then(data => {
+          for (let n of data) {
+            if (n.hasOwnProperty("error") || !n.hasOwnProperty("result")) {
+              resolve({});
+              return;
             }
           }
 
-          if (address.address_index == 0) {
-            wallet.address_list.primary.push(address);
-          } else if (address.used) {
-            wallet.address_list.used.push(address);
-          } else {
-            wallet.address_list.unused.push(address);
-          }
-        }
+          let num_unused_addresses = 10;
 
-        // limit to 10 unused addresses
-        wallet.address_list.unused = wallet.address_list.unused.slice(0, 10);
+          let wallet = {
+            info: {
+              address: data[0].result.address,
+              balance: data[1].result.balance,
+              unlocked_balance: data[1].result.unlocked_balance
+              // num_unspent_outputs: data[1].result.num_unspent_outputs
+            },
+            address_list: {
+              primary: [],
+              used: [],
+              unused: []
+            }
+          };
 
-        if (wallet.address_list.unused.length < num_unused_addresses) {
-          for (
-            let n = wallet.address_list.unused.length;
-            n < num_unused_addresses;
-            n++
-          ) {
-            this.sendRPC("create_address", {
-              account_index: 0
-            }).then(data => {
-              wallet.address_list.unused.push(data.result);
-              if (wallet.address_list.unused.length == num_unused_addresses) {
-                // should sort them here
-                resolve(wallet);
+          for (let address of data[0].result.addresses) {
+            address.balance = null;
+            address.unlocked_balance = null;
+            address.num_unspent_outputs = null;
+
+            if (data[1].result.hasOwnProperty("per_subaddress")) {
+              for (let address_balance of data[1].result.per_subaddress) {
+                if (address_balance.address_index == address.address_index) {
+                  address.balance = address_balance.balance;
+                  address.unlocked_balance = address_balance.unlocked_balance;
+                  address.num_unspent_outputs =
+                    address_balance.num_unspent_outputs;
+                  break;
+                }
               }
-            });
+            }
+
+            if (address.address_index == 0) {
+              wallet.address_list.primary.push(address);
+            } else if (address.used) {
+              wallet.address_list.used.push(address);
+            } else {
+              wallet.address_list.unused.push(address);
+            }
           }
-        } else {
-          resolve(wallet);
-        }
-      });
+
+          // limit to 10 unused addresses
+          wallet.address_list.unused = wallet.address_list.unused.slice(0, 10);
+
+          if (wallet.address_list.unused.length < num_unused_addresses) {
+            for (
+              let n = wallet.address_list.unused.length;
+              n < num_unused_addresses;
+              n++
+            ) {
+              this.sendRPC("create_address", {
+                account_index: 0
+              })
+                .then(data => {
+                  wallet.address_list.unused.push(data.result);
+                  if (
+                    wallet.address_list.unused.length == num_unused_addresses
+                  ) {
+                    // should sort them here
+                    resolve(wallet);
+                  }
+                })
+                .catch(err => {
+                  console.log(`Failed to create address with error: ${err}`);
+                });
+            }
+          } else {
+            resolve(wallet);
+          }
+        })
+        .catch(err => {
+          console.log(`Failed to get address list with error: ${err}`);
+        });
     });
   }
 
@@ -1889,132 +2015,153 @@ export class WalletRPC {
         pending: true,
         failed: true,
         pool: true
-      }).then(data => {
-        if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
-          resolve({});
-          return;
-        }
-        let wallet = {
-          transactions: {
-            tx_list: []
+      })
+        .then(data => {
+          if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
+            resolve({});
+            return;
           }
-        };
+          let wallet = {
+            transactions: {
+              tx_list: []
+            }
+          };
 
-        const types = [
-          "in",
-          "out",
-          "pending",
-          "failed",
-          "pool",
-          "miner",
-          "snode",
-          "gov",
-          "stake"
-        ];
-        types.forEach(type => {
-          if (data.result.hasOwnProperty(type)) {
-            wallet.transactions.tx_list = wallet.transactions.tx_list.concat(
-              data.result[type]
-            );
+          const types = [
+            "in",
+            "out",
+            "pending",
+            "failed",
+            "pool",
+            "miner",
+            "snode",
+            "gov",
+            "stake"
+          ];
+          types.forEach(type => {
+            if (data.result.hasOwnProperty(type)) {
+              wallet.transactions.tx_list = wallet.transactions.tx_list.concat(
+                data.result[type]
+              );
+            }
+          });
+
+          for (let i = 0; i < wallet.transactions.tx_list.length; i++) {
+            if (/^0*$/.test(wallet.transactions.tx_list[i].payment_id)) {
+              wallet.transactions.tx_list[i].payment_id = "";
+            } else if (
+              /^0*$/.test(
+                wallet.transactions.tx_list[i].payment_id.substring(16)
+              )
+            ) {
+              wallet.transactions.tx_list[
+                i
+              ].payment_id = wallet.transactions.tx_list[
+                i
+              ].payment_id.substring(0, 16);
+            }
           }
+
+          wallet.transactions.tx_list.sort(function(a, b) {
+            if (a.timestamp < b.timestamp) return 1;
+            if (a.timestamp > b.timestamp) return -1;
+            return 0;
+          });
+          resolve(wallet);
+        })
+        .catch(err => {
+          console.log(`Failed to get transactions with error: ${err}`);
         });
-
-        for (let i = 0; i < wallet.transactions.tx_list.length; i++) {
-          if (/^0*$/.test(wallet.transactions.tx_list[i].payment_id)) {
-            wallet.transactions.tx_list[i].payment_id = "";
-          } else if (
-            /^0*$/.test(wallet.transactions.tx_list[i].payment_id.substring(16))
-          ) {
-            wallet.transactions.tx_list[
-              i
-            ].payment_id = wallet.transactions.tx_list[i].payment_id.substring(
-              0,
-              16
-            );
-          }
-        }
-
-        wallet.transactions.tx_list.sort(function(a, b) {
-          if (a.timestamp < b.timestamp) return 1;
-          if (a.timestamp > b.timestamp) return -1;
-          return 0;
-        });
-        resolve(wallet);
-      });
     });
   }
 
   getAddressBook() {
     return new Promise(resolve => {
-      this.sendRPC("get_address_book").then(data => {
-        if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
-          resolve({});
-          return;
-        }
-        let wallet = {
-          address_list: {
-            address_book: [],
-            address_book_starred: []
+      this.sendRPC("get_address_book")
+        .then(data => {
+          if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
+            resolve({});
+            return;
           }
-        };
+          let wallet = {
+            address_list: {
+              address_book: [],
+              address_book_starred: []
+            }
+          };
 
-        const entries = data.result.entries || [];
-        const addresses = entries.map(e => {
-          const entry = { ...e };
-          const desc = entry.description.split("::");
-          if (desc.length == 3) {
-            entry.starred = desc[0] == "starred";
-            entry.name = desc[1];
-            entry.description = desc[2];
-          } else if (desc.length == 2) {
-            entry.starred = false;
-            entry.name = desc[0];
-            entry.description = desc[1];
-          } else {
-            entry.starred = false;
-            entry.name = entry.description;
-            entry.description = "";
-          }
+          const entries = data.result.entries || [];
+          const addresses = entries.map(e => {
+            const entry = { ...e };
+            const desc = entry.description.split("::");
+            if (desc.length == 3) {
+              entry.starred = desc[0] == "starred";
+              entry.name = desc[1];
+              entry.description = desc[2];
+            } else if (desc.length == 2) {
+              entry.starred = false;
+              entry.name = desc[0];
+              entry.description = desc[1];
+            } else {
+              entry.starred = false;
+              entry.name = entry.description;
+              entry.description = "";
+            }
 
-          if (/^0*$/.test(entry.payment_id)) {
-            entry.payment_id = "";
-          } else if (/^0*$/.test(entry.payment_id.substring(16))) {
-            entry.payment_id = entry.payment_id.substring(0, 16);
-          }
+            if (/^0*$/.test(entry.payment_id)) {
+              entry.payment_id = "";
+            } else if (/^0*$/.test(entry.payment_id.substring(16))) {
+              entry.payment_id = entry.payment_id.substring(0, 16);
+            }
 
-          return entry;
-        });
-
-        for (const entry of addresses) {
-          const list = entry.starred
-            ? wallet.address_list.address_book_starred
-            : wallet.address_list.address_book;
-          const hasAddress = list.find(a => {
-            return (
-              a.address === entry.address &&
-              a.name === entry.name &&
-              a.payment_id === entry.payment_id
-            );
+            return entry;
           });
-          if (!hasAddress) {
-            list.push(entry);
-          }
-        }
 
-        resolve(wallet);
-      });
+          for (const entry of addresses) {
+            const list = entry.starred
+              ? wallet.address_list.address_book_starred
+              : wallet.address_list.address_book;
+            const hasAddress = list.find(a => {
+              return (
+                a.address === entry.address &&
+                a.name === entry.name &&
+                a.payment_id === entry.payment_id
+              );
+            });
+            if (!hasAddress) {
+              list.push(entry);
+            }
+          }
+
+          resolve(wallet);
+        })
+        .catch(err => {
+          console.log(`Failed to get address book with error: ${err}`);
+        });
     });
   }
 
   deleteAddressBook(index = false) {
     if (index !== false) {
-      this.sendRPC("delete_address_book", { index: index }).then(() => {
-        this.saveWallet().then(() => {
-          this.getAddressBook().then(data => {
-            this.sendGateway("set_wallet_data", data);
-          });
+      this.sendRPC("delete_address_book", { index: index })
+        .then(() => {
+          this.saveWallet()
+            .then(() => {
+              this.getAddressBook()
+                .then(data => {
+                  this.sendGateway("set_wallet_data", data);
+                })
+                .catch(err => {
+                  console.log(`Failed to set wallet data with error: ${err}`);
+                });
+            })
+            .catch(err => {
+              console.log(`Failed to save wallet: ${err}`);
+            });
+        })
+        .catch(err => {
+          console.log(`Failed to delete address book with error: ${err}`);
         });
-      });
     }
   }
 
@@ -2027,9 +2174,15 @@ export class WalletRPC {
     index = false
   ) {
     if (index !== false) {
-      this.sendRPC("delete_address_book", { index: index }).then(() => {
-        this.addAddressBook(address, payment_id, description, name, starred);
-      });
+      this.sendRPC("delete_address_book", { index: index })
+        .then(() => {
+          this.addAddressBook(address, payment_id, description, name, starred);
+        })
+        .catch(err => {
+          console.log(
+            `Failed to delete address book on add with error: ${err}`
+          );
+        });
       return;
     }
 
@@ -2048,21 +2201,41 @@ export class WalletRPC {
 
     params.description = desc.join("::");
 
-    this.sendRPC("add_address_book", params).then(() => {
-      this.saveWallet().then(() => {
-        this.getAddressBook().then(data => {
-          this.sendGateway("set_wallet_data", data);
-        });
+    this.sendRPC("add_address_book", params)
+      .then(() => {
+        this.saveWallet()
+          .then(() => {
+            this.getAddressBook().then(data => {
+              this.sendGateway("set_wallet_data", data);
+            });
+          })
+          .catch(err => {
+            console.log(
+              `Failed to save wallet on add addres book with error: ${err}`
+            );
+          });
+      })
+      .catch(err => {
+        console.log(`Failed to add address book with error: ${err}`);
       });
-    });
   }
 
   saveTxNotes(txid, note) {
-    this.sendRPC("set_tx_notes", { txids: [txid], notes: [note] }).then(() => {
-      this.getTransactions().then(wallet => {
-        this.sendGateway("set_wallet_data", wallet);
+    this.sendRPC("set_tx_notes", { txids: [txid], notes: [note] })
+      .then(() => {
+        this.getTransactions()
+          .then(wallet => {
+            this.sendGateway("set_wallet_data", wallet);
+          })
+          .catch(err => {
+            console.log(
+              `Failed to wallet data when setting tx notes with error: ${err}`
+            );
+          });
+      })
+      .catch(err => {
+        console.log(`Failed to set tx notes with error: ${err}`);
       });
-    });
   }
 
   exportKeyImages(password, filename = null) {
@@ -2186,22 +2359,31 @@ export class WalletRPC {
           .then(signed_key_images => {
             this.sendRPC("import_key_images", {
               signed_key_images
-            }).then(data => {
-              if (
-                data.hasOwnProperty("error") ||
-                !data.hasOwnProperty("result")
-              ) {
-                onError("notification.errors.keyImages.importing");
-                return;
-              }
+            })
+              .then(data => {
+                if (
+                  data.hasOwnProperty("error") ||
+                  !data.hasOwnProperty("result")
+                ) {
+                  onError("notification.errors.keyImages.importing");
+                  return;
+                }
 
-              this.sendGateway("show_notification", {
-                i18n: "notification.positive.keyImages.imported",
-                timeout: 2000
+                this.sendGateway("show_notification", {
+                  i18n: "notification.positive.keyImages.imported",
+                  timeout: 2000
+                });
+              })
+              .catch(err => {
+                console.log(`Failed to import key images with error: ${err}`);
               });
-            });
           })
-          .catch(() => onError("notification.errors.keyImages.reading"));
+          .catch(err => {
+            onError("notification.errors.keyImages.reading");
+            console.log(
+              `Failed to read JSON file name on key image import with error: ${err}`
+            );
+          });
       }
     );
   }
@@ -2364,8 +2546,9 @@ export class WalletRPC {
         }
 
         wallets.list.push(wallet_data);
-      } catch (e) {
+      } catch (err) {
         // Something went wrong
+        console.log(`Failed to list wallets with error: ${err}`);
       }
     });
 
@@ -2416,8 +2599,8 @@ export class WalletRPC {
             path: legacy_wallet_path,
             address: legacy_address
           });
-        } catch (e) {
-          // Something went wrong
+        } catch (err) {
+          console.log(`Failed to list legacy wallets with error: ${err}`);
         }
       }
     }
@@ -2453,26 +2636,33 @@ export class WalletRPC {
         this.sendRPC("change_wallet_password", {
           old_password,
           new_password
-        }).then(data => {
-          if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
+        })
+          .then(data => {
+            if (
+              data.hasOwnProperty("error") ||
+              !data.hasOwnProperty("result")
+            ) {
+              this.sendGateway("show_notification", {
+                type: "negative",
+                i18n: "notification.errors.changingPassword",
+                timeout: 2000
+              });
+              return;
+            }
+
+            // store hash of the password so we can check against it later when requesting private keys, or for sending txs
+            this.wallet_state.password_hash = crypto
+              .pbkdf2Sync(new_password, this.auth[2], 1000, 64, "sha512")
+              .toString("hex");
+
             this.sendGateway("show_notification", {
-              type: "negative",
-              i18n: "notification.errors.changingPassword",
+              i18n: "notification.positive.passwordUpdated",
               timeout: 2000
             });
-            return;
-          }
-
-          // store hash of the password so we can check against it later when requesting private keys, or for sending txs
-          this.wallet_state.password_hash = crypto
-            .pbkdf2Sync(new_password, this.auth[2], 1000, 64, "sha512")
-            .toString("hex");
-
-          this.sendGateway("show_notification", {
-            i18n: "notification.positive.passwordUpdated",
-            timeout: 2000
+          })
+          .catch(err => {
+            console.log(`Failed to create wallet password with error: ${err}`);
           });
-        });
       }
     );
   }
@@ -2507,21 +2697,25 @@ export class WalletRPC {
         });
 
         let wallet_path = path.join(this.wallet_dir, this.wallet_state.name);
-        this.closeWallet().then(() => {
-          try {
-            if (fs.existsSync(wallet_path + ".keys"))
-              fs.unlinkSync(wallet_path + ".keys");
-            if (fs.existsSync(wallet_path + ".address.txt"))
-              fs.unlinkSync(wallet_path + ".address.txt");
-            if (fs.existsSync(wallet_path)) fs.unlinkSync(wallet_path);
-          } catch (e) {
-            console.warn(`Failed to delete wallet files: ${e}`);
-          }
+        this.closeWallet()
+          .then(() => {
+            try {
+              if (fs.existsSync(wallet_path + ".keys"))
+                fs.unlinkSync(wallet_path + ".keys");
+              if (fs.existsSync(wallet_path + ".address.txt"))
+                fs.unlinkSync(wallet_path + ".address.txt");
+              if (fs.existsSync(wallet_path)) fs.unlinkSync(wallet_path);
+            } catch (e) {
+              console.warn(`Failed to delete wallet files: ${e}`);
+            }
 
-          this.listWallets();
-          this.sendGateway("hide_loading");
-          this.sendGateway("return_to_wallet_select");
-        });
+            this.listWallets();
+            this.sendGateway("hide_loading");
+            this.sendGateway("return_to_wallet_select");
+          })
+          .catch(err => {
+            console.log(`Failed to delete wallet with error: ${err}`);
+          });
       }
     );
   }
