@@ -16,10 +16,15 @@ jobs:
       - name: Checkout git repo
         uses: actions/checkout@v1
 
+      # Read node version from `.nvmrc` file
+      - name: Read nvm rc
+        id: nvmrc
+        uses: browniebroke/read-nvmrc-action@v1
+
       - name: Install node
         uses: actions/setup-node@v1
         with:
-          node-version: "14.11.0"
+          node-version: ${{ steps.nvmrc.outputs.node_version }}
 
       - name: Install dependencies
         run: npm install
