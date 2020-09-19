@@ -66,183 +66,178 @@ export class WalletRPC {
         daemon_address = `${daemon.remote_host}:${daemon.remote_port}`;
       }
 
-      crypto
-        .randomBytes(64 + 64 + 32, (err, buffer) => {
-          if (err) throw err;
+      crypto.randomBytes(64 + 64 + 32, (err, buffer) => {
+        if (err) throw err;
 
-          let auth = buffer.toString("hex");
+        let auth = buffer.toString("hex");
 
-          this.auth = [
-            auth.substr(0, 64), // rpc username
-            auth.substr(64, 64), // rpc password
-            auth.substr(128, 32) // password salt
-          ];
+        this.auth = [
+          auth.substr(0, 64), // rpc username
+          auth.substr(64, 64), // rpc password
+          auth.substr(128, 32) // password salt
+        ];
 
-          const args = [
-            "--rpc-login",
-            this.auth[0] + ":" + this.auth[1],
-            "--rpc-bind-port",
-            options.wallet.rpc_bind_port,
-            "--daemon-address",
-            daemon_address,
-            // "--log-level", options.wallet.log_level,
-            "--log-level",
-            "*:WARNING,net*:FATAL,net.http:DEBUG,global:INFO,verify:FATAL,stacktrace:INFO"
-          ];
+        const args = [
+          "--rpc-login",
+          this.auth[0] + ":" + this.auth[1],
+          "--rpc-bind-port",
+          options.wallet.rpc_bind_port,
+          "--daemon-address",
+          daemon_address,
+          // "--log-level", options.wallet.log_level,
+          "--log-level",
+          "*:WARNING,net*:FATAL,net.http:DEBUG,global:INFO,verify:FATAL,stacktrace:INFO"
+        ];
 
-          const { net_type, wallet_data_dir, data_dir } = options.app;
-          this.net_type = net_type;
-          this.data_dir = data_dir;
-          this.wallet_data_dir = wallet_data_dir;
+        const { net_type, wallet_data_dir, data_dir } = options.app;
+        this.net_type = net_type;
+        this.data_dir = data_dir;
+        this.wallet_data_dir = wallet_data_dir;
 
-          this.dirs = {
-            mainnet: this.wallet_data_dir,
-            stagenet: path.join(this.wallet_data_dir, "stagenet"),
-            testnet: path.join(this.wallet_data_dir, "testnet")
-          };
+        this.dirs = {
+          mainnet: this.wallet_data_dir,
+          stagenet: path.join(this.wallet_data_dir, "stagenet"),
+          testnet: path.join(this.wallet_data_dir, "testnet")
+        };
 
-          this.wallet_dir = path.join(this.dirs[net_type], "wallets");
-          args.push("--wallet-dir", this.wallet_dir);
+        this.wallet_dir = path.join(this.dirs[net_type], "wallets");
+        args.push("--wallet-dir", this.wallet_dir);
 
-          const log_file = path.join(
-            this.dirs[net_type],
-            "logs",
-            "wallet-rpc.log"
+        const log_file = path.join(
+          this.dirs[net_type],
+          "logs",
+          "wallet-rpc.log"
+        );
+        args.push("--log-file", log_file);
+
+        if (net_type === "testnet") {
+          args.push("--testnet");
+        } else if (net_type === "stagenet") {
+          args.push("--stagenet");
+        }
+
+        if (fs.existsSync(log_file)) {
+          fs.truncateSync(log_file, 0);
+        }
+
+        if (!fs.existsSync(this.wallet_dir)) {
+          fs.mkdirpSync(this.wallet_dir);
+        }
+
+        // save this info for later RPC calls
+        this.protocol = "http://";
+        this.hostname = "127.0.0.1";
+        this.port = options.wallet.rpc_bind_port;
+
+        const rpcExecutable =
+          process.platform === "win32"
+            ? "loki-wallet-rpc.exe"
+            : "loki-wallet-rpc";
+        // eslint-disable-next-line no-undef
+        const rpcPath = path.join(__ryo_bin, rpcExecutable);
+
+        // Check if the rpc exists
+        if (!fs.existsSync(rpcPath)) {
+          reject(
+            new Error(
+              "Failed to find Loki Wallet RPC. Please make sure you anti-virus has not removed it."
+            )
           );
-          args.push("--log-file", log_file);
+          return;
+        }
 
-          if (net_type === "testnet") {
-            args.push("--testnet");
-          } else if (net_type === "stagenet") {
-            args.push("--stagenet");
-          }
+        portscanner
+          .checkPortStatus(this.port, this.hostname)
+          .catch(() => "closed")
+          .then(status => {
+            if (status === "closed") {
+              const options =
+                process.platform === "win32" ? {} : { detached: true };
+              this.walletRPCProcess = child_process.spawn(
+                rpcPath,
+                args,
+                options
+              );
 
-          if (fs.existsSync(log_file)) {
-            fs.truncateSync(log_file, 0);
-          }
+              this.walletRPCProcess.stdout.on("data", data => {
+                process.stdout.write(`Wallet: ${data}`);
 
-          if (!fs.existsSync(this.wallet_dir)) {
-            fs.mkdirpSync(this.wallet_dir);
-          }
-
-          // save this info for later RPC calls
-          this.protocol = "http://";
-          this.hostname = "127.0.0.1";
-          this.port = options.wallet.rpc_bind_port;
-
-          const rpcExecutable =
-            process.platform === "win32"
-              ? "loki-wallet-rpc.exe"
-              : "loki-wallet-rpc";
-          // eslint-disable-next-line no-undef
-          const rpcPath = path.join(__ryo_bin, rpcExecutable);
-
-          // Check if the rpc exists
-          if (!fs.existsSync(rpcPath)) {
-            reject(
-              new Error(
-                "Failed to find Loki Wallet RPC. Please make sure you anti-virus has not removed it."
-              )
-            );
-            return;
-          }
-
-          portscanner
-            .checkPortStatus(this.port, this.hostname)
-            .catch(() => "closed")
-            .then(status => {
-              if (status === "closed") {
-                const options =
-                  process.platform === "win32" ? {} : { detached: true };
-                this.walletRPCProcess = child_process.spawn(
-                  rpcPath,
-                  args,
-                  options
-                );
-
-                this.walletRPCProcess.stdout.on("data", data => {
-                  process.stdout.write(`Wallet: ${data}`);
-
-                  let lines = data.toString().split("\n");
-                  let match,
-                    height = null;
-                  let isRPCSyncing = false;
-                  for (const line of lines) {
-                    for (const regex of this.height_regexes) {
-                      match = line.match(regex.string);
-                      if (match) {
-                        height = regex.height(match);
-                        isRPCSyncing = true;
-                        break;
-                      }
+                let lines = data.toString().split("\n");
+                let match,
+                  height = null;
+                let isRPCSyncing = false;
+                for (const line of lines) {
+                  for (const regex of this.height_regexes) {
+                    match = line.match(regex.string);
+                    if (match) {
+                      height = regex.height(match);
+                      isRPCSyncing = true;
+                      break;
                     }
                   }
+                }
 
-                  // Keep track on wether a wallet is syncing or not
+                // Keep track on wether a wallet is syncing or not
+                this.sendGateway("set_wallet_data", {
+                  isRPCSyncing
+                });
+                this.isRPCSyncing = isRPCSyncing;
+
+                if (height && Date.now() - this.last_height_send_time > 1000) {
+                  this.last_height_send_time = Date.now();
                   this.sendGateway("set_wallet_data", {
-                    isRPCSyncing
+                    info: {
+                      height
+                    }
                   });
-                  this.isRPCSyncing = isRPCSyncing;
+                }
+              });
+              this.walletRPCProcess.on("error", err =>
+                process.stderr.write(`Wallet: ${err}`)
+              );
+              this.walletRPCProcess.on("close", code => {
+                process.stderr.write(`Wallet: exited with code ${code} \n`);
+                this.walletRPCProcess = null;
+                this.agent.destroy();
+                if (code === null) {
+                  reject(new Error("Failed to start wallet RPC"));
+                }
+              });
 
-                  if (
-                    height &&
-                    Date.now() - this.last_height_send_time > 1000
-                  ) {
-                    this.last_height_send_time = Date.now();
-                    this.sendGateway("set_wallet_data", {
-                      info: {
-                        height
-                      }
-                    });
-                  }
-                });
-                this.walletRPCProcess.on("error", err =>
-                  process.stderr.write(`Wallet: ${err}`)
-                );
-                this.walletRPCProcess.on("close", code => {
-                  process.stderr.write(`Wallet: exited with code ${code} \n`);
-                  this.walletRPCProcess = null;
-                  this.agent.destroy();
-                  if (code === null) {
-                    reject(new Error("Failed to start wallet RPC"));
-                  }
-                });
-
-                // To let caller know when the wallet is ready
-                let intrvl = setInterval(() => {
-                  this.sendRPC("get_languages")
-                    .then(data => {
-                      if (!data.hasOwnProperty("error")) {
-                        clearInterval(intrvl);
-                        resolve();
+              // To let caller know when the wallet is ready
+              let intrvl = setInterval(() => {
+                this.sendRPC("get_languages")
+                  .then(data => {
+                    if (!data.hasOwnProperty("error")) {
+                      clearInterval(intrvl);
+                      resolve();
+                    } else {
+                      if (
+                        this.walletRPCProcess &&
+                        data.error.cause &&
+                        data.error.cause.code === "ECONNREFUSED"
+                      ) {
+                        // Ignore
                       } else {
-                        if (
-                          this.walletRPCProcess &&
-                          data.error.cause &&
-                          data.error.cause.code === "ECONNREFUSED"
-                        ) {
-                          // Ignore
-                        } else {
-                          clearInterval(intrvl);
-                          if (this.walletRPCProcess)
-                            this.walletRPCProcess.kill();
-                          this.walletRPCProcess = null;
-                          reject(new Error("Could not connect to wallet RPC"));
-                        }
+                        clearInterval(intrvl);
+                        if (this.walletRPCProcess) this.walletRPCProcess.kill();
+                        this.walletRPCProcess = null;
+                        reject(new Error("Could not connect to wallet RPC"));
                       }
-                    })
-                    .catch(err => {
-                      console.log(`Failed to get languages with error: ${err}`);
-                    });
-                }, 1000);
-              } else {
-                reject(new Error(`Wallet RPC port ${this.port} is in use`));
-              }
-            });
-        })
-        .catch(err => {
-          console.log(`portscanner failed with error: ${err}`);
-        });
+                    }
+                  })
+                  .catch(err => {
+                    console.log(`Failed to get languages with error: ${err}`);
+                  });
+              }, 1000);
+            } else {
+              reject(new Error(`Wallet RPC port ${this.port} is in use`));
+            }
+          })
+          .catch(err => {
+            console.log(`portscanner failed with error: ${err}`);
+          });
+      });
     });
   }
 
