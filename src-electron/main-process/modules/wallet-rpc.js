@@ -228,6 +228,7 @@ export class WalletRPC {
                   })
                   .catch(err => {
                     console.log(`Failed to get languages with error: ${err}`);
+                    reject(new Error("Wallet RPC port ${this.port} is in use"));
                   });
               }, 1000);
             } else {
