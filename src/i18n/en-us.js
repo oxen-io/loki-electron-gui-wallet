@@ -505,9 +505,7 @@ export default {
       lastRewardBlockHeight: "Last reward block height",
       lastUptimeProof: "Last uptime proof",
       maxContribution: "Max contribution",
-
       minContribution: "Min contribution",
-      min: "MIN",
       operatorFee: "Operator Fee",
       registrationHeight: "Registration height",
       unlockHeight: "Unlock height",
