@@ -28,7 +28,7 @@
               <q-btn
                 color="secondary"
                 :text-color="theme == 'dark' ? 'white' : 'dark'"
-                @click="newTx.amount = unlocked_balance / 1e9 - 1"
+                @click="newTx.amount = unlocked_balance / 1e9"
               >
                 {{ $t("buttons.all") }}
               </q-btn>
