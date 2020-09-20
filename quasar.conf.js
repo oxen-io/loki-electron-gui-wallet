@@ -158,7 +158,8 @@ module.exports = function() {
 
         appId: "com.loki-project.electron-wallet",
         productName: "Loki Electron Wallet",
-        copyright: "Copyright © 2018-2019 Loki Project, 2018 Ryo Currency Project",
+        copyright:
+          "Copyright © 2018-2020 Loki Project, 2018 Ryo Currency Project",
         afterSign: "build/notarize.js",
         artifactName: "loki-electron-wallet-${version}-${os}.${ext}",
         publish: "github",
@@ -192,7 +193,13 @@ module.exports = function() {
           allowToChangeInstallationDirectory: true
         },
 
-        files: ["!build/*.js", "!.env", "!dev-app-update.yml"],
+        files: [
+          "!build/*.js",
+          "!.env",
+          "!dev-app-update.yml",
+          "!downloads/**",
+          "!dist/**"
+        ],
 
         extraResources: ["bin"]
       }

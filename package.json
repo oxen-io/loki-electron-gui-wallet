@@ -1,6 +1,6 @@
 {
   "name": "loki-electron-wallet",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Modern GUI interface for Loki Currency",
   "productName": "Loki Electron Wallet",
   "repository": {

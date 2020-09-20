@@ -17,28 +17,36 @@ jobs:
       - name: Checkout git repo
         uses: actions/checkout@v1
 
+      # Read node version from `.nvmrc` file
+      - name: Read nvm rc
+        id: nvmrc
+        uses: browniebroke/read-nvmrc-action@v1
+
       - name: Install node
         uses: actions/setup-node@v1
         with:
-          node-version: "11.9.0"
+          node-version: ${{ steps.nvmrc.outputs.node_version }}
 
       - name: Install dependencies
         run: npm install
 
       - name: Download lokid binaries
-        run: node ./build/download-binaries.js
+        run: ./download-asset.sh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OS: ${{ runner.os }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        working-directory: ./downloads
 
       - name: Extract zip binaries
         if: runner.os != 'Linux'
-        run: unzip latest.zip
+        run: unzip latest
         shell: bash
         working-directory: ./downloads
 
       - name: Extract xz binaries
         if: runner.os == 'Linux'
-        run: tar -xf latest.xz
+        run: tar -xf latest
         shell: bash
         working-directory: ./downloads
 
