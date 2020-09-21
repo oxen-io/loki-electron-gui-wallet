@@ -432,10 +432,8 @@ export default {
             message: "Getting transaction information",
             sending: true
           });
-          const isSweepAll = this.newTx.amount === this.unlocked_balance / 1e9;
           const newTx = objectAssignDeep.noMutate(this.newTx, {
-            password,
-            isSweepAll
+            password
           });
 
           this.$gateway.send("wallet", "transfer", newTx);

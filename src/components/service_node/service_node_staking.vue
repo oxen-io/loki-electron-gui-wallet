@@ -240,9 +240,6 @@ export default {
       const operatorPortion = node.portions_for_operator;
       return (operatorPortion / 18446744073709551612) * 100;
     },
-    buildDialogFieldsSweep(txData) {
-      this.buildDialogFields(txData);
-    },
     getNodeWithPubKey() {
       const key = this.service_node.key;
       const nodeOfKey = this.awaiting_service_nodes.find(
@@ -316,11 +313,7 @@ export default {
             sending: true
           });
           const newTx = objectAssignDeep.noMutate(tx, { password });
-          const txWithSweepAll = {
-            ...newTx,
-            isSweepAll: true
-          };
-          this.$gateway.send("wallet", "transfer", txWithSweepAll);
+          this.$gateway.send("wallet", "transfer", newTx);
         })
         .onDismiss(() => {})
         .onCancel(() => {});
