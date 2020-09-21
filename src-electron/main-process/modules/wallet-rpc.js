@@ -1364,8 +1364,7 @@ export class WalletRPC {
       try {
         const data = await this.sendRPC("relay_tx", params);
         if (data.hasOwnProperty("error")) {
-          const errMsg = data.error.message || errorMessage;
-          errorMessage = errMsg;
+          errorMessage = data.error.message || errorMessage;
           failed = true;
           break;
         } else if (data.hasOwnProperty("result")) {
