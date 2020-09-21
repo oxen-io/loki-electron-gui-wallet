@@ -1353,7 +1353,7 @@ export class WalletRPC {
   async relayTransaction(metadataList, isBlink, addressSave, note) {
     const { address, payment_id, address_book } = addressSave;
     let failed = false;
-    let errorMessage = "";
+    let errorMessage = "Failed to relay transaction";
 
     // submit each transaction individually
     for (const hex of metadataList) {
@@ -1366,18 +1366,19 @@ export class WalletRPC {
       try {
         const data = await this.sendRPC("relay_tx", params);
         if (data.hasOwnProperty("error")) {
-          const errMsg = data.error.message;
-          const error = errMsg.charAt(0).toUpperCase() + errMsg.slice(1);
-          errorMessage = error;
+          const errMsg = data.error.message || errorMessage;
+          errorMessage = errMsg;
           failed = true;
-          return;
-        }
-        // save note to the new txid
-        if (data.hasOwnProperty("result")) {
+          break;
+        } else if (data.hasOwnProperty("result")) {
           const tx_hash = data.result.tx_hash;
           if (note && note !== "") {
             this.saveTxNotes(tx_hash, note);
           }
+        } else {
+          errorMessage = "Invalid format of relay_tx RPC return message";
+          failed = true;
+          break;
         }
       } catch (e) {
         failed = true;
@@ -1434,6 +1435,7 @@ export class WalletRPC {
       amount = (parseFloat(amount) * 1e9).toFixed(0);
 
       const rpc_endpoint = isSweepAll ? "sweep_all" : "transfer_split";
+
       const rpcSpecificParams = isSweepAll
         ? {
             address,
@@ -1471,13 +1473,14 @@ export class WalletRPC {
             });
             return;
           }
+
           // update state to show a confirm popup
           this.sendGateway("set_tx_status", {
             code: 1,
             i18n: "strings.awaitingConfirmation",
             sending: false,
             txData: {
-              // for a sweep all
+              // target address for a sweep all
               address: data.params.address,
               isSweepAll: rpc_endpoint === "sweep_all",
               amountList: data.result.amount_list,

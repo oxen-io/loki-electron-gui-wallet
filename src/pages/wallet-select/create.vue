@@ -1,7 +1,10 @@
 <template>
   <q-page class="create-wallet">
     <div class="fields q-mx-md q-mt-md">
-      <LokiField :label="$t('fieldLabels.walletName')" :error="$v.wallet.name.$error">
+      <LokiField
+        :label="$t('fieldLabels.walletName')"
+        :error="$v.wallet.name.$error"
+      >
         <q-input
           v-model="wallet.name"
           :dark="theme == 'dark'"
@@ -48,7 +51,12 @@
         />
       </LokiField>
 
-      <q-btn class="submit-button" color="primary" :label="$t('buttons.createWallet')" @click="create" />
+      <q-btn
+        class="submit-button"
+        color="primary"
+        :label="$t('buttons.createWallet')"
+        @click="create"
+      />
     </div>
   </q-page>
 </template>
@@ -79,7 +87,7 @@ export default {
     return {
       wallet: {
         name: "",
-        language: languageOptions[0],
+        language: languageOptions[0].value,
         password: "",
         password_confirm: ""
       },

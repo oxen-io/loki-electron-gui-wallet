@@ -28,7 +28,7 @@
               <q-btn
                 color="secondary"
                 :text-color="theme == 'dark' ? 'white' : 'dark'"
-                @click="newTx.amount = unlocked_balance / 1e9 - 1"
+                @click="newTx.amount = unlocked_balance / 1e9"
               >
                 {{ $t("buttons.all") }}
               </q-btn>
@@ -432,8 +432,10 @@ export default {
             message: "Getting transaction information",
             sending: true
           });
+          const isSweepAll = this.newTx.amount === this.unlocked_balance / 1e9;
           const newTx = objectAssignDeep.noMutate(this.newTx, {
-            password
+            password,
+            isSweepAll: isSweepAll
           });
 
           this.$gateway.send("wallet", "transfer", newTx);
