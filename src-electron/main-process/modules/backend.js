@@ -493,7 +493,6 @@ export class Backend {
         fs.mkdirpSync(log_dir);
       }
 
-      console.log("About to init the logger with log_dir: " + log_dir);
       this.initLogger(log_dir);
 
       this.daemon = new Daemon(this);

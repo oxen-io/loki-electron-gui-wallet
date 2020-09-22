@@ -73,8 +73,17 @@
       class="contribute"
       @contribute="fillStakingFields"
     />
+    <ConfirmTransactionDialog
+      :show="confirmSweepAll"
+      :amount="confirmFields.totalAmount"
+      :is-blink="confirmFields.isBlink"
+      :send-to="confirmFields.destination"
+      :fee="confirmFields.totalFees"
+      :on-confirm-transaction="onConfirmTransaction"
+      :on-cancel-transaction="onCancelTransaction"
+    />
     <q-inner-loading
-      :showing="stake_status.sending || tx_status.sending"
+      :showing="stake_status.sending || sweep_all_status.sending"
       :dark="theme == 'dark'"
     >
       <q-spinner color="primary" size="30" />
@@ -92,15 +101,16 @@ import WalletPassword from "src/mixins/wallet_password";
 import ConfirmDialogMixin from "src/mixins/confirm_dialog_mixin";
 import ServiceNodeContribute from "./service_node_contribute";
 import ServiceNodeMixin from "src/mixins/service_node_mixin";
+import ConfirmTransactionDialog from "components/confirm_tx_dialog";
 
-// the case for doing nothing on a tx_status update
 const DO_NOTHING = 10;
 
 export default {
   name: "ServiceNodeStaking",
   components: {
     LokiField,
-    ServiceNodeContribute
+    ServiceNodeContribute,
+    ConfirmTransactionDialog
   },
   mixins: [WalletPassword, ConfirmDialogMixin, ServiceNodeMixin],
   data() {
@@ -112,6 +122,13 @@ export default {
         // start at min/max for the wallet
         minStakeAmount: 0,
         maxStakeAmount: this.unlocked_balance / 1e9
+      },
+      confirmFields: {
+        metadataList: [],
+        isBlink: false,
+        totalAmount: -1,
+        destination: "",
+        totalFees: 0
       }
     };
   },
@@ -120,8 +137,9 @@ export default {
     unlocked_balance: state => state.gateway.wallet.info.unlocked_balance,
     info: state => state.gateway.wallet.info,
     stake_status: state => state.gateway.service_node_status.stake,
-    tx_status: state => state.gateway.tx_status,
+    sweep_all_status: state => state.gateway.sweep_all_status,
     award_address: state => state.gateway.wallet.info.address,
+    confirmSweepAll: state => state.gateway.sweep_all_status.code === 1,
     is_ready() {
       return this.$store.getters["gateway/isReady"];
     },
@@ -215,6 +233,50 @@ export default {
         }
       },
       deep: true
+    },
+    sweep_all_status: {
+      handler(val, old) {
+        if (val.code == old.code) return;
+        const { code, message } = val;
+        switch (code) {
+          // the "nothing", so we can update state without doing anything
+          // in particular
+          case DO_NOTHING:
+            break;
+          case 1:
+            this.buildDialogFieldsSweepAll(val);
+            break;
+          case 0:
+            this.$q.notify({
+              type: "positive",
+              timeout: 1000,
+              message
+            });
+            this.$v.$reset();
+            this.newTx = {
+              amount: 0,
+              address: "",
+              payment_id: "",
+              // blink
+              priority: 5,
+              address_book: {
+                save: false,
+                name: "",
+                description: ""
+              },
+              note: ""
+            };
+            break;
+          case -1:
+            this.$q.notify({
+              type: "negative",
+              timeout: 3000,
+              message
+            });
+            break;
+        }
+      },
+      deep: true
     }
   },
   methods: {
@@ -256,6 +318,33 @@ export default {
         return nodeOfKey;
       }
     },
+    onConfirmTransaction() {
+      // put the loading spinner up
+      this.$store.commit("gateway/set_sweep_all_status", {
+        code: DO_NOTHING,
+        message: "Getting sweep all tx information",
+        sending: true
+      });
+
+      const metadataList = this.confirmFields.metadataList;
+      const isBlink = this.confirmFields.isBlink;
+
+      const relayTxData = {
+        metadataList,
+        isBlink,
+        isSweepAll: true
+      };
+
+      // Commit the transaction
+      this.$gateway.send("wallet", "relay_tx", relayTxData);
+    },
+    onCancelTransaction() {
+      this.$store.commit("gateway/set_sweep_all_status", {
+        code: DO_NOTHING,
+        message: "Cancel the transaction from confirm dialog",
+        sending: false
+      });
+    },
     sweepAllWarning() {
       this.$q
         .dialog({
@@ -277,6 +366,9 @@ export default {
         })
         .onDismiss(() => {})
         .onCancel(() => {});
+    },
+    buildDialogFieldsSweepAll(txData) {
+      this.confirmFields = this.buildDialogFields(txData);
     },
     areButtonsEnabled() {
       // if we can find the service node key in the list of service nodes
@@ -307,12 +399,15 @@ export default {
       passwordDialog
         .onOk(password => {
           password = password || "";
-          this.$store.commit("gateway/set_tx_status", {
+          this.$store.commit("gateway/set_sweep_all_status", {
             code: DO_NOTHING,
             message: "Sweeping all",
             sending: true
           });
-          const newTx = objectAssignDeep.noMutate(tx, { password });
+          const newTx = objectAssignDeep.noMutate(tx, {
+            password,
+            isSweepAll: true
+          });
           this.$gateway.send("wallet", "transfer", newTx);
         })
         .onDismiss(() => {})

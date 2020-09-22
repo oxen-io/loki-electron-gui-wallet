@@ -13,10 +13,14 @@ export class Gateway extends EventEmitter {
     this.scee = new SCEE();
 
     // Set the initial language
-    let language = LocalStorage.has("language") ? LocalStorage.getItem("language") : "en-us";
+    let language = LocalStorage.has("language")
+      ? LocalStorage.getItem("language")
+      : "en-us";
     this.setLanguage(language);
 
-    let theme = LocalStorage.has("theme") ? LocalStorage.getItem("theme") : "dark";
+    let theme = LocalStorage.has("theme")
+      ? LocalStorage.getItem("theme")
+      : "dark";
     this.app.store.commit("gateway/set_app_data", {
       config: {
         appearance: {
@@ -90,7 +94,10 @@ export class Gateway extends EventEmitter {
       cancel: {
         flat: true,
         label: i18n.t("dialog.buttons.cancel"),
-        color: this.app.store.state.gateway.app.config.appearance.theme === "dark" ? "white" : "dark"
+        color:
+          this.app.store.state.gateway.app.config.appearance.theme === "dark"
+            ? "white"
+            : "dark"
       },
       dark: this.app.store.state.gateway.app.config.appearance.theme === "dark"
     })
@@ -111,7 +118,10 @@ export class Gateway extends EventEmitter {
       method,
       data
     };
-    let encrypted_data = this.scee.encryptString(JSON.stringify(message), this.token);
+    let encrypted_data = this.scee.encryptString(
+      JSON.stringify(message),
+      this.token
+    );
     this.ws.send(encrypted_data);
   }
 
@@ -122,7 +132,9 @@ export class Gateway extends EventEmitter {
   receive(message) {
     // should wrap this in a try catch, and if fail redirect to error screen
     // shouldn't happen outside of dev environment
-    let decrypted_data = JSON.parse(this.scee.decryptString(message, this.token));
+    let decrypted_data = JSON.parse(
+      this.scee.decryptString(message, this.token)
+    );
 
     if (
       typeof decrypted_data !== "object" ||
@@ -173,6 +185,15 @@ export class Gateway extends EventEmitter {
         break;
       }
 
+      case "set_sweep_all_status": {
+        const data = { ...decrypted_data.data };
+        if (data.i18n) {
+          data.message = this.geti18n(data.i18n);
+        }
+        this.app.store.commit("gateway/set_sweep_all_status", data);
+        break;
+      }
+
       case "set_lns_status": {
         const data = { ...decrypted_data.data };
         if (data.i18n) {
@@ -217,7 +238,10 @@ export class Gateway extends EventEmitter {
         break;
       }
       case "set_old_gui_import_status":
-        this.app.store.commit("gateway/set_old_gui_import_status", decrypted_data.data);
+        this.app.store.commit(
+          "gateway/set_old_gui_import_status",
+          decrypted_data.data
+        );
         break;
 
       case "wallet_list":
@@ -260,7 +284,10 @@ export class Gateway extends EventEmitter {
         break;
 
       case "set_update_required":
-        this.app.store.commit("gateway/set_update_required", decrypted_data.data);
+        this.app.store.commit(
+          "gateway/set_update_required",
+          decrypted_data.data
+        );
         break;
     }
   }

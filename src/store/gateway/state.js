@@ -57,6 +57,13 @@ export default {
     i18n: "",
     sending: false
   },
+  // differentiate between a tx and sweep_all
+  sweep_all_status: {
+    code: 0,
+    message: "",
+    i18n: "",
+    sending: false
+  },
   service_node_status: {
     stake: {
       code: 0,

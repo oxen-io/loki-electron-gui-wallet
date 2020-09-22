@@ -446,35 +446,6 @@ export default {
 </script>
 
 <style lang="scss">
-.confirm-tx-card {
-  color: "primary";
-  width: 450px;
-  max-width: 450x;
-
-  .confirm-list {
-    .q-item {
-      max-height: 100%;
-      margin-top: 0;
-      margin-bottom: 4px;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-  }
-
-  .label {
-    color: #cecece;
-    padding-right: 6px;
-  }
-  .address-value {
-    word-break: break-word;
-  }
-
-  .confirm-send-btn {
-    color: white;
-    background: $positive;
-  }
-}
-
 .send {
   .send-btn {
     margin-top: 6px;

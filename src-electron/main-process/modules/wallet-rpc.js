@@ -336,7 +336,8 @@ export class WalletRPC {
           params.amount,
           params.address,
           params.payment_id,
-          params.priority
+          params.priority,
+          !!params.isSweepAll
         );
         break;
       case "relay_tx":
@@ -344,7 +345,8 @@ export class WalletRPC {
           params.metadataList,
           params.isBlink,
           params.addressSave,
-          params.note
+          params.note,
+          !!params.isSweepAll
         );
         break;
       case "purchase_lns":
@@ -1348,8 +1350,17 @@ export class WalletRPC {
   }
 
   // submits the transaction to the blockchain, irreversible from here
-  async relayTransaction(metadataList, isBlink, addressSave, note) {
-    const { address, payment_id, address_book } = addressSave;
+  async relayTransaction(metadataList, isBlink, addressSave, note, isSweepAll) {
+    // for a sweep these don't exist
+    let address = "";
+    let payment_id = "";
+    let address_book = "";
+    if (addressSave) {
+      address = addressSave.address;
+      payment_id = addressSave.payment_id;
+      address_book = addressSave.address_book;
+    }
+
     let failed = false;
     let errorMessage = "Failed to relay transaction";
 
@@ -1383,8 +1394,13 @@ export class WalletRPC {
       }
     }
 
+    // for updating state on the correct page
+    const gatewayEndpoint = isSweepAll
+      ? "set_sweep_all_status"
+      : "set_tx_status";
+
     if (!failed) {
-      this.sendGateway("set_tx_status", {
+      this.sendGateway(gatewayEndpoint, {
         code: 0,
         i18n: "notification.positive.sendSuccess",
         sending: false
@@ -1401,7 +1417,7 @@ export class WalletRPC {
       return;
     }
 
-    this.sendGateway("set_tx_status", {
+    this.sendGateway(gatewayEndpoint, {
       code: -1,
       message: errorMessage,
       sending: false
@@ -1410,7 +1426,8 @@ export class WalletRPC {
 
   // prepares params and provides a "confirm" popup to allow the user to check
   // send address and tx fees before sending
-  transfer(password, amount, address, payment_id, priority) {
+  // isSweepAll refers to if it's the sweep from service nodes page
+  transfer(password, amount, address, payment_id, priority, isSweepAll) {
     const cryptoCallback = (err, password_hash) => {
       if (err) {
         this.sendGateway("set_tx_status", {
@@ -1434,10 +1451,10 @@ export class WalletRPC {
       // if sending "All" the funds, then we need to send all - fee (sweep_all)
       // To be amended after the hardfork, v8.
       // https://github.com/loki-project/loki-electron-gui-wallet/issues/181
-      const isSweepAll = amount == this.wallet_state.unlocked_balance;
-      const rpc_endpoint = isSweepAll ? "sweep_all" : "transfer_split";
+      const isSweepAllRPC = amount == this.wallet_state.unlocked_balance;
+      const rpc_endpoint = isSweepAllRPC ? "sweep_all" : "transfer_split";
 
-      const rpcSpecificParams = isSweepAll
+      const rpcSpecificParams = isSweepAllRPC
         ? {
             address,
             account_index: 0
@@ -1456,6 +1473,11 @@ export class WalletRPC {
         params.payment_id = payment_id;
       }
 
+      // for updating state on the correct page
+      const gatewayEndpoint = isSweepAll
+        ? "set_sweep_all_status"
+        : "set_tx_status";
+
       this.sendRPC(rpc_endpoint, params)
         .then(data => {
           if (data.hasOwnProperty("error") || !data.hasOwnProperty("result")) {
@@ -1467,7 +1489,7 @@ export class WalletRPC {
             } else {
               error = `Incorrect result from ${rpc_endpoint} RPC call`;
             }
-            this.sendGateway("set_tx_status", {
+            this.sendGateway(gatewayEndpoint, {
               code: -1,
               message: error,
               sending: false
@@ -1476,14 +1498,14 @@ export class WalletRPC {
           }
 
           // update state to show a confirm popup
-          this.sendGateway("set_tx_status", {
+          this.sendGateway(gatewayEndpoint, {
             code: 1,
             i18n: "strings.awaitingConfirmation",
             sending: false,
             txData: {
               // target address for a sweep all
               address: data.params.address,
-              isSweepAll: isSweepAll,
+              isSweepAll: isSweepAllRPC,
               amountList: data.result.amount_list,
               metadataList: data.result.tx_metadata_list,
               feeList: data.result.fee_list,
@@ -1494,7 +1516,7 @@ export class WalletRPC {
           });
         })
         .catch(err => {
-          this.sendGateway("set_tx_status", {
+          this.sendGateway(gatewayEndpoint, {
             code: -1,
             message: err.message,
             sending: false
