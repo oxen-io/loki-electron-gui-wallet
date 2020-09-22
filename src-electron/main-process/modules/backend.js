@@ -8,10 +8,15 @@ import { version } from "../../../package.json";
 const bunyan = require("bunyan");
 
 const WebSocket = require("ws");
+const electron = require("electron");
 const os = require("os");
 const fs = require("fs-extra");
 const path = require("upath");
 const objectAssignDeep = require("object-assign-deep");
+
+const { ipcMain: ipc } = electron;
+
+const LOG_LEVELS = ["fatal", "error", "warn", "info", "debug", "trace"];
 
 export class Backend {
   constructor(mainWindow) {
@@ -355,10 +360,18 @@ export class Backend {
       name: "log",
       streams: [
         {
-          level: "debug",
-          path: path.join(logPath, "electron.log")
+          type: "rotating-file",
+          path: path.join(logPath, "electron.log"),
+          period: "1d", // daily rotation
+          count: 4 // keep 4 days of logs
         }
       ]
+    });
+
+    LOG_LEVELS.forEach(level => {
+      ipc.on(`log-${level}`, (first, ...rest) => {
+        log[level](...rest);
+      });
     });
 
     this.log = log;

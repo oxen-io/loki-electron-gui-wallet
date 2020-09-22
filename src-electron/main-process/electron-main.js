@@ -26,7 +26,11 @@ let installUpdate = false;
 
 const title = `${productName} v${version}`;
 
-const selectionMenu = Menu.buildFromTemplate([{ role: "copy" }, { type: "separator" }, { role: "selectall" }]);
+const selectionMenu = Menu.buildFromTemplate([
+  { role: "copy" },
+  { type: "separator" },
+  { role: "selectall" }
+]);
 
 const inputMenu = Menu.buildFromTemplate([
   { role: "cut" },
@@ -54,7 +58,13 @@ function createWindow() {
     minWidth: 640,
     minHeight: 480,
     icon: require("path").join(__statics, "icon_512x512.png"),
-    title
+    title,
+    webPreferences: {
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      // anything we want preloaded, e.g. global vars
+      preload: path.resolve(__dirname, "electron-preload.js")
+    }
   });
 
   mainWindow.on("close", e => {
