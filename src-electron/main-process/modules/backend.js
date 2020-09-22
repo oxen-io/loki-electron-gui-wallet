@@ -351,7 +351,7 @@ export class Backend {
   }
 
   initLogger(logPath) {
-    this.log = bunyan.createLogger({
+    let log = bunyan.createLogger({
       name: "log",
       streams: [
         {
@@ -359,6 +359,16 @@ export class Backend {
           path: path.join(logPath, "electron.log")
         }
       ]
+    });
+
+    this.log = log;
+
+    process.on("uncaughtException", error => {
+      log.error("Unhandled Error", error);
+    });
+
+    process.on("unhandledRejection", error => {
+      log.error("Unhandled Promise Rejection", error);
     });
   }
 
