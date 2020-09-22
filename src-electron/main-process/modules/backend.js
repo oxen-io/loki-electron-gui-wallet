@@ -5,6 +5,7 @@ import { dialog } from "electron";
 import semver from "semver";
 import axios from "axios";
 import { version } from "../../../package.json";
+const bunyan = require("bunyan");
 
 const WebSocket = require("ws");
 const os = require("os");
@@ -24,6 +25,7 @@ export class Backend {
     this.config_file = null;
     this.config_data = {};
     this.scee = new SCEE();
+    this.log = null;
   }
 
   init(config) {
@@ -142,7 +144,10 @@ export class Backend {
       data
     };
 
-    let encrypted_data = this.scee.encryptString(JSON.stringify(message), this.token);
+    let encrypted_data = this.scee.encryptString(
+      JSON.stringify(message),
+      this.token
+    );
 
     this.wss.clients.forEach(function each(client) {
       if (client.readyState === WebSocket.OPEN) {
@@ -185,14 +190,22 @@ export class Backend {
       case "quick_save_config":
         // save only partial config settings
         Object.keys(params).map(key => {
-          this.config_data[key] = Object.assign(this.config_data[key], params[key]);
+          this.config_data[key] = Object.assign(
+            this.config_data[key],
+            params[key]
+          );
         });
-        fs.writeFile(this.config_file, JSON.stringify(this.config_data, null, 4), "utf8", () => {
-          this.send("set_app_data", {
-            config: params,
-            pending_config: params
-          });
-        });
+        fs.writeFile(
+          this.config_file,
+          JSON.stringify(this.config_data, null, 4),
+          "utf8",
+          () => {
+            this.send("set_app_data", {
+              config: params,
+              pending_config: params
+            });
+          }
+        );
         break;
       case "save_config_init":
       case "save_config": {
@@ -208,12 +221,18 @@ export class Backend {
         }
 
         Object.keys(params).map(key => {
-          this.config_data[key] = Object.assign(this.config_data[key], params[key]);
+          this.config_data[key] = Object.assign(
+            this.config_data[key],
+            params[key]
+          );
         });
 
         const validated = Object.keys(this.defaults)
           .filter(k => k in this.config_data)
-          .map(k => [k, this.validate_values(this.config_data[k], this.defaults[k])])
+          .map(k => [
+            k,
+            this.validate_values(this.config_data[k], this.defaults[k])
+          ])
           .reduce((map, obj) => {
             map[obj[0]] = obj[1];
             return map;
@@ -225,19 +244,24 @@ export class Backend {
           ...validated
         };
 
-        fs.writeFile(this.config_file, JSON.stringify(this.config_data, null, 4), "utf8", () => {
-          if (data.method == "save_config_init") {
-            this.startup();
-          } else {
-            this.send("set_app_data", {
-              config: this.config_data,
-              pending_config: this.config_data
-            });
-            if (config_changed) {
-              this.send("settings_changed_reboot");
+        fs.writeFile(
+          this.config_file,
+          JSON.stringify(this.config_data, null, 4),
+          "utf8",
+          () => {
+            if (data.method == "save_config_init") {
+              this.startup();
+            } else {
+              this.send("set_app_data", {
+                config: this.config_data,
+                pending_config: this.config_data
+              });
+              if (config_changed) {
+                this.send("settings_changed_reboot");
+              }
             }
           }
-        });
+        );
         break;
       }
       case "init":
@@ -255,7 +279,10 @@ export class Backend {
         }
 
         if (path) {
-          const baseUrl = net_type === "testnet" ? "https://lokitestnet.com" : "https://lokiblocks.com";
+          const baseUrl =
+            net_type === "testnet"
+              ? "https://lokitestnet.com"
+              : "https://lokiblocks.com";
           const url = `${baseUrl}/${path}/`;
           require("electron").shell.openExternal(url + params.id);
         }
@@ -279,12 +306,18 @@ export class Backend {
             if (err) {
               this.send("show_notification", {
                 type: "negative",
-                i18n: ["notification.errors.errorSavingItem", { item: params.type }],
+                i18n: [
+                  "notification.errors.errorSavingItem",
+                  { item: params.type }
+                ],
                 timeout: 2000
               });
             } else {
               this.send("show_notification", {
-                i18n: ["notification.positive.itemSaved", { item: params.type, filename }],
+                i18n: [
+                  "notification.positive.itemSaved",
+                  { item: params.type, filename }
+                ],
                 timeout: 2000
               });
             }
@@ -317,6 +350,24 @@ export class Backend {
     }
   }
 
+  initLogger(logPath) {
+    console.log("Init Logging at path: " + logPath);
+    try {
+      this.log = bunyan.createLogger({
+        name: "log",
+        streams: [
+          {
+            level: "debug",
+            path: path.join(logPath, "electron.log")
+          }
+        ]
+      });
+    } catch (e) {
+      console.log("Could not create the logger");
+      console.log(e);
+    }
+  }
+
   startup() {
     this.send("set_app_data", {
       remotes: this.remotes,
@@ -344,14 +395,20 @@ export class Backend {
         if (!this.config_data.hasOwnProperty(key)) {
           this.config_data[key] = {};
         }
-        this.config_data[key] = Object.assign(this.config_data[key], disk_config_data[key]);
+        this.config_data[key] = Object.assign(
+          this.config_data[key],
+          disk_config_data[key]
+        );
       });
 
       // here we may want to check if config data is valid, if not also send code -1
       // i.e. check ports are integers and > 1024, check that data dir path exists, etc
       const validated = Object.keys(this.defaults)
         .filter(k => k in this.config_data)
-        .map(k => [k, this.validate_values(this.config_data[k], this.defaults[k])])
+        .map(k => [
+          k,
+          this.validate_values(this.config_data[k], this.defaults[k])
+        ])
         .reduce((map, obj) => {
           map[obj[0]] = obj[1];
           return map;
@@ -364,7 +421,12 @@ export class Backend {
       };
 
       // save config file back to file, so updated options are stored on disk
-      fs.writeFile(this.config_file, JSON.stringify(this.config_data, null, 4), "utf8", () => {});
+      fs.writeFile(
+        this.config_file,
+        JSON.stringify(this.config_data, null, 4),
+        "utf8",
+        () => {}
+      );
 
       this.send("set_app_data", {
         config: this.config_data,
@@ -426,6 +488,9 @@ export class Backend {
       if (!fs.existsSync(log_dir)) {
         fs.mkdirpSync(log_dir);
       }
+
+      console.log("About to init the logger with log_dir: " + log_dir);
+      this.initLogger(log_dir);
 
       this.daemon = new Daemon(this);
       this.walletd = new WalletRPC(this);
@@ -605,7 +670,11 @@ export class Backend {
 
   // Replace any invalid value with default values
   validate_values(values, defaults) {
-    const isDictionary = v => typeof v === "object" && v !== null && !(v instanceof Array) && !(v instanceof Date);
+    const isDictionary = v =>
+      typeof v === "object" &&
+      v !== null &&
+      !(v instanceof Array) &&
+      !(v instanceof Date);
     const modified = { ...values };
 
     // Make sure we have valid defaults
@@ -616,7 +685,10 @@ export class Backend {
       if (!(key in defaults)) continue;
 
       const defaultValue = defaults[key];
-      const invalidDefault = defaultValue === null || defaultValue === undefined || Number.isNaN(defaultValue);
+      const invalidDefault =
+        defaultValue === null ||
+        defaultValue === undefined ||
+        Number.isNaN(defaultValue);
       if (invalidDefault) continue;
 
       const value = modified[key];
@@ -626,7 +698,12 @@ export class Backend {
         modified[key] = this.validate_values(value, defaultValue);
       } else {
         // Check if we need to replace the value
-        const isValidValue = !(value === undefined || value === null || value === "" || Number.isNaN(value));
+        const isValidValue = !(
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          Number.isNaN(value)
+        );
         if (isValidValue) continue;
 
         // Otherwise set the default value

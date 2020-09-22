@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "axios": "^0.18.1",
+    "bunyan": "^1.8.14",
     "electron-is-dev": "^1.0.1",
     "electron-updater": "^4.2.0",
     "electron-window-state": "^5.0.3",

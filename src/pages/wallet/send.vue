@@ -355,6 +355,7 @@ export default {
       this.$gateway.send("wallet", "relay_tx", relayTxData);
     },
     onCancelTransaction() {
+      console.log("Test log cancel tx");
       this.$store.commit("gateway/set_tx_status", {
         code: DO_NOTHING,
         message: "Cancel the transaction from confirm dialog",

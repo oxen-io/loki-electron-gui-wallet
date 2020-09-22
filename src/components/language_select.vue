@@ -1,6 +1,8 @@
 <template>
   <div class="language-select column items-center justify-center">
-    <h6 class="q-my-md" style="font-weight: 300">{{ $t("strings.selectLanguage") }}:</h6>
+    <h6 class="q-my-md" style="font-weight: 300">
+      {{ $t("strings.selectLanguage") }}:
+    </h6>
     <div class="row justify-center">
       <q-btn
         v-for="option in options"
