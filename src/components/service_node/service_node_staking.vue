@@ -291,12 +291,10 @@ export default {
       this.service_node.amount = minContribution;
     },
     minStake() {
-      window.alert("OIIIII");
       const node = this.getNodeWithPubKey();
       return this.getMinContribution(node);
     },
     maxStake() {
-      window.log.info("Hello my friend");
       const node = this.getNodeWithPubKey();
       return this.openForContributionLoki(node);
     },

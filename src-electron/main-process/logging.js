@@ -1,14 +1,11 @@
+// This allows for logging (to a file) from the frontend by creating global logging functions
+// That send ipc calls (from renderer) to the electron main process
 // create global logging functions for the frontend. It sends messages to the main
 // process which then log to file
 
 const electron = require("electron");
 
 const _ = require("lodash");
-
-console.log("yeah basically required all that bs");
-
-// Default Bunyan levels: https://github.com/trentm/node-bunyan#levels
-// To make it easier to visually scan logs, we make all levels the same length
 
 const ipc = electron.ipcRenderer;
 
@@ -53,16 +50,8 @@ function now() {
 
 // The Bunyan API: https://github.com/trentm/node-bunyan#log-method-api
 function logAtLevel(level, prefix, ...args) {
-  console._log("the level is: " + level);
-  // do some different shit for dev
-  //   if (development) {
   const fn = `_${level}`;
   console[fn](prefix, now(), ...args);
-
-  console._log("hey, the console fn actually worked");
-  //   } else {
-  //     console._log(prefix, now(), ...args);
-  //   }
 
   const logText = cleanArgsForIPC(args);
   ipc.send(`log-${level}`, logText);
@@ -77,13 +66,13 @@ window.log = {
   trace: _.partial(logAtLevel, "trace", "TRACE")
 };
 
-// window.onerror = (message, script, line, col, error) => {
-//   const errorInfo = error && error.stack ? error.stack : JSON.stringify(error);
-//   window.log.error(`Top-level unhandled error: ${errorInfo}`);
-// };
+window.onerror = (message, script, line, col, error) => {
+  const errorInfo = error && error.stack ? error.stack : JSON.stringify(error);
+  window.log.error(`Top-level unhandled error: ${errorInfo}`);
+};
 
-// window.addEventListener("unhandledrejection", rejectionEvent => {
-//   const error = rejectionEvent.reason;
-//   const errorInfo = error && error.stack ? error.stack : error;
-//   window.log.error("Top-level unhandled promise rejection:", errorInfo);
-// });
+window.addEventListener("unhandledrejection", rejectionEvent => {
+  const error = rejectionEvent.reason;
+  const errorInfo = error && error.stack ? error.stack : error;
+  window.log.error("Top-level unhandled promise rejection:", errorInfo);
+});
