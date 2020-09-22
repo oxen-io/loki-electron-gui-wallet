@@ -351,21 +351,15 @@ export class Backend {
   }
 
   initLogger(logPath) {
-    console.log("Init Logging at path: " + logPath);
-    try {
-      this.log = bunyan.createLogger({
-        name: "log",
-        streams: [
-          {
-            level: "debug",
-            path: path.join(logPath, "electron.log")
-          }
-        ]
-      });
-    } catch (e) {
-      console.log("Could not create the logger");
-      console.log(e);
-    }
+    this.log = bunyan.createLogger({
+      name: "log",
+      streams: [
+        {
+          level: "debug",
+          path: path.join(logPath, "electron.log")
+        }
+      ]
+    });
   }
 
   startup() {
