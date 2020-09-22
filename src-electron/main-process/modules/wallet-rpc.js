@@ -2581,6 +2581,7 @@ export class WalletRPC {
     if (timeout > 0) {
       options.timeout = timeout;
     }
+
     return this.queue.add(() => {
       return request(options)
         .then(response => {
