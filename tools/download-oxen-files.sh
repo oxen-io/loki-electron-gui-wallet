@@ -6,11 +6,11 @@ Usage: $0 URL -- download and extract an oxen-core build (typically from https:/
 
 Some common URLs:
     https://oxen.rocks/oxen-io/oxen-core/oxen-stable-linux-LATEST.tar.xz
-    https://oxen.rocks/oxen-io/oxen-core/oxen-stable-win-LATEST.tar.xz
+    https://oxen.rocks/oxen-io/oxen-core/oxen-stable-win-LATEST.zip
     https://oxen.rocks/oxen-io/oxen-core/oxen-stable-macos-LATEST.tar.xz
 
     https://oxen.rocks/oxen-io/oxen-core/oxen-dev-linux-LATEST.tar.xz
-    https://oxen.rocks/oxen-io/oxen-core/oxen-dev-win-LATEST.tar.xz
+    https://oxen.rocks/oxen-io/oxen-core/oxen-dev-win-LATEST.zip
     https://oxen.rocks/oxen-io/oxen-core/oxen-dev-macos-LATEST.tar.xz
 EOF
     exit 1
@@ -33,8 +33,19 @@ fi
 
 rm -f bin/oxen*
 
-curl -sS "$1" | $tar --strip-components=1 -C bin -xJv --no-anchored oxend oxen-wallet-rpc
+if [[ "$1" = *win*.zip ]]; then
+    tmpzip=$(mktemp XXXXXXXXXXXX.zip)
+    curl -sSo $tmpzip "$1"
+    unzip -p $tmpzip '*/oxend.exe' >bin/oxend.exe
+    unzip -p $tmpzip '*/oxen-wallet-rpc.exe' >bin/oxen-wallet-rpc.exe
+    rm -f $tmpzip
 
-echo "Checking downloaded versions:"
-echo -n "oxend: "; ./bin/oxend --version
-echo -n "oxen-wallet-rpc: "; ./bin/oxen-wallet-rpc --version
+    echo "Extracted:"
+    ls -l bin/*.exe
+else
+    curl -sS "$1" | $tar --strip-components=1 -C bin -xJv --no-anchored oxend oxen-wallet-rpc
+
+    echo "Checking downloaded versions:"
+    echo -n "oxend: "; ./bin/oxend --version
+    echo -n "oxen-wallet-rpc: "; ./bin/oxen-wallet-rpc --version
+fi
