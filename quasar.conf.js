@@ -168,6 +168,21 @@ module.exports = function() {
           icon: "oxen-electron-wallet.png",
           category: "Finance"
         },
+        // see https://www.electron.build/configuration/linux#debian-package-options
+        deb: {
+          depends: [
+            "libgtk-3-0",
+            "libnotify4",
+            "libnss3",
+            "libxss1",
+            "libxtst6",
+            "xdg-utils",
+            "libatspi2.0-0",
+            "libuuid1",
+            "libsecret-1-0",
+            "libappindicator3-1 | libayatana-appindicator3-1"
+          ]
+        },
 
         mac: {
           // We need zip for auto-updating
